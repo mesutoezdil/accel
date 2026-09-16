@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func write(t *testing.T, root, p, v string) {
@@ -43,6 +44,8 @@ func TestLinuxRates(t *testing.T) {
 	write(t, root, "sys/class/infiniband/mlx5_0/ports/1/counters/symbol_error", "2\n")
 
 	s := New()
+	clock := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	s.now = func() time.Time { return clock }
 	first := s.Sample()
 	if !first.CPU.Percent.Unknown() || first.Mem.Used != 600*1024 || first.CPU.Load1 != 1.5 || first.CPU.MHz != 3000 {
 		t.Fatalf("first sample %+v", first)
@@ -51,7 +54,7 @@ func TestLinuxRates(t *testing.T) {
 	write(t, root, "proc/net/dev", "h\nh\n  eth0: 3000 30 1 2 0 0 0 0 4000 40 3 4 0 0 0 0\n")
 	write(t, root, "sys/class/infiniband/mlx5_0/ports/1/counters/port_rcv_data", "200\n")
 	write(t, root, "proc/diskstats", "   8       0 sda 20 0 3000 0 5 0 500 0 0 600 0\n")
-	s.at = s.at.Add(-2e9) // pretend 2 seconds passed
+	clock = clock.Add(2 * time.Second)
 	second := s.Sample()
 	if math.Abs(float64(second.CPU.Percent)-66.67) > 0.1 || len(second.CPU.PerCore) != 1 {
 		t.Fatalf("cpu %v %v", second.CPU.Percent, second.CPU.PerCore)

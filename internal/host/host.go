@@ -119,6 +119,7 @@ type Sampler struct {
 	mu   sync.Mutex
 	prev raw
 	at   time.Time
+	now  func() time.Time // time.Now; tests replace it so the interval is exact
 }
 
 // raw holds counters from one read.
@@ -148,13 +149,16 @@ type ibCounters struct {
 }
 
 // New returns a sampler.
-func New() *Sampler { return &Sampler{} }
+func New() *Sampler { return &Sampler{now: time.Now} }
 
 // Sample reads the host. The first call has no rates (NaN).
 func (s *Sampler) Sample() Stats {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	now := time.Now()
+	if s.now == nil {
+		s.now = time.Now
+	}
+	now := s.now()
 	st := Stats{Time: now, OS: runtime.GOOS + "/" + runtime.GOARCH}
 	st.Hostname, _ = os.Hostname()
 	st.CPU.Cores = runtime.NumCPU()
