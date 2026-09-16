@@ -43,11 +43,11 @@ test-fake-nvml:
 
 # Shell completions and the man page, as the packages ship them.
 completions: build
-	mkdir -p dist/extra
-	bin/accel --completion bash > dist/extra/accel.bash
-	bin/accel --completion zsh > dist/extra/_accel
-	bin/accel --completion fish > dist/extra/accel.fish
-	bin/accel --man > dist/extra/accel.1
+	mkdir -p build/extra
+	bin/accel --completion bash > build/extra/accel.bash
+	bin/accel --completion zsh > build/extra/_accel
+	bin/accel --completion fish > build/extra/accel.fish
+	bin/accel --man > build/extra/accel.1
 
 clean:
-	rm -rf bin dist
+	rm -rf bin dist build

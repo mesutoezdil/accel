@@ -3,11 +3,11 @@ project_name: accel
 
 before:
   hooks:
-    - mkdir -p dist/extra
-    - sh -c "go run . --completion bash > dist/extra/accel.bash"
-    - sh -c "go run . --completion zsh > dist/extra/_accel"
-    - sh -c "go run . --completion fish > dist/extra/accel.fish"
-    - sh -c "go run . --man > dist/extra/accel.1"
+    - mkdir -p build/extra
+    - sh -c "go run . --completion bash > build/extra/accel.bash"
+    - sh -c "go run . --completion zsh > build/extra/_accel"
+    - sh -c "go run . --completion fish > build/extra/accel.fish"
+    - sh -c "go run . --man > build/extra/accel.1"
 
 builds:
   - id: accel
@@ -44,16 +44,16 @@ nfpms:
       - src: examples/config.yaml
         dst: /etc/accel/config.yaml
         type: config|noreplace
-      - src: dist/extra/accel.bash
+      - src: build/extra/accel.bash
         dst: /usr/share/bash-completion/completions/accel
-      - src: dist/extra/_accel
+      - src: build/extra/_accel
         dst: /usr/share/zsh/site-functions/_accel
-      - src: dist/extra/accel.fish
+      - src: build/extra/accel.fish
         dst: /usr/share/fish/vendor_completions.d/accel.fish
-      - src: dist/extra/accel.1
+      - src: build/extra/accel.1
         dst: /usr/share/man/man1/accel.1
 
-brews:
+homebrew_casks:
   - name: accel
     repository:
       owner: mesutoezdil
@@ -61,10 +61,12 @@ brews:
     homepage: https://github.com/mesutoezdil/accel
     description: Terminal monitor for GPUs, NPUs, and other AI accelerators.
     license: Apache-2.0
-    extra_install: |
-      generate_completions_from_executable(bin/"accel", "--completion", shells: [:bash, :zsh, :fish])
-      (man1/"accel.1").write Utils.safe_popen_read(bin/"accel", "--man")
-    test: system "#{bin}/accel", "--version"
+    binary: accel
+    manpages: [build/extra/accel.1]
+    completions:
+      bash: build/extra/accel.bash
+      zsh: build/extra/_accel
+      fish: build/extra/accel.fish
 
 dockers:
   - image_templates: ["ghcr.io/mesutoezdil/accel:{{ .Version }}-amd64"]
