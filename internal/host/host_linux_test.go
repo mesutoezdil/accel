@@ -20,9 +20,12 @@ func write(t *testing.T, root, p, v string) {
 
 func TestLinuxRates(t *testing.T) {
 	root := t.TempDir()
+	oldProc, oldSys := procRoot, sysRoot
 	procRoot, sysRoot = filepath.Join(root, "proc"), filepath.Join(root, "sys")
+	t.Cleanup(func() { procRoot, sysRoot = oldProc, oldSys })
+	// 200 busy ticks out of 300 elapsed: 66.7% busy
 	stat1 := "cpu  100 0 100 800 0 0 0 0\ncpu0 100 0 100 800 0 0 0 0\n"
-	stat2 := "cpu  200 0 200 800 0 0 0 0\ncpu0 200 0 200 800 0 0 0 0\n"
+	stat2 := "cpu  200 0 200 900 0 0 0 0\ncpu0 200 0 200 900 0 0 0 0\n"
 	write(t, root, "proc/stat", stat1)
 	write(t, root, "proc/meminfo", "MemTotal:       1000 kB\nMemAvailable:    400 kB\nSwapTotal:  100 kB\nSwapFree: 50 kB\n")
 	write(t, root, "proc/loadavg", "1.5 1.0 0.5 1/100 123\n")

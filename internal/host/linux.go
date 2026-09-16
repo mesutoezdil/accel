@@ -153,7 +153,11 @@ func isPartition(name string) bool {
 }
 
 func readNets(st *Stats, r *raw) {
-	for _, l := range lines(procRoot + "/net/dev")[2:] {
+	ls := lines(procRoot + "/net/dev")
+	if len(ls) < 2 {
+		return
+	}
+	for _, l := range ls[2:] {
 		name, rest, ok := strings.Cut(l, ":")
 		if !ok {
 			continue
