@@ -1,0 +1,5 @@
+| GPU     NAME         Persistence-M | Bus-id              | GPU-Util      sGPU-M |
+| Temp    Pwr:Usage/Cap         Perf | Memory-Usage        | GPU-State            |
+|====================================+=====================+======================|
+| 0       MetaX N260             Off | 0000:01:00.0        | 0%            Native |
+| 37C     29W / 225W              P0 | 666/65536 MiB       | Available            |

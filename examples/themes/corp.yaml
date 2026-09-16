@@ -1,0 +1,8 @@
+# A user theme: ~/.config/accel/themes/corp.yaml, then `theme: corp`.
+# Any role not set here comes from the theme it extends.
+name: corp
+extends: ice
+colors:
+  accent: "#ff00ff"
+  title: "#ff00ff"
+  warn: "214"          # ANSI 256-colour numbers work too

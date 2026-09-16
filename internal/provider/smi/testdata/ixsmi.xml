@@ -1,0 +1,184 @@
+<?xml version="1.0" ?>
+<!DOCTYPE ixsmi_log SYSTEM "ixsmi_device.dtd">
+<ixsmi_log>
+        <timestamp>Tue May 20 19:21:24 2025</timestamp>
+        <driver_version>4.2.0</driver_version>
+        <cuda_version>10.2</cuda_version>
+        <attached_gpus>2</attached_gpus>
+        <gpu id="00000000:0C:00.0">
+                <product_name>Iluvatar MR-V100</product_name>
+                <serial>23490256585496</serial>
+                <uuid>GPU-1ac807aa-cbcd-5579-8591-d59d436d6eca</uuid>
+                <minor_number>0</minor_number>
+                <multigpu_board>No</multigpu_board>
+                <board_id>170c</board_id>
+                <gpu_position>N/A</gpu_position>
+                <gpu_part_number>MR-V100-00</gpu_part_number>
+                <gpu_virtualization_mode>
+                        <virtualization_mode>None</virtualization_mode>
+                        <host_vgpu_mode>N/A</host_vgpu_mode>
+                </gpu_virtualization_mode>
+                <pci>
+                        <pci_bus>0C</pci_bus>
+                        <pci_device>00</pci_device>
+                        <pci_domain>0000</pci_domain>
+                        <pci_device_id>00021E3E</pci_device_id>
+                        <pci_bus_id>00000000:0C:00.0</pci_bus_id>
+                        <pci_sub_system_id>00010000</pci_sub_system_id>
+                        <pci_gpu_link_info>
+                                <pcie_gen>
+                                        <max_link_gen>4</max_link_gen>
+                                        <current_link_gen>4</current_link_gen>
+                                </pcie_gen>
+                                <link_widths>
+                                        <max_link_width>16x</max_link_width>
+                                        <current_link_width>16x</current_link_width>
+                                </link_widths>
+                        </pci_gpu_link_info>
+                        <tx_util>0 KB/s</tx_util>
+                        <rx_util>0 KB/s</rx_util>
+                </pci>
+                <fan_speed>N/A</fan_speed>
+                <memory_usage>
+                        <total>32768 MiB</total>
+                        <used>27780 MiB</used>
+                        <free>4988 MiB</free>
+                </memory_usage>
+                <utilization>
+                        <gpu_util>0 %</gpu_util>
+                        <memory_util>85 %</memory_util>
+                        <encoder_util>0 %</encoder_util>
+                        <decoder_util>0 %</decoder_util>
+                </utilization>
+                <ecc_mode>
+                        <current_ecc>Enabled</current_ecc>
+                        <pending_ecc>N/A</pending_ecc>
+                </ecc_mode>
+                <ecc_errors>
+                        <single_bit>0</single_bit>
+                        <double_bit>0</double_bit>
+                </ecc_errors>
+                <temperature>
+                        <gpu_temp>44 C</gpu_temp>
+                        <gpu_temp_max_threshold>105 C</gpu_temp_max_threshold>
+                        <gpu_temp_slow_threshold>100 C</gpu_temp_slow_threshold>
+                        <gpu_temp_max_gpu_threshold>95 C</gpu_temp_max_gpu_threshold>
+                </temperature>
+                <power_readings>
+                        <gpu_power_draw>37 W</gpu_power_draw>
+                        <current_gpu_power_limit>150 W</current_gpu_power_limit>
+                        <default_gpu_power_limit>150 W</default_gpu_power_limit>
+                        <board_power_draw>N/A</board_power_draw>
+                        <current_board_power_limit>N/A</current_board_power_limit>
+                        <default_board_power_limit>N/A</default_board_power_limit>
+                </power_readings>
+                <clocks>
+                        <sm_clock>1500 MHz</sm_clock>
+                        <mem_clock>1600 MHz</mem_clock>
+                </clocks>
+                <max_clocks>
+                        <sm_clock>1500 MHz</sm_clock>
+                        <mem_clock>1600 MHz</mem_clock>
+                </max_clocks>
+                <compute_mode>Default</compute_mode>
+                <performance_state>P0</performance_state>
+                <processes>
+                        <process_info>
+                                <gpu_instance_id>N/A</gpu_instance_id>
+                                <compute_instance_id>N/A</compute_instance_id>
+                                <pid>21039</pid>
+                                <type>C</type>
+                                <process_name>/usr/local/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=13, pipe_handle=15) --multiprocessing-fork</process_name>
+                                <used_memory>27664 MiB</used_memory>
+                        </process_info>
+                </processes>
+        </gpu>
+        <gpu id="00000000:0F:00.0">
+                <product_name>Iluvatar MR-V100</product_name>
+                <serial>23490258505496</serial>
+                <uuid>GPU-be5622c9-df8e-56fb-8586-86e94d57c938</uuid>
+                <minor_number>1</minor_number>
+                <multigpu_board>No</multigpu_board>
+                <board_id>1d0f</board_id>
+                <gpu_position>N/A</gpu_position>
+                <gpu_part_number>MR-V100-00</gpu_part_number>
+                <gpu_virtualization_mode>
+                        <virtualization_mode>None</virtualization_mode>
+                        <host_vgpu_mode>N/A</host_vgpu_mode>
+                </gpu_virtualization_mode>
+                <pci>
+                        <pci_bus>0F</pci_bus>
+                        <pci_device>00</pci_device>
+                        <pci_domain>0000</pci_domain>
+                        <pci_device_id>00021E3E</pci_device_id>
+                        <pci_bus_id>00000000:0F:00.0</pci_bus_id>
+                        <pci_sub_system_id>00010000</pci_sub_system_id>
+                        <pci_gpu_link_info>
+                                <pcie_gen>
+                                        <max_link_gen>4</max_link_gen>
+                                        <current_link_gen>4</current_link_gen>
+                                </pcie_gen>
+                                <link_widths>
+                                        <max_link_width>16x</max_link_width>
+                                        <current_link_width>16x</current_link_width>
+                                </link_widths>
+                        </pci_gpu_link_info>
+                        <tx_util>0 KB/s</tx_util>
+                        <rx_util>0 KB/s</rx_util>
+                </pci>
+                <fan_speed>N/A</fan_speed>
+                <memory_usage>
+                        <total>32768 MiB</total>
+                        <used>27716 MiB</used>
+                        <free>5052 MiB</free>
+                </memory_usage>
+                <utilization>
+                        <gpu_util>0 %</gpu_util>
+                        <memory_util>85 %</memory_util>
+                        <encoder_util>0 %</encoder_util>
+                        <decoder_util>0 %</decoder_util>
+                </utilization>
+                <ecc_mode>
+                        <current_ecc>Enabled</current_ecc>
+                        <pending_ecc>N/A</pending_ecc>
+                </ecc_mode>
+                <ecc_errors>
+                        <single_bit>0</single_bit>
+                        <double_bit>0</double_bit>
+                </ecc_errors>
+                <temperature>
+                        <gpu_temp>44 C</gpu_temp>
+                        <gpu_temp_max_threshold>105 C</gpu_temp_max_threshold>
+                        <gpu_temp_slow_threshold>100 C</gpu_temp_slow_threshold>
+                        <gpu_temp_max_gpu_threshold>95 C</gpu_temp_max_gpu_threshold>
+                </temperature>
+                <power_readings>
+                        <gpu_power_draw>39 W</gpu_power_draw>
+                        <current_gpu_power_limit>150 W</current_gpu_power_limit>
+                        <default_gpu_power_limit>150 W</default_gpu_power_limit>
+                        <board_power_draw>N/A</board_power_draw>
+                        <current_board_power_limit>N/A</current_board_power_limit>
+                        <default_board_power_limit>N/A</default_board_power_limit>
+                </power_readings>
+                <clocks>
+                        <sm_clock>1500 MHz</sm_clock>
+                        <mem_clock>1600 MHz</mem_clock>
+                </clocks>
+                <max_clocks>
+                        <sm_clock>1500 MHz</sm_clock>
+                        <mem_clock>1600 MHz</mem_clock>
+                </max_clocks>
+                <compute_mode>Default</compute_mode>
+                <performance_state>P0</performance_state>
+                <processes>
+                        <process_info>
+                                <gpu_instance_id>N/A</gpu_instance_id>
+                                <compute_instance_id>N/A</compute_instance_id>
+                                <pid>22550</pid>
+                                <type>C</type>
+                                <process_name>/usr/local/bin/python3 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=13, pipe_handle=15) --multiprocessing-fork</process_name>
+                                <used_memory>27600 MiB</used_memory>
+                        </process_info>
+                </processes>
+        </gpu>
+</ixsmi_log>

@@ -1,0 +1,15 @@
+Captured vendor tool output used as parser fixtures.
+
+efsmi.txt      github.com/rongxinzy/suanctl src/collectors/fixtures/efsmi_query.txt (MIT)
+efsmi_old.txt  github.com/hawkli-1994/gpu_tools pkg/gpu/enflame/testdata/efs.txt (Apache-2.0)
+ixsmi.xml      github.com/hawkli-1994/gpu_tools pkg/gpu/ix/testdata/ixsmi.xml (Apache-2.0)
+hysmi.json     github.com/open-beagle/gpustack tests/detectors/rocm_smi/data/hygon-gpu-24.04.3-rocm-smi.json (Apache-2.0)
+xpusmi.txt     github.com/xyDong0223/infer-forge-harness tests/unit/test_memory_budget.py
+cnmon.txt      device rows from the PaddlePaddle MLU install guide; frame reconstructed
+npusmi.txt     device rows from github.com/ForceInjection/AI-fundamentals npu-smi reference;
+               second device and process table reconstructed from the same layout
+npusmi_310.txt 310P layout reconstructed from public npu-smi documentation
+mxsmi.txt          github.com/modelscope/ms-swift docs/source_en/BestPractices/Metax-support.md (first device)
+mxsmi_old.txt      github.com/Approaching-AI/AIMA internal/hal/hal_test.go
+mthreadsgmi.txt    github.com/containers/ramalama docs/ramalama-musa.7.md
+mthreadsgmi_new.txt github.com/PaddlePaddle/PaddleFormers docs/zh/MUSA-GPU_installation_guide.md

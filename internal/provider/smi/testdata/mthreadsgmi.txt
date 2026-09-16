@@ -1,0 +1,9 @@
+    mthreads-gmi:2.0.0           Driver Version:3.0.0
+---------------------------------------------------------------
+ID   Name           |PCIe                |%GPU  Mem
+     Device Type    |Pcie Lane Width     |Temp  MPC Capable
+                                         |      ECC Mode
++-------------------------------------------------------------+
+0    MTT S80        |00000000:01:00.0    |0%    3419MiB(16384MiB)
+     Physical       |16x(16x)            |59C   YES
+                                         |      N/A

@@ -1,0 +1,555 @@
+-------------------------------------------------------------------------------
+--------------------- Enflame System Management Interface ---------------------
+--------- Enflame Tech, All Rights Reserved. 2024-2025 Copyright (C) ----------
+-------------------------------------------------------------------------------
+                                                                               
+DEV ID 0
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH90200803
+        Dev SN                  : A0A7P40510338   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2024-7-25
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 0d
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 99 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 38934 MiB
+        Free Size               : 2911 MiB
+    Temperature Info
+        GCU Temp                : 35 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 1
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH59050406
+        Dev SN                  : A806U40520442   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2024-6-30
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 0f
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 101 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 38902 MiB
+        Free Size               : 2943 MiB
+    Temperature Info
+        GCU Temp                : 34 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 2
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH75231005
+        Dev SN                  : A807840520005   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2024-7-8
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 13
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 102 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 38940 MiB
+        Free Size               : 2905 MiB
+    Temperature Info
+        GCU Temp                : 36 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 3
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH75190307
+        Dev SN                  : A807D40510771   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2024-7-13
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 17
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 103 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 38940 MiB
+        Free Size               : 2905 MiB
+    Temperature Info
+        GCU Temp                : 35 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 4
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH63221000
+        Dev SN                  : A0A1650510828   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2025-1-6
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 19
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 102 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 19163 MiB
+        Free Size               : 22682 MiB
+    Temperature Info
+        GCU Temp                : 34 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 5
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH59180208
+        Dev SN                  : A806U40520800   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2024-6-30
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 22
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 99 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 38952 MiB
+        Free Size               : 2893 MiB
+    Temperature Info
+        GCU Temp                : 33 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 6
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TR6Y54090402
+        Dev SN                  : A0A5550550317   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2025-5-5
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 24
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 101 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 38902 MiB
+        Free Size               : 2943 MiB
+    Temperature Info
+        GCU Temp                : 34 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 7
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH67050805
+        Dev SN                  : A806U40520266   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2024-6-30
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 28
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 102 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 38940 MiB
+        Free Size               : 2905 MiB
+    Temperature Info
+        GCU Temp                : 36 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 8
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH87120908
+        Dev SN                  : A807J405I0078   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2024-7-19
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 2c
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 101 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 38912 MiB
+        Free Size               : 2933 MiB
+    Temperature Info
+        GCU Temp                : 36 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0
+DEV ID 9
+    Driver Info
+        Ver                     : 1.5.20260710
+    Device Info
+        Dev Name                : Enflame S60
+        Dev UUID                : TPUH71221004
+        Dev SN                  : A807D40510005   
+        Dev PN                  : EFB-0088000-00      
+        Dev MFD                 : 2024-7-13
+        Health                  : True
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 2e
+        Dev                     : 00
+        Func                    : 0
+        Link Info               
+            Max Link Speed      : Gen5
+            Max Link Width      : X16
+            Cur Link Speed      : Gen4
+            Cur Link Width      : X16
+            Tx Throughput       : 0 MiB/s
+            Rx Throughput       : 0 MiB/s
+    Power Info
+        Power Capa              : 300 W
+        Cur Power               : 102 W
+        Dpm Level               : Sleep
+    Device Mem Info
+        Total Size              : 42976 MiB
+        Reserved Size           : 1129 MiB
+        Used Size               : 0 MiB
+        Free Size               : 41846 MiB
+    Temperature Info
+        GCU Temp                : 34 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+    ECC Mode
+        Current                 : Enable
+        Pending                 : Enable
+    Error Records
+        Total Error Count       : 0
+        Reset Count             : 0
+        Last Reset Date         : N/A
+    Error Details
+        User Triggered Reset    : 0
+        Internal Error          : 0
+        SIP Error               : 0
+        Bus Error               : 0
+        FW Error                : 0
+        DTE Error               : 0
+        DRAM HBM Error          : 0
+        PCIE Error              : 0
+        GCU-LARE Error          : 0
+        Unknown Error           : 0

@@ -1,0 +1,5 @@
+# Used by goreleaser: the binary is already built for the target platform.
+FROM alpine:3.20
+COPY accel /usr/local/bin/accel
+ENTRYPOINT ["accel"]
+CMD ["--service", "--listen", ":9800", "--insecure"]

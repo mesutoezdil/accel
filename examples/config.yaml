@@ -1,0 +1,84 @@
+# accel configuration. Copy to `~/.config/accel/config.yaml` (or pass `--config`).
+# Every key is optional; these are the defaults unless noted. Unknown keys
+# are rejected with their line number. `accel --print-config` shows the
+# effective result.
+
+refresh: 1s            # sampling interval
+vendors: []            # probe every vendor; or e.g. [nvidia, ascend]
+
+history:
+  keep: 24h            # how far back the time machine goes
+  resolution: 5s       # one point per device per resolution
+  persist: true        # write to ~/.local/state/accel/history
+  dir: ""              # override the history directory
+  max_disk_mb: 256     # oldest hourly files go first
+
+thresholds:
+  idle_util: 5         # percent; below it a device is idle
+  busy_util: 80        # percent; at or above it a device is busy
+  idle_after: 5m       # idle with processes this long: idle-allocated
+  temp_warn: 85        # celsius; alert and health deduction above it
+  outlier_delta: 20    # percentage points below siblings: outlier
+
+listen: ""             # "127.0.0.1:9800" serves /api/snapshot, /api/summary, /api/events, /api/history, and /metrics
+token: ""              # bearer token, or "sha256:<digest>" from `accel --gen-token` so the plaintext never sits here
+tls:                   # required to listen outside loopback (unless insecure: true)
+  cert: ""             # server certificate (PEM)
+  key: ""              # server key (PEM)
+  client_ca: ""        # set to require client certificates (mTLS)
+insecure: false        # allow a non-loopback listen without TLS and a token
+
+nodes: []              # remote sources shown in the same fleet
+# nodes:
+#   - name: gpu-node-01              # another accel with --listen
+#     url: https://gpu-node-01:9800
+#     token_file: ~/.config/accel/tokens/gpu-node-01
+#     ca: ~/.config/accel/ca.pem
+#   - name: hpc-07                   # no accel there: vendor tools over ssh
+#     ssh: root@hpc-07
+#     key: ~/.ssh/id_ed25519
+
+kubernetes:
+  kubeconfig: ""       # outside the cluster; "" uses in-cluster, then KUBECONFIG, then ~/.kube/config
+  context: ""
+
+cost:
+  currency: "$"
+  per_hour: {}         # device name substring: price per device-hour; longest match wins
+# cost:
+#   per_hour:
+#     "H100": 3.50
+#     "MI300X": 3.00
+#     "910B": 1.80
+
+alerts:
+  webhook: ""          # POST {"host", "alerts": [...]} on every new alert
+  slack: ""            # Slack incoming webhook URL
+  alertmanager: ""     # http://alertmanager:9093
+  min_severity: warning
+  resend: 1h           # repeat an active alert after this long
+  rules: []            # your own conditions on top of the built-in ones
+# alerts:
+#   rules:
+#     - name: wasted
+#       when: "util < 10"       # <metric> <op> <value>; memory values take K M G T
+#       for: 10m                # must hold this long
+#       on: allocated           # "", allocated, idle
+#       severity: warning
+#     - when: "health < 50"
+#       severity: critical
+
+carbon:
+  g_per_kwh: 0         # grid intensity of your region in gCO2/kWh; 0 hides carbon
+
+theme: default         # amber, default, dracula, ice, mono, solarized, or a file in ~/.config/accel/themes
+colors: {}             # role overrides; roles: accent text dim title border ok mid warn crit info
+                       #   bar_low bar_mid bar_high bar_track spark tab_active_bg tab_active_fg selection_bg selection_fg
+transparent: false     # keep the terminal background
+mouse: true
+log: ""                # debug log file (also `--debug`)
+
+keys: {}               # action: key or "key1,key2"; see `?` in the terminal UI for actions
+# keys:
+#   quit: "q,ctrl+c"
+#   command: ";"

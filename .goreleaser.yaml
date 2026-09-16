@@ -1,0 +1,106 @@
+version: 2
+project_name: accel
+
+before:
+  hooks:
+    - mkdir -p dist/extra
+    - sh -c "go run . --completion bash > dist/extra/accel.bash"
+    - sh -c "go run . --completion zsh > dist/extra/_accel"
+    - sh -c "go run . --completion fish > dist/extra/accel.fish"
+    - sh -c "go run . --man > dist/extra/accel.1"
+
+builds:
+  - id: accel
+    main: .
+    binary: accel
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - id: binaries
+    formats: [binary]
+    name_template: "accel-{{ .Os }}-{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+
+nfpms:
+  - id: packages
+    package_name: accel
+    vendor: Mesut Oezdil
+    homepage: https://github.com/mesutoezdil/accel
+    maintainer: Mesut Oezdil <versusfinem@gmail.com>
+    description: Terminal monitor for GPUs, NPUs, and other AI accelerators.
+    license: Apache-2.0
+    formats: [deb, rpm]
+    bindir: /usr/local/bin
+    contents:
+      - src: deploy/systemd/accel.service
+        dst: /lib/systemd/system/accel.service
+      - src: examples/config.yaml
+        dst: /etc/accel/config.yaml
+        type: config|noreplace
+      - src: dist/extra/accel.bash
+        dst: /usr/share/bash-completion/completions/accel
+      - src: dist/extra/_accel
+        dst: /usr/share/zsh/site-functions/_accel
+      - src: dist/extra/accel.fish
+        dst: /usr/share/fish/vendor_completions.d/accel.fish
+      - src: dist/extra/accel.1
+        dst: /usr/share/man/man1/accel.1
+
+brews:
+  - name: accel
+    repository:
+      owner: mesutoezdil
+      name: homebrew-tap
+    homepage: https://github.com/mesutoezdil/accel
+    description: Terminal monitor for GPUs, NPUs, and other AI accelerators.
+    license: Apache-2.0
+    extra_install: |
+      generate_completions_from_executable(bin/"accel", "--completion", shells: [:bash, :zsh, :fish])
+      (man1/"accel.1").write Utils.safe_popen_read(bin/"accel", "--man")
+    test: system "#{bin}/accel", "--version"
+
+dockers:
+  - image_templates: ["ghcr.io/mesutoezdil/accel:{{ .Version }}-amd64"]
+    goarch: amd64
+    dockerfile: Dockerfile.release
+    use: buildx
+    build_flag_templates: ["--platform=linux/amd64"]
+  - image_templates: ["ghcr.io/mesutoezdil/accel:{{ .Version }}-arm64"]
+    goarch: arm64
+    dockerfile: Dockerfile.release
+    use: buildx
+    build_flag_templates: ["--platform=linux/arm64"]
+
+docker_manifests:
+  - name_template: ghcr.io/mesutoezdil/accel:{{ .Version }}
+    image_templates:
+      - ghcr.io/mesutoezdil/accel:{{ .Version }}-amd64
+      - ghcr.io/mesutoezdil/accel:{{ .Version }}-arm64
+  - name_template: ghcr.io/mesutoezdil/accel:latest
+    skip_push: "{{ .Prerelease }}"
+    image_templates:
+      - ghcr.io/mesutoezdil/accel:{{ .Version }}-amd64
+      - ghcr.io/mesutoezdil/accel:{{ .Version }}-arm64
+
+release:
+  prerelease: auto
+  header: |
+    Single static binaries for Linux and macOS, deb and rpm packages, a
+    container image, and a Homebrew tap. Install:
+
+        curl -fLo accel https://github.com/mesutoezdil/accel/releases/download/{{ .Tag }}/accel-linux-amd64
+        chmod +x accel && sudo install accel /usr/local/bin/
+
+    On macOS clear the quarantine flag first: `xattr -d com.apple.quarantine accel`.
+
+changelog:
+  use: git
+  filters:
+    exclude: ["^ci:", "^chore:"]

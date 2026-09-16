@@ -1,0 +1,51 @@
+------------------------------------------------------------------------------
+-------------------- Enflame System Management Interface ---------------------
+--------- Enflame Tech, All Rights Reserved. 2024-2025 Copyright (C) ---------
+------------------------------------------------------------------------------
+
+DEV ID 0
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 0c
+        Dev                     : 00
+        Func                    : 0
+        Link Info
+        Max Link Speed          : Gen5
+        Max Link Width          : X16
+        Cur Link Speed          : Gen5
+        Cur Link Width          : X16
+        Tx Throughput           : 0 MiB/s
+        Rx Throughput           : 0 MiB/s
+    Device Mem Info
+        Mem Size                : 42976 MiB
+        Mem Usage               : 1129 MiB
+        Mem Ecc                 : enable
+    Temperature Info
+        GCU Temp                : 39 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %
+DEV ID 1
+    PCIe Info
+        Vendor ID               : 1e36
+        Device ID               : c035
+        Domain                  : 0000
+        Bus                     : 0f
+        Dev                     : 00
+        Func                    : 0
+        Link Info
+        Max Link Speed          : Gen5
+        Max Link Width          : X16
+        Cur Link Speed          : Gen5
+        Cur Link Width          : X16
+        Tx Throughput           : 0 MiB/s
+        Rx Throughput           : 0 MiB/s
+    Device Mem Info
+        Mem Size                : 42976 MiB
+        Mem Usage               : 1129 MiB
+        Mem Ecc                 : enable
+    Temperature Info
+        GCU Temp                : 39 ℃
+    Device Usage Info
+        GCU Usage               : 0.0 %

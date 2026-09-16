@@ -1,0 +1,24 @@
+[Unit]
+Description=accel accelerator monitor (headless collector with API and /metrics)
+Documentation=https://github.com/mesutoezdil/accel
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/accel --service --listen 127.0.0.1:9800
+Restart=on-failure
+RestartSec=5s
+Environment=ACCEL_STATE_DIR=/var/lib/accel
+Environment=ACCEL_CONFIG=/etc/accel/config.yaml
+StateDirectory=accel
+ConfigurationDirectory=accel
+# accel reads vendor tools and /proc; it never needs root on NVIDIA and
+# Apple. Uncomment when a vendor CLI insists on it.
+#User=accel
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/accel
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,35 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: GOOS=linux go vet ./...
+      - run: go test -race ./...
+      - run: go test -run TestFakeNVML -v ./internal/provider/nvidia/
+        if: runner.os == 'Linux'
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest
+      - run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build .
+      - run: GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build .
+      - run: GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build .
+      - run: go run . --demo --once
+      - run: go test -run xxx -bench . -benchtime 200ms ./internal/collect/ ./internal/tui/
+        if: runner.os == 'Linux'

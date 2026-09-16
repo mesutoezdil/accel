@@ -1,0 +1,96 @@
+# accel on every accelerator node: a headless collector that Prometheus
+# scrapes and that `accel --remote` or `nodes:` in a config can attach to.
+#
+# The pod needs the vendor tools and libraries of the host, so /usr and the
+# driver directories are mounted read-only. Kubernetes correlation uses the
+# kubelet log directory and, through the service account, the API server.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: accel
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: accel
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: accel
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: accel
+subjects:
+  - kind: ServiceAccount
+    name: accel
+    namespace: monitoring
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: accel
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: accel
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: accel
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: accel
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9800"
+        prometheus.io/path: /metrics
+    spec:
+      serviceAccountName: accel
+      hostPID: true # see the processes that hold the devices
+      hostNetwork: true
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: accel
+          image: ghcr.io/mesutoezdil/accel:latest
+          args: ["--service", "--listen", ":9800"]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: ACCEL_STATE_DIR
+              value: /var/lib/accel
+            # Uncomment to require a token; generate one with `accel --gen-token`.
+            # - name: ACCEL_TOKEN
+            #   valueFrom:
+            #     secretKeyRef: {name: accel, key: token}
+          ports:
+            - name: metrics
+              containerPort: 9800
+          securityContext:
+            privileged: true # device nodes and vendor libraries
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {memory: 256Mi}
+          volumeMounts:
+            - {name: usr, mountPath: /usr, readOnly: true}
+            - {name: opt, mountPath: /opt, readOnly: true}
+            - {name: dev, mountPath: /dev}
+            - {name: sys, mountPath: /sys, readOnly: true}
+            - {name: pods, mountPath: /var/log/pods, readOnly: true}
+            - {name: state, mountPath: /var/lib/accel}
+      volumes:
+        - {name: usr, hostPath: {path: /usr}}
+        - {name: opt, hostPath: {path: /opt}}
+        - {name: dev, hostPath: {path: /dev}}
+        - {name: sys, hostPath: {path: /sys}}
+        - {name: pods, hostPath: {path: /var/log/pods}}
+        - {name: state, hostPath: {path: /var/lib/accel, type: DirectoryOrCreate}}
