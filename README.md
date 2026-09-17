@@ -70,7 +70,11 @@ curl -fsSL -o accel https://github.com/mesutoezdil/accel/releases/latest/downloa
 chmod +x accel && sudo mv accel /usr/local/bin/
 ```
 
-Builds exist for `linux-amd64`, `linux-arm64`, `darwin-amd64`, and `darwin-arm64`. `checksums.txt` sits next to them.
+Builds exist for `linux-amd64`, `linux-arm64`, `darwin-amd64`, and `darwin-arm64`. `checksums.txt` sits next to them. The macOS binaries are not notarized, so Gatekeeper quarantines a downloaded one; clear that before running it:
+
+```sh
+xattr -d com.apple.quarantine accel
+```
 
 **deb or rpm** (ships shell completions and the man page)
 
@@ -96,10 +100,12 @@ go install github.com/mesutoezdil/accel@latest
 **Container** (headless collector with the API and `/metrics` on port 9800)
 
 ```sh
-docker run --rm -p 9800:9800 --gpus all ghcr.io/mesutoezdil/accel:latest
+docker run --rm -p 9800:9800 --gpus all --pid=host \
+  -e NVIDIA_DRIVER_CAPABILITIES=utility \
+  ghcr.io/mesutoezdil/accel:latest
 ```
 
-Vendor CLIs must be visible inside the container. A [systemd unit](deploy/systemd/accel.service) and a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) are in `deploy/`.
+`--pid=host` puts accel in the host's PID namespace; without it, `/proc` inside the container only shows the container's own processes, so accel finds the devices but not what is using them. Vendor CLIs must be visible inside the container too. A [systemd unit](deploy/systemd/accel.service) and a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) are in `deploy/`.
 
 ## Quick start
 
