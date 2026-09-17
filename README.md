@@ -9,13 +9,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="license"></a>
 </p>
 
-accel is a terminal monitor for AI accelerators: GPUs, NPUs, XPUs, MLUs, DCUs, GCUs, and Apple silicon, from 15 vendors, in one interface. It shows utilization, memory, processes, power, thermals, links, and health per device, keeps a time machine on disk, correlates processes with Kubernetes pods and Slurm jobs, and serves the same data as JSON and Prometheus metrics for fleets.
+accel is a terminal monitor for AI accelerators from 15 vendors: GPUs, NPUs, XPUs, MLUs, DCUs, GCUs, and Apple silicon. Utilization, memory, processes, power, thermals, links, and health per device; history on disk; pods and Slurm jobs next to processes; JSON and Prometheus for fleets.
 
 <p align="center">
   <img src="assets/overview.png" alt="the Overview tab with a mixed fleet" width="100%">
 </p>
-
-Every screenshot in this file is rendered from `accel --demo` by `make shots`, so the numbers are synthetic. The layout and the derived values (states, outliers, cost, health) are what you get on real hardware.
 
 ## Contents
 
@@ -57,13 +55,13 @@ The vendor list follows the device plugins in [HAMi](https://github.com/Project-
 | Biren | GPUs | `brsmi` | no | flags from vendor documentation; no public sample, reported as unverified |
 | VastAI | VA series | PCI sysfs | no | device presence only until the `vasmi` format is known |
 
-Where each fixture came from is listed in [`internal/provider/smi/testdata/SOURCES`](internal/provider/smi/testdata/SOURCES). A vendor whose tool is installed but whose output we could not parse shows up in the Health tab with the error, never as a device with zeros. Every value in accel is either measured or shown as `N/A`.
+Fixture sources: [`testdata/SOURCES`](internal/provider/smi/testdata/SOURCES). A value is measured or shown as `N/A`, never guessed; a tool whose output fails to parse shows its error in the Health tab.
 
 Host metrics (CPU, memory, disks, network, InfiniBand) come from `/proc` and `/sys` on Linux and from `sysctl` and `vm_stat` on macOS.
 
 ## Install
 
-Binaries, packages, and images are published on every release and on every push to `main` as a pre-release tagged `vX.Y.Z-main.N`.
+Every release and every push to `main` (pre-release `vX.Y.Z-main.N`) publishes binaries, packages, and images.
 
 **Release binary**
 
@@ -87,7 +85,7 @@ sudo rpm -i accel-*.x86_64.rpm      # RHEL, Fedora, SUSE
 brew install mesutoezdil/tap/accel
 ```
 
-The [tap](https://github.com/mesutoezdil/homebrew-tap) re-renders its formula from the newest release every 6 hours; until the first stable release it points at the newest `main` pre-release.
+After `brew tap mesutoezdil/tap`, plain `brew install accel` works too. The [tap](https://github.com/mesutoezdil/homebrew-tap) follows the newest release.
 
 **Go**
 
@@ -101,7 +99,7 @@ go install github.com/mesutoezdil/accel@latest
 docker run --rm -p 9800:9800 --gpus all ghcr.io/mesutoezdil/accel:latest
 ```
 
-Vendor CLIs (`npu-smi`, `cnmon`, and the rest) must be visible inside the container for their devices to appear. A [systemd unit](deploy/systemd/accel.service) and a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) are in `deploy/`.
+Vendor CLIs must be visible inside the container. A [systemd unit](deploy/systemd/accel.service) and a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) are in `deploy/`.
 
 ## Quick start
 
@@ -126,7 +124,7 @@ accel --status             # one line for tmux, i3bar, or a shell prompt
 
 ## Views
 
-16 tabs, switched with the key shown in the tab bar or with the mouse. Tabs with nothing to show (Links without link data, Kubernetes without a pod source, Network without interfaces) hide themselves.
+16 tabs, switched by key or mouse. Tabs with nothing to show hide themselves.
 
 | Key | Tab | What it shows |
 |---|---|---|
@@ -163,11 +161,21 @@ accel --status             # one line for tmux, i3bar, or a shell prompt
   <img src="assets/health.png" alt="the Health tab" width="100%">
 </p>
 
-Derived values are labeled "(derived)" in the interface: device states (busy, active, idle, down, idle-allocated), outliers (a device well below its siblings), placement hints (which free devices share an NVLink or NUMA domain), anomalies on history (utilization collapse, memory leak slope, temperature creep), and the health score.
+On a MacBook Pro with an M4 Pro, captured on that machine:
+
+<p align="center">
+  <img src="assets/mac-overview.png" alt="accel on an M4 Pro" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/mac-devices.png" alt="the Devices tab on an M4 Pro" width="100%">
+</p>
+
+Values accel computes rather than reads (states, outliers, placement hints, anomalies, the health score) are labeled "(derived)".
 
 ## Keys
 
-The defaults; every action can be rebound in the config (see [Themes and keymaps](#themes-and-keymaps)).
+Defaults; rebind any action under `keys:` in the config.
 
 | Keys | Action |
 |---|---|
@@ -190,11 +198,11 @@ The defaults; every action can be rebound in the config (see [Themes and keymaps
 | `ctrl+n`, `ctrl+p` | next and previous node |
 | `ctrl+e` | export the current table as CSV |
 
-The mouse works everywhere: click a tab, a row, or a column header, double-click a row for its detail, use the wheel to scroll the table or the detail pane under the pointer. Hold Shift to select text in the terminal.
+The mouse works everywhere: click tabs, rows, and headers; double-click a row for its detail; wheel to scroll. Hold Shift to select text.
 
 ## Configuration
 
-`~/.config/accel/config.yaml`, or `--config path`. Every key is optional and unknown keys are rejected with their line number. [`examples/config.yaml`](examples/config.yaml) documents every key with its default; `accel --print-config` prints the effective result.
+`~/.config/accel/config.yaml` or `--config path`. Every key is optional; [`examples/config.yaml`](examples/config.yaml) lists them all with defaults, `accel --print-config` prints the effective result.
 
 ```yaml
 refresh: 1s
@@ -218,7 +226,7 @@ State (history, the debug log) lives under `~/.local/state/accel`.
 
 ## Fleets
 
-One accel per node serves its data; another accel shows them all.
+One accel per node serves; one accel shows them all.
 
 On each node:
 
@@ -241,15 +249,15 @@ nodes:
     key: ~/.ssh/id_ed25519
 ```
 
-Remote and local devices appear in the same tables with a node column; the Nodes tab sums them. The SSH provider runs the vendor CLI on the remote host through the system `ssh` client and parses it with the same code, so it covers the CLI vendors (Ascend, Cambricon, Enflame, Hygon, Iluvatar, Kunlunxin, MetaX, Moore Threads, Biren). NVIDIA, AMD, Intel, and Neuron need accel on the node.
+Remote and local devices share the same tables; the Nodes tab sums them. The `ssh` entry runs the vendor CLI on the remote host and parses it locally, so it works for the CLI vendors; NVIDIA, AMD, Intel, and Neuron need accel on the node.
 
-Listening on anything other than loopback requires TLS plus a token; `insecure: true` overrides that for networks you trust. The token is stored as a digest, so the plaintext never sits in a config file. Command lines are stripped from `/api/snapshot`.
+Off loopback, `--listen` needs TLS and a token (`insecure: true` skips both). The config holds only the token digest. `/api/snapshot` strips command lines.
 
 ## Kubernetes and Slurm
 
-Processes are mapped to pods from the container log directory (`/var/log/pods`) whenever it exists. When in-cluster credentials or a kubeconfig are available (`kubernetes.kubeconfig` and `kubernetes.context` in the config, then `KUBECONFIG`, then `~/.kube/config`) the API server adds owner references, container names, and requests. Exec credential plugins are not run; such clusters stay on the log directory. Separately, the kubelet pod-resources socket (`/var/lib/kubelet/pod-resources/kubelet.sock`) tells which pod holds which device, including pods with no running process. The DaemonSet in `deploy/kubernetes/` mounts all of this.
+Pods come from `/var/log/pods`; with in-cluster credentials or a kubeconfig (`kubernetes.kubeconfig`, `KUBECONFIG`, `~/.kube/config`) the API server adds owners, containers, and requests. The kubelet pod-resources socket shows which pod holds which device, even with no process running. Exec credential plugins are not run. The DaemonSet mounts everything needed.
 
-On Slurm nodes the job ID comes from the process cgroup and the job's name, user, and GRES allocation from `scontrol`. Jobs show up in the Workloads tab next to Kubernetes owners.
+On Slurm nodes the job comes from the process cgroup and `scontrol`; jobs appear in the Workloads tab.
 
 ## API and Prometheus
 
@@ -264,13 +272,13 @@ With `--listen` or `listen:` in the config:
 | `GET /api/history?id=<device id>&n=600` | the last `n` points of utilization, memory, temperature, power, and core clock for one device |
 | `GET /metrics` | Prometheus text format |
 
-Send the token as `Authorization: Bearer <token>`. Metrics are gauges named `accel_device_*` with `node`, `vendor`, `index`, `id`, and `name` labels: `accel_device_util_percent`, `accel_device_memory_used_bytes`, `accel_device_power_watts`, `accel_device_temperature_celsius`, `accel_device_energy_joules_total`, `accel_device_ecc_uncorrected_total`, `accel_device_pcie_replays_total`, `accel_device_links_active`, `accel_device_health_score`, and more. Host gauges are `accel_host_*`. A metric a vendor does not report is simply absent.
+Auth: `Authorization: Bearer <token>`. Metrics are `accel_device_*` gauges (`util_percent`, `memory_used_bytes`, `power_watts`, `temperature_celsius`, `energy_joules_total`, `ecc_uncorrected_total`, `pcie_replays_total`, `links_active`, `health_score`, and more) with `node`, `vendor`, `index`, `id`, and `name` labels, plus `accel_host_*`. Unreported metrics are absent.
 
-`--json` without `--once` streams one snapshot per refresh, which is the same format `--record` writes and `--replay` reads.
+`--json` streams one snapshot per refresh; `--record` writes the same format and `--replay` reads it.
 
 ## Alerts
 
-Built-in rules cover temperature at or above `temp_warn`, thermal throttling, clocks held at the power cap, hardware slowdown, outliers, idle-allocated devices, pending or failed row remaps, a PCIe link narrower than its maximum, and interconnect links down. Each one needs 2 consecutive samples to raise or clear. Add your own:
+Built in: temperature at `temp_warn`, thermal and power throttling, hardware slowdown, outliers, idle-allocated devices, row remaps, a narrowed PCIe link, links down. Each needs 2 consecutive samples. Your own:
 
 ```yaml
 alerts:
@@ -291,11 +299,11 @@ alerts:
 
 ## History, recording, and export
 
-History is written as plain-text hourly files with a CRC per line, capped by `history.max_disk_mb`, and reloaded on start. `--retention 168h` overrides `history.keep`. `accel --export history.csv` writes it as CSV. `--record` appends every snapshot to a file and `--replay` drives the interface from it, which is a way to hand an incident to someone else.
+History is plain-text hourly files, capped by `history.max_disk_mb`, reloaded on start. `--retention 168h` overrides `history.keep`; `accel --export history.csv` writes CSV. `--record` and `--replay` let you hand an incident to someone else.
 
 ## Themes and keymaps
 
-Built-in themes: `amber`, `default`, `dracula`, `ice`, `mono`, `solarized` (`accel --list-themes`). A file in `~/.config/accel/themes/<name>.yaml` can `extends` one of them and override any of the 19 color roles; [`examples/themes/corp.yaml`](examples/themes/corp.yaml) is a starting point. `colors:` in the config overrides single roles and `transparent: true` keeps the terminal background.
+Themes: `amber`, `default`, `dracula`, `ice`, `mono`, `solarized`. Your own goes in `~/.config/accel/themes/<name>.yaml` (`extends` a built-in, override any of the 19 roles; see [`examples/themes/corp.yaml`](examples/themes/corp.yaml)). `colors:` overrides single roles; `transparent: true` keeps the terminal background.
 
 ```yaml
 keys:
@@ -305,17 +313,18 @@ keys:
 
 ## Building and testing
 
-Go 1.26 or newer. No cgo anywhere: NVML and the macOS frameworks are loaded at run time with [purego](https://github.com/ebitengine/purego).
+Go 1.26 or newer, no cgo: NVML and the macOS frameworks load at run time through [purego](https://github.com/ebitengine/purego).
 
 ```sh
 make build        # bin/accel
 make check        # lint, race tests, and cross builds
 make demo         # the simulated fleet
 make test-fake-nvml   # the NVML ABI test against a fake driver (Linux, or Docker elsewhere)
-go run ./scripts/shots   # regenerate the screenshots under assets/
+make shots        # the fleet screenshots under assets/, rendered from the simulated fleet (synthetic numbers)
+make shots-mac    # the Apple silicon screenshots, captured on the Mac that runs it
 ```
 
-CI runs gofmt, `go vet` for Linux and macOS, race tests, golangci-lint, and static cross builds on every push. The fake NVML test compiles a C library that answers the NVML calls accel makes, so the ABI structs are checked without hardware.
+CI runs gofmt, vet for Linux and macOS, race tests, golangci-lint, and cross builds. The fake NVML test checks the ABI structs against a C library without hardware.
 
 ## Contributing
 
