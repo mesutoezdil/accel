@@ -1,11 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1384" height="580" viewBox="0 0 1384 580" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace" font-size="14">
-<rect width="100%" height="100%" rx="12" fill="#0d1117"/>
-<circle cx="20" cy="18" r="6" fill="#ff5f57"/>
-<circle cx="40" cy="18" r="6" fill="#febc2e"/>
-<circle cx="60" cy="18" r="6" fill="#28c840"/>
-<text x="50%" y="22" text-anchor="middle" fill="#8b949e" font-size="12">accel: Health</text>
-<g xml:space="preserve">
-<text y="70.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#79c0ff" font-weight="bold">accel</tspan><tspan x="62.0" fill="#6e7681">  │  </tspan><tspan x="104.0">h100-node-07</tspan><tspan x="204.8" fill="#6e7681">  │  </tspan><tspan x="246.8">17 devices</tspan><tspan x="330.8" fill="#6e7681">  │  </tspan><tspan x="372.8">7 nodes</tspan><tspan x="431.6" fill="#6e7681">  │  </tspan><tspan x="473.6" fill="#ffa198">DEMO: simulated data</tspan><tspan x="641.6" fill="#6e7681">  │  </tspan><tspan x="683.6" fill="#ffa198">▲ 5 alerts</tspan><tspan x="1288.4" fill="#6e7681">08:04:00</tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1456" height="706" viewBox="0 0 1456 706" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace" font-size="14">
+<defs><linearGradient id="desk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f2a3a"/><stop offset="1" stop-color="#0b0e14"/></linearGradient><filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000" flood-opacity="0.55"/></filter></defs>
+<rect width="100%" height="100%" fill="url(#desk)"/>
+<rect x="36" y="36" width="1384" height="634" rx="12" fill="#0d1117" filter="url(#shadow)"/>
+<rect x="36" y="36" width="1384" height="36" rx="12" fill="#161b22"/><rect x="36" y="60" width="1384" height="12" fill="#161b22"/>
+<circle cx="56" cy="54" r="6" fill="#ff5f57"/>
+<circle cx="76" cy="54" r="6" fill="#febc2e"/>
+<circle cx="96" cy="54" r="6" fill="#28c840"/>
+<text x="50%" y="58" text-anchor="middle" fill="#8b949e" font-size="12">accel · Health</text>
+<g xml:space="preserve" transform="translate(36 36)">
+<text y="70.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#79c0ff" font-weight="bold">accel</tspan><tspan x="62.0" fill="#6e7681">  │  </tspan><tspan x="104.0">h100-node-07</tspan><tspan x="204.8" fill="#6e7681">  │  </tspan><tspan x="246.8">17 devices</tspan><tspan x="330.8" fill="#6e7681">  │  </tspan><tspan x="372.8">7 nodes</tspan><tspan x="431.6" fill="#6e7681">  │  </tspan><tspan x="473.6" fill="#ffa198">▲ 5 alerts</tspan><tspan x="1078.4" fill="#6e7681">08:10:33                         </tspan></text>
 <rect x="1128.8" y="74.0" width="84.0" height="18.0" fill="#79c0ff"/>
 <text y="88.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">1</tspan><tspan x="28.4"> Overview  </tspan><tspan x="120.8" fill="#6e7681">2</tspan><tspan x="129.2"> Devices  </tspan><tspan x="213.2" fill="#6e7681">3</tspan><tspan x="221.6"> Procs  </tspan><tspan x="288.8" fill="#6e7681">4</tspan><tspan x="297.2"> Memory  </tspan><tspan x="372.8" fill="#6e7681">5</tspan><tspan x="381.2"> Power  </tspan><tspan x="448.4" fill="#6e7681">6</tspan><tspan x="456.8"> Thermal  </tspan><tspan x="540.8" fill="#6e7681">7</tspan><tspan x="549.2"> Links  </tspan><tspan x="616.4" fill="#6e7681">8</tspan><tspan x="624.8"> History  </tspan><tspan x="708.8" fill="#6e7681">9</tspan><tspan x="717.2"> Events  </tspan><tspan x="792.8" fill="#6e7681">0</tspan><tspan x="801.2"> Nodes  </tspan><tspan x="868.4" fill="#6e7681">N</tspan><tspan x="876.8"> Net  </tspan><tspan x="927.2" fill="#6e7681">K</tspan><tspan x="935.6"> Kube  </tspan><tspan x="994.4" fill="#6e7681">W</tspan><tspan x="1002.8"> Work  </tspan><tspan x="1061.6" fill="#6e7681">D</tspan><tspan x="1070.0"> Dash  </tspan><tspan x="1128.8" fill="#484f58" font-weight="bold"> H Health </tspan><tspan x="1212.8" fill="#6e7681">?</tspan><tspan x="1221.2"> Help  </tspan></text>
 <text y="106.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">Health</tspan><tspan x="70.4" fill="#6e7681">  0-100, derived by accel; every deduction is explained</tspan></text>
@@ -28,10 +31,12 @@
 <text y="394.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">mi300… AMD Instinct MI300X           100 healthy                                                                                                               </tspan></text>
 <text y="412.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">mlu-0… Cambricon MLU370-X8           100 healthy                                                                                                               </tspan></text>
 <text y="430.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">xpu-0… Kunlunxin P800 OAM            100 healthy                                                                                                               </tspan></text>
-<text y="466.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">Collectors</tspan></text>
-<text y="484.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  Simulated fleet                               17 devices      0s    0 errors  </tspan><tspan x="692.0" fill="#56d364">ok</tspan></text>
-<text y="520.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">accel itself</tspan><tspan x="120.8">  rss 18M  cpu 122.4%  goroutines 1  last pass 0s  passes 3  up 0s</tspan></text>
-<text y="538.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">sources:</tspan><tspan x="87.2"> Kubernetes via kubeconfig</tspan></text>
-<text y="556.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">⏎ detail  tab next  p pause  r refresh  / search  : command  ? help  q quit</tspan></text>
+<text y="466.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">Anomalies</tspan><tspan x="95.6" fill="#6e7681">  patterns in the last 30 minutes of history</tspan></text>
+<text y="484.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="36.8" fill="#e3b341">≈</tspan><tspan x="45.2"> #ascend-01:1 memory-leak: memory grows 57.3% of the device per 30m0s and fills it in about 8m0s</tspan></text>
+<text y="520.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">Collectors</tspan></text>
+<text y="538.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  Simulated fleet                               17 devices      0s    0 errors  </tspan><tspan x="692.0" fill="#56d364">ok</tspan></text>
+<text y="574.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">accel itself</tspan><tspan x="120.8">  rss 18M  cpu 127.9%  goroutines 1  last pass 0s  passes 3  up 0s</tspan></text>
+<text y="592.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">sources:</tspan><tspan x="87.2"> Kubernetes via kubeconfig</tspan></text>
+<text y="610.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">⏎ detail  tab next  p pause  r refresh  / search  : command  ? help  q quit</tspan></text>
 </g>
 </svg>

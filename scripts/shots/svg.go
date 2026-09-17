@@ -20,16 +20,22 @@ func svg(view string, cols, rows int, title string) string {
 	)
 	lines := strings.Split(strings.TrimRight(view, "\n "), "\n")
 	rows = min(rows, len(lines))
-	width := float64(cols)*cw + 2*pad
-	height := float64(rows)*lh + 2*pad + barH
+	const margin = 36.0 // desk around the window
+	winW := float64(cols)*cw + 2*pad
+	winH := float64(rows)*lh + 2*pad + barH
+	width, height := winW+2*margin, winH+2*margin
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" width="%.0f" height="%.0f" viewBox="0 0 %.0f %.0f" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace" font-size="%.0f">`+"\n", width, height, width, height, fs)
-	fmt.Fprintf(&b, `<rect width="100%%" height="100%%" rx="12" fill="%s"/>`+"\n", bg)
+	b.WriteString(`<defs><linearGradient id="desk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f2a3a"/><stop offset="1" stop-color="#0b0e14"/></linearGradient>` +
+		`<filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000" flood-opacity="0.55"/></filter></defs>` + "\n")
+	b.WriteString(`<rect width="100%" height="100%" fill="url(#desk)"/>` + "\n")
+	fmt.Fprintf(&b, `<rect x="%.0f" y="%.0f" width="%.0f" height="%.0f" rx="12" fill="%s" filter="url(#shadow)"/>`+"\n", margin, margin, winW, winH, bg)
+	fmt.Fprintf(&b, `<rect x="%.0f" y="%.0f" width="%.0f" height="%.0f" rx="12" fill="#161b22"/><rect x="%.0f" y="%.0f" width="%.0f" height="%.0f" fill="#161b22"/>`+"\n", margin, margin, winW, barH, margin, margin+barH-12, winW, 12.0)
 	for i, c := range []string{"#ff5f57", "#febc2e", "#28c840"} {
-		fmt.Fprintf(&b, `<circle cx="%.0f" cy="%.0f" r="6" fill="%s"/>`+"\n", pad+float64(i)*20, barH/2, c)
+		fmt.Fprintf(&b, `<circle cx="%.0f" cy="%.0f" r="6" fill="%s"/>`+"\n", margin+pad+float64(i)*20, margin+barH/2, c)
 	}
-	fmt.Fprintf(&b, `<text x="50%%" y="%.0f" text-anchor="middle" fill="#8b949e" font-size="12">%s</text>`+"\n", barH/2+4, esc(title))
-	b.WriteString(`<g xml:space="preserve">` + "\n")
+	fmt.Fprintf(&b, `<text x="50%%" y="%.0f" text-anchor="middle" fill="#8b949e" font-size="12">%s</text>`+"\n", margin+barH/2+4, esc(title))
+	fmt.Fprintf(&b, `<g xml:space="preserve" transform="translate(%.0f %.0f)">`+"\n", margin, margin)
 	st := style{fg: fg}
 	for row, line := range lines[:rows] {
 		y := barH + pad + float64(row)*lh

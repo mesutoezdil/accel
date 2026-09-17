@@ -12,10 +12,10 @@
 accel is a terminal monitor for AI accelerators: GPUs, NPUs, XPUs, MLUs, DCUs, GCUs, and Apple silicon, from 15 vendors, in one interface. It shows utilization, memory, processes, power, thermals, links, and health per device, keeps a time machine on disk, correlates processes with Kubernetes pods and Slurm jobs, and serves the same data as JSON and Prometheus metrics for fleets.
 
 <p align="center">
-  <img src="assets/overview.svg" alt="the Overview tab with a mixed fleet" width="100%">
+  <img src="assets/overview.png" alt="the Overview tab with a mixed fleet" width="100%">
 </p>
 
-Every screenshot in this file comes from `accel --demo` (`make shots`), so the numbers are synthetic; the DEMO badge in the header says so. The layout and the derived values (states, outliers, cost, health) are what you get on real hardware.
+Every screenshot in this file is rendered from `accel --demo` by `make shots`, so the numbers are synthetic. The layout and the derived values (states, outliers, cost, health) are what you get on real hardware.
 
 ## Contents
 
@@ -148,19 +148,19 @@ accel --status             # one line for tmux, i3bar, or a shell prompt
 | `?` | Help | keys, filter syntax, and the command list |
 
 <p align="center">
-  <img src="assets/devices.svg" alt="the Devices tab" width="100%">
+  <img src="assets/devices.png" alt="the Devices tab" width="100%">
 </p>
 
 <p align="center">
-  <img src="assets/history.svg" alt="the History tab" width="100%">
+  <img src="assets/history.png" alt="the History tab" width="100%">
 </p>
 
 <p align="center">
-  <img src="assets/links.svg" alt="the Links tab with the topology matrix" width="100%">
+  <img src="assets/links.png" alt="the Links tab with the topology matrix" width="100%">
 </p>
 
 <p align="center">
-  <img src="assets/health.svg" alt="the Health tab" width="100%">
+  <img src="assets/health.png" alt="the Health tab" width="100%">
 </p>
 
 Derived values are labeled "(derived)" in the interface: device states (busy, active, idle, down, idle-allocated), outliers (a device well below its siblings), placement hints (which free devices share an NVLink or NUMA domain), anomalies on history (utilization collapse, memory leak slope, temperature creep), and the health score.

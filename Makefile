@@ -52,6 +52,7 @@ completions: build
 # Screenshots for README.md, rendered from the simulated fleet.
 shots:
 	go run ./scripts/shots -out assets
+	scripts/shots/png.sh
 
 clean:
 	rm -rf bin dist build
