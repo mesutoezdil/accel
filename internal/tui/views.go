@@ -163,6 +163,9 @@ func (m Model) empty() string {
 	for _, p := range m.snap.Providers {
 		if p.Error != "" {
 			msg += "\n  " + p.Label + ": " + p.Error
+			if p.Hint != "" {
+				msg += "\n    " + p.Hint
+			}
 		}
 	}
 	return msg + "\n\nTry `accel --demo`, or ? for the vendors that were probed."
