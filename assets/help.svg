@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1384" height="832" viewBox="0 0 1384 832" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace" font-size="14">
+<rect width="100%" height="100%" rx="12" fill="#0d1117"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="18" r="6" fill="#febc2e"/>
+<circle cx="60" cy="18" r="6" fill="#28c840"/>
+<text x="50%" y="22" text-anchor="middle" fill="#8b949e" font-size="12">accel: Help</text>
+<g xml:space="preserve">
+<text y="70.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#79c0ff" font-weight="bold">accel</tspan><tspan x="62.0" fill="#6e7681">  │  </tspan><tspan x="104.0">node-a01</tspan><tspan x="171.2" fill="#6e7681">  │  </tspan><tspan x="213.2">17 devices</tspan><tspan x="297.2" fill="#6e7681">  │  </tspan><tspan x="339.2" fill="#ffa198">DEMO: simulated data</tspan><tspan x="507.2" fill="#6e7681">  │  </tspan><tspan x="549.2" fill="#ffa198">▲ 5 alerts</tspan><tspan x="1254.8" fill="#6e7681">07:43:31</tspan></text>
+<rect x="1212.8" y="74.0" width="67.2" height="18.0" fill="#79c0ff"/>
+<text y="88.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">1</tspan><tspan x="28.4"> Overview  </tspan><tspan x="120.8" fill="#6e7681">2</tspan><tspan x="129.2"> Devices  </tspan><tspan x="213.2" fill="#6e7681">3</tspan><tspan x="221.6"> Procs  </tspan><tspan x="288.8" fill="#6e7681">4</tspan><tspan x="297.2"> Memory  </tspan><tspan x="372.8" fill="#6e7681">5</tspan><tspan x="381.2"> Power  </tspan><tspan x="448.4" fill="#6e7681">6</tspan><tspan x="456.8"> Thermal  </tspan><tspan x="540.8" fill="#6e7681">7</tspan><tspan x="549.2"> Links  </tspan><tspan x="616.4" fill="#6e7681">8</tspan><tspan x="624.8"> History  </tspan><tspan x="708.8" fill="#6e7681">9</tspan><tspan x="717.2"> Events  </tspan><tspan x="792.8" fill="#6e7681">0</tspan><tspan x="801.2"> Nodes  </tspan><tspan x="868.4" fill="#6e7681">N</tspan><tspan x="876.8"> Net  </tspan><tspan x="927.2" fill="#6e7681">K</tspan><tspan x="935.6"> Kube  </tspan><tspan x="994.4" fill="#6e7681">W</tspan><tspan x="1002.8"> Work  </tspan><tspan x="1061.6" fill="#6e7681">D</tspan><tspan x="1070.0"> Dash  </tspan><tspan x="1128.8" fill="#6e7681">H</tspan><tspan x="1137.2"> Health  </tspan><tspan x="1212.8" fill="#484f58" font-weight="bold"> ? Help </tspan></text>
+<text y="106.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">Keys</tspan></text>
+<text y="124.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  up k           </tspan><tspan x="162.8" fill="#6e7681">select previous row</tspan></text>
+<text y="142.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  down j         </tspan><tspan x="162.8" fill="#6e7681">select next row</tspan></text>
+<text y="160.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  pgup ctrl+u    </tspan><tspan x="162.8" fill="#6e7681">up 10 rows</tspan></text>
+<text y="178.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  pgdown ctrl+d  </tspan><tspan x="162.8" fill="#6e7681">down 10 rows</tspan></text>
+<text y="196.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  enter          </tspan><tspan x="162.8" fill="#6e7681">open the selected row (device detail, pod describe)</tspan></text>
+<text y="214.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  esc            </tspan><tspan x="162.8" fill="#6e7681">clear filters, then back to the overview</tspan></text>
+<text y="232.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  tab right ]    </tspan><tspan x="162.8" fill="#6e7681">next tab</tspan></text>
+<text y="250.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  shift+tab left [ </tspan><tspan x="179.6" fill="#6e7681">previous tab</tspan></text>
+<text y="268.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  p              </tspan><tspan x="162.8" fill="#6e7681">pause updates</tspan></text>
+<text y="286.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  r              </tspan><tspan x="162.8" fill="#6e7681">collect now</tspan></text>
+<text y="304.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  /              </tspan><tspan x="162.8" fill="#6e7681">filter: words, dev:3 user:alice ns:ml sev:critical kind:xid</tspan></text>
+<text y="322.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  :              </tspan><tspan x="162.8" fill="#6e7681">command bar (Tab completes)</tspan></text>
+<text y="340.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  s              </tspan><tspan x="162.8" fill="#6e7681">sort by the next column</tspan></text>
+<text y="358.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  S              </tspan><tspan x="162.8" fill="#6e7681">reverse the sort</tspan></text>
+<text y="376.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  ,              </tspan><tspan x="162.8" fill="#6e7681">history: one step back</tspan></text>
+<text y="394.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  .              </tspan><tspan x="162.8" fill="#6e7681">history: one step forward</tspan></text>
+<text y="412.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  &lt; &gt;            </tspan><tspan x="162.8" fill="#6e7681">history: 30 steps</tspan></text>
+<text y="430.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  n              </tspan><tspan x="162.8" fill="#6e7681">history: back to now</tspan></text>
+<text y="448.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  m              </tspan><tspan x="162.8" fill="#6e7681">history: next metric</tspan></text>
+<text y="466.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  + =            </tspan><tspan x="162.8" fill="#6e7681">history: narrower window</tspan></text>
+<text y="484.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  -              </tspan><tspan x="162.8" fill="#6e7681">history: wider window</tspan></text>
+<text y="502.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  {              </tspan><tspan x="162.8" fill="#6e7681">history: previous device</tspan></text>
+<text y="520.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  }              </tspan><tspan x="162.8" fill="#6e7681">history: next device</tspan></text>
+<text y="538.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  d              </tspan><tspan x="162.8" fill="#6e7681">Kubernetes: describe pod</tspan></text>
+<text y="556.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  l              </tspan><tspan x="162.8" fill="#6e7681">Kubernetes: container logs</tspan></text>
+<text y="574.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  c              </tspan><tspan x="162.8" fill="#6e7681">logs: next container</tspan></text>
+<text y="592.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  w              </tspan><tspan x="162.8" fill="#6e7681">logs: wrap lines</tspan></text>
+<text y="610.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  D              </tspan><tspan x="162.8" fill="#6e7681">dashboard</tspan></text>
+<text y="628.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  ctrl+n         </tspan><tspan x="162.8" fill="#6e7681">next node (filters every tab)</tspan></text>
+<text y="646.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  ctrl+p         </tspan><tspan x="162.8" fill="#6e7681">previous node</tspan></text>
+<text y="664.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  ctrl+e         </tspan><tspan x="162.8" fill="#6e7681">export history of the devices in view to CSV</tspan></text>
+<text y="682.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  ?              </tspan><tspan x="162.8" fill="#6e7681">this screen</tspan></text>
+<text y="700.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  q ctrl+c       </tspan><tspan x="162.8" fill="#6e7681">quit</tspan></text>
+<text y="718.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  1-9 0 N K W D… </tspan><tspan x="162.8" fill="#6e7681">switch tab; tabs, rows, column headers, and footer hints are clickable, the wheel scrolls, double-click opens</tspan></text>
+<text y="754.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">Commands</tspan><tspan x="87.2" fill="#6e7681">  (: then)</tspan></text>
+<text y="772.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  &lt;tab name&gt;                             </tspan><tspan x="364.4" fill="#6e7681">switch tab, e.g. :proc</tspan></text>
+<text y="790.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">  sort &lt;column&gt;                          </tspan><tspan x="364.4" fill="#6e7681">sort the current table</tspan></text>
+<text y="808.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">⏎ detail  tab next  p pause  r refresh  / search  : command  ? help  q quit</tspan></text>
+</g>
+</svg>

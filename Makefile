@@ -49,5 +49,9 @@ completions: build
 	bin/accel --completion fish > build/extra/accel.fish
 	bin/accel --man > build/extra/accel.1
 
+# Screenshots for README.md, rendered from the simulated fleet.
+shots:
+	go run ./scripts/shots -out assets
+
 clean:
 	rm -rf bin dist build

@@ -1,0 +1,31 @@
+name: Bug
+description: Something shows the wrong value, crashes, or misbehaves
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: accel version
+      description: "`accel --version`"
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: "OS, architecture, and the vendor tool version when relevant (`nvidia-smi --version`, `npu-smi -v`)"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw and what you expected instead
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: "`accel --once --json --vendors <vendor>` with anything private removed, or the debug log from `--debug`"
+      render: text

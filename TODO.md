@@ -1,7 +1,7 @@
 # accel Roadmap
 
-Tick a box when the item is built, tested, and lint-clean. Plan stage: nothing
-is committed or pushed until the owner says so.
+Tick a box when the item is built, tested, and lint-clean. Commit and push
+only when the owner says so.
 
 ## Vendors (15, every one in HAMi plus Apple and Intel)
 - [x] NVIDIA (NVIDIA Management Library (NVML) via purego, no cgo)
@@ -90,6 +90,7 @@ is committed or pushed until the owner says so.
 - [x] Alert outputs: generic webhook, Slack, Alertmanager
 - [x] Compare two devices or two moments side by side
 - [x] Per-vendor depth beyond utilization (processes for AMD, Ascend, Cambricon)
+- [x] README with screenshots rendered from `--demo` (`make shots`), logo, contributing, security, and issue templates
 - [ ] Homebrew tap: create `mesutoezdil/homebrew-tap`, add a token secret, drop `--skip=homebrew` from the workflows
 - [ ] eBPF kernel-launch visibility (long term)
 

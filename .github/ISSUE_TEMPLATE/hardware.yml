@@ -1,0 +1,31 @@
+name: Hardware report
+description: You ran accel on real accelerators; tell us what worked and what did not
+labels: [hardware]
+body:
+  - type: dropdown
+    id: vendor
+    attributes:
+      label: Vendor
+      options: [NVIDIA, Apple, AMD, Intel, Huawei Ascend, AWS Neuron, Biren, Cambricon, Enflame, Hygon, Iluvatar, Kunlunxin, MetaX, Moore Threads, VastAI]
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and driver
+      description: "Model, driver or tool version"
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Result
+      description: "Which tabs and metrics were right, which were missing or wrong"
+    validations:
+      required: true
+  - type: textarea
+    id: raw
+    attributes:
+      label: Raw tool output
+      description: "The vendor tool's output (for example `npu-smi info`), so it can become a test fixture. Say whether we may add it to the repository under its license."
+      render: text
