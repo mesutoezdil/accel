@@ -199,6 +199,10 @@ func TestNodeCycleAndExport(t *testing.T) {
 		t.Fatalf("node %q", m.node)
 	}
 	m.cycleNode(1)
+	if m.node != "ascend-01" { // the demo fleet spans several nodes
+		t.Fatalf("node %q", m.node)
+	}
+	m.cycleNode(-2)
 	if m.node != "" {
 		t.Fatalf("node %q", m.node)
 	}

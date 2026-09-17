@@ -1,5 +1,5 @@
 // Package sim fakes a mixed accelerator fleet for `--demo`, so every view can
-// be explored on any machine. Every name says "(simulated)".
+// be explored on any machine. Every name carries Suffix.
 package sim
 
 import (
@@ -20,30 +20,35 @@ type model struct {
 	temp   bool
 	links  int // interconnect links per device
 	procs  []proc
+	node   string // "" is the local host; the rest look like remote nodes
 }
 
 type proc struct {
-	name, user, pod, ns, workload string
+	name, user, pod, ns, workload, cmd string
 }
 
 // Now is the clock the fleet moves on; tools that seed history replace it.
 var Now = time.Now
 
+// Suffix marks every simulated device name. The screenshot renderer clears it;
+// the DEMO badge in the header stays either way.
+var Suffix = " (simulated)"
+
 // Provider returns a demo provider with n NVIDIA-class devices plus one
 // small group per other vendor. Device 3 of the NVIDIA group is a straggler
 // on a narrow PCIe link; device n-1 is idle but allocated.
 func Provider(n int) provider.Provider {
-	train := proc{"python", "alice", "llama-70b-pretrain-0", "ml", "StatefulSet/llama-70b-pretrain"}
-	serve := proc{"vllm", "svc", "chat-api-7d9f8b6c5-x2k9p", "inference", "Deployment/chat-api"}
-	nb := proc{"python", "bob", "notebook-bob-0", "notebooks", "StatefulSet/notebook-bob"}
+	train := proc{"python", "alice", "llama-70b-pretrain-0", "ml", "StatefulSet/llama-70b-pretrain", "python -m torch.distributed.run --nproc_per_node 8 train.py --config configs/llama-70b.yaml"}
+	serve := proc{"vllm", "svc", "chat-api-7d9f8b6c5-x2k9p", "inference", "Deployment/chat-api", "python -m vllm.entrypoints.api_server --model meta-llama/Llama-3.1-70B-Instruct --tensor-parallel-size 8"}
+	nb := proc{"python", "bob", "notebook-bob-0", "notebooks", "StatefulSet/notebook-bob", "python -m ipykernel_launcher -f /root/.local/share/jupyter/runtime/kernel-3f1a.json"}
 	models := []model{
-		{device.NVIDIA, "NVIDIA H100 80GB HBM3", n, 80, 700, true, 18, []proc{train, serve}},
-		{device.Ascend, "Ascend 910B3", 2, 64, 310, true, 7, []proc{train}},
-		{device.Kunlunxin, "Kunlunxin P800 OAM", 1, 96, 400, true, 0, nil},
-		{device.Cambricon, "Cambricon MLU370-X8", 1, 48, 250, true, 0, nil},
-		{device.AMD, "AMD Instinct MI300X", 1, 192, 750, true, 7, []proc{serve}},
-		{device.Neuron, "AWS Inferentia2", 1, 32, 0, false, 0, nil},
-		{device.Apple, "Apple M4 Pro 20-core GPU", 1, 48, 0, false, 0, nil},
+		{device.NVIDIA, "NVIDIA H100 80GB HBM3", n, 80, 700, true, 18, []proc{train, serve}, ""},
+		{device.Ascend, "Ascend 910B3", 2, 64, 310, true, 7, []proc{train}, "ascend-01"},
+		{device.Kunlunxin, "Kunlunxin P800 OAM", 1, 96, 400, true, 0, nil, "xpu-01"},
+		{device.Cambricon, "Cambricon MLU370-X8", 1, 48, 250, true, 0, nil, "mlu-01"},
+		{device.AMD, "AMD Instinct MI300X", 1, 192, 750, true, 7, []proc{serve}, "mi300-01"},
+		{device.Neuron, "AWS Inferentia2", 1, 32, 0, false, 0, nil, "inf2-01"},
+		{device.Apple, "Apple M4 Pro 20-core GPU", 1, 48, 0, false, 0, nil, "mac-01"},
 	}
 	start := Now()
 	return provider.Provider{
@@ -79,9 +84,10 @@ func Provider(n int) provider.Provider {
 
 // device builds one device at the given load (0..1).
 func (m model) device(i int, load, t float64) device.Device {
-	d := device.New(m.vendor, i, m.name+" (simulated)", "", "")
+	d := device.New(m.vendor, i, m.name+Suffix, "", "")
 	d.ID += "-sim"
 	d.Source = "simulated"
+	d.Node = m.node
 	gib := m.memGiB * (1 << 30)
 	throttle := 0
 	if i == 3 { // the straggler: PCIe trained at x8, held back by power
@@ -138,7 +144,7 @@ func (m model) device(i int, load, t float64) device.Device {
 
 func procOf(p proc, pid int, mem, util float64) device.Process {
 	pr := device.Process{
-		PID: pid, Name: p.name, User: p.user, Command: p.name + " train.py --model " + p.workload,
+		PID: pid, Name: p.name, User: p.user, Command: p.cmd,
 		Pod: p.pod, Namespace: p.ns, Workload: p.workload, Container: "main",
 		Started: time.Now().Add(-time.Duration(pid%7+1) * time.Hour),
 		Metrics: device.Metrics{device.MemUsed: math.Round(mem), device.Util: math.Round(util)},
@@ -153,7 +159,7 @@ func procOf(p proc, pid int, mem, util float64) device.Process {
 func (m model) partitions(parent device.Device) []device.Device {
 	var out []device.Device
 	for i, frac := range []float64{0.5, 0.25} {
-		p := device.New(m.vendor, i, m.name+" 3g.40gb (simulated)", "", "")
+		p := device.New(m.vendor, i, m.name+" 3g.40gb"+Suffix, "", "")
 		p.ID = parent.ID + "-part" + string(rune('0'+i))
 		p.Parent, p.Source = parent.ID, "simulated"
 		p.Metrics[device.MemTotal] = math.Round(parent.Metrics[device.MemTotal] * frac)

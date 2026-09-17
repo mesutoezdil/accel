@@ -1,6 +1,7 @@
 // Command shots renders every terminal UI (TUI) tab from the simulated fleet
 // to the SVG images under `assets/`. Everything it shows comes from
-// `--demo`, so the numbers are synthetic and the DEMO badge stays visible.
+// `--demo`, so the numbers are synthetic; the DEMO badge stays visible and
+// the "(simulated)" suffix is dropped for room.
 //
 //	go run ./scripts/shots -out assets
 package main
@@ -57,6 +58,7 @@ func run(out, ans string, w, h int, theme string) error {
 	now := time.Now()
 	clock := now.Add(-30 * time.Minute)
 	sim.Now = func() time.Time { return clock }
+	sim.Suffix = "" // the DEMO badge in the header marks the data
 	prov := sim.Provider(8)
 	ctx := context.Background()
 	for ; clock.Before(now); clock = clock.Add(cfg.History.Resolution) {
@@ -80,7 +82,7 @@ func run(out, ans string, w, h int, theme string) error {
 	for _, tab := range tui.TabKeys() {
 		m = update(m, key(tab.Key))
 		name := strings.ToLower(tab.Name)
-		view := strings.ReplaceAll(m.View(), host, "node-a01")
+		view := strings.ReplaceAll(m.View(), host, "h100-node-07")
 		if err := os.WriteFile(filepath.Join(out, name+".svg"), []byte(svg(view, w, h, "accel: "+tab.Name)), 0o644); err != nil {
 			return err
 		}

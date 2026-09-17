@@ -15,7 +15,7 @@ accel is a terminal monitor for AI accelerators: GPUs, NPUs, XPUs, MLUs, DCUs, G
   <img src="assets/overview.svg" alt="the Overview tab with a mixed fleet" width="100%">
 </p>
 
-Every screenshot in this file comes from `accel --demo`, so the numbers are synthetic and every device name says "(simulated)". The layout and the derived values (states, outliers, cost, health) are what you get on real hardware.
+Every screenshot in this file comes from `accel --demo` (`make shots`), so the numbers are synthetic; the DEMO badge in the header says so. The layout and the derived values (states, outliers, cost, health) are what you get on real hardware.
 
 ## Contents
 
@@ -80,6 +80,14 @@ Builds exist for `linux-amd64`, `linux-arm64`, `darwin-amd64`, and `darwin-arm64
 sudo dpkg -i accel_*_amd64.deb      # Debian, Ubuntu
 sudo rpm -i accel-*.x86_64.rpm      # RHEL, Fedora, SUSE
 ```
+
+**Homebrew** (macOS and Linux)
+
+```sh
+brew install mesutoezdil/tap/accel
+```
+
+The [tap](https://github.com/mesutoezdil/homebrew-tap) re-renders its formula from the newest release every 6 hours; until the first stable release it points at the newest `main` pre-release.
 
 **Go**
 

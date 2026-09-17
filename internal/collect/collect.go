@@ -229,6 +229,9 @@ func (e *Engine) Collect(ctx context.Context) Snapshot {
 	// host counters change slowly and, on macOS, cost a few execs: every 5s
 	if time.Since(e.hostAt) >= 5*time.Second {
 		e.hostLast, e.hostAt = e.hostS.Sample(), time.Now()
+		if e.demo {
+			e.hostLast = host.Demo(e.hostAt, e.host) // never show the real machine in a demo
+		}
 	}
 	hostStats := e.hostLast
 	wg.Wait()
