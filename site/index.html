@@ -10,8 +10,13 @@
 :root{
   --bg:#0b0a09; --panel:#161310; --panel2:#1d1915; --border:#332c24;
   --text:#ece6db; --dim:#9c9186; --dimmer:#5c5349;
-  --accent:#ff8a3d; --accent2:#ffb35c;
+  --accent:#ff8a3d; --accent2:#ffb35c; --nav-bg:rgba(11,10,9,.86);
   --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+}
+html[data-mode="light"]{
+  --bg:#f7f4ef; --panel:#ffffff; --panel2:#efe9df; --border:#ddd3c4;
+  --text:#241f19; --dim:#6b6156; --dimmer:#a89c8c;
+  --accent2:#d9650f; --nav-bg:rgba(247,244,239,.86);
 }
 *{box-sizing:border-box}
 html{background:var(--bg)}
@@ -43,18 +48,18 @@ section{padding:64px 0}
 section:last-of-type{padding-bottom:24px}
 section+section{border-top:1px solid var(--border)}
 
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(11,10,9,.86);
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--nav-bg);
   backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:56px;max-width:1040px}
-.nav-left,.nav-right{display:flex;align-items:center;gap:20px;min-width:0}
-.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap;flex:none}
+nav .wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;height:56px;max-width:1040px}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap;justify-self:start}
 .brand img{width:22px;height:22px}
 nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem;white-space:nowrap}
 nav a.link:hover{color:var(--text)}
-.nav-sections{display:flex;gap:20px}
-.lang-btn{font-family:var(--mono);font-size:.8rem;background:none;border:1px solid var(--border);
+.nav-sections{display:flex;gap:20px;justify-self:center}
+.nav-right{display:flex;align-items:center;gap:16px;min-width:0;justify-self:end}
+.lang-btn,.mode-btn{font-family:var(--mono);font-size:.8rem;background:none;border:1px solid var(--border);
   color:var(--dim);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap;flex:none}
-.lang-btn:hover{color:var(--text);border-color:var(--dimmer)}
+.lang-btn:hover,.mode-btn:hover{color:var(--text);border-color:var(--dimmer)}
 @media (max-width:640px){
   .nav-sections{display:none}
 }
@@ -74,12 +79,6 @@ nav a.link:hover{color:var(--text)}
 .hero .cores i:nth-child(7n){animation-duration:2.6s;animation-delay:-3.4s}
 .hero .cores i:nth-child(11n){animation-duration:7.1s;animation-delay:-4.8s}
 @keyframes gpuPulse{0%,100%{transform:scaleY(.12)}50%{transform:scaleY(1)}}
-.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.78rem;
-  color:var(--dim);text-decoration:none;background:var(--panel2);border:1px solid var(--border);
-  border-radius:999px;padding:4px 12px}
-.pill:hover{color:var(--text);border-color:var(--dimmer)}
-.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
 .hero h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 .4em;color:var(--text)}
 .hero h1 .accent{color:var(--accent)}
 .hero .lede{font-size:1.05rem}
@@ -144,19 +143,18 @@ footer a:hover{color:var(--text)}
 
 <nav>
   <div class="wrap">
-    <div class="nav-left">
-      <a class="brand" href="#top"><img src="assets/logo.svg" alt=""> accel</a>
-      <div class="nav-sections">
-        <a class="link" href="#why" data-en="Why" data-zh="为什么">Why</a>
-        <a class="link" href="#views" data-en="Views" data-zh="功能">Views</a>
-        <a class="link" href="#keys" data-en="Keys" data-zh="快捷键">Keys</a>
-        <a class="link" href="#vendors" data-en="Vendors" data-zh="厂商">Vendors</a>
-        <a class="link" href="#install" data-en="Install" data-zh="安装">Install</a>
-      </div>
+    <a class="brand" href="#top"><img src="assets/logo.svg" alt=""> accel</a>
+    <div class="nav-sections">
+      <a class="link" href="#why" data-en="Why" data-zh="为什么">Why</a>
+      <a class="link" href="#views" data-en="Views" data-zh="功能">Views</a>
+      <a class="link" href="#keys" data-en="Keys" data-zh="快捷键">Keys</a>
+      <a class="link" href="#vendors" data-en="Vendors" data-zh="厂商">Vendors</a>
+      <a class="link" href="#install" data-en="Install" data-zh="安装">Install</a>
     </div>
     <div class="nav-right">
       <a class="link" href="https://github.com/mesutoezdil/accel">GitHub ↗</a>
       <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
+      <button class="mode-btn" id="mode-toggle" title="switch color mode" type="button">light</button>
     </div>
   </div>
 </nav>
@@ -165,11 +163,6 @@ footer a:hover{color:var(--text)}
 <section class="hero">
   <div class="cores" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="wrap">
-    <div class="badges">
-      <a class="pill" href="https://github.com/mesutoezdil/accel/actions/workflows/ci.yml"><span class="dot"></span><span data-en="CI" data-zh="CI">CI</span></a>
-      <a class="pill" id="release-pill" href="https://github.com/mesutoezdil/accel/releases">Releases</a>
-      <a class="pill" href="LICENSE">Apache-2.0</a>
-    </div>
     <h1><span class="accent">accel</span> <span data-en="finds every accelerator in the machine." data-zh="能找到机器里的每一块加速卡。">finds every accelerator in the machine.</span></h1>
     <p class="lede" data-en="Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago." data-zh="目前支持十五家厂商：GPU、NPU、苹果自研芯片，以及机架里能叫得上名字的其他加速器。它会显示谁在用每一块设备、温度多高，还有十分钟前发生了什么。">Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago.</p>
     <div class="cta">
@@ -322,13 +315,6 @@ chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
 </footer>
 
 <script>
-fetch("https://api.github.com/repos/mesutoezdil/accel/releases?per_page=1")
-  .then(function(r){ return r.ok ? r.json() : []; })
-  .then(function(list){
-    var el = document.getElementById("release-pill");
-    if (el && list[0]) el.textContent = list[0].tag_name;
-  })
-  .catch(function(){});
 document.querySelectorAll(".install .tabbtn").forEach(function(b){
   b.addEventListener("click", function(){
     document.querySelectorAll(".install .tabbtn").forEach(function(x){ x.classList.remove("active"); });
@@ -374,6 +360,29 @@ function accelApplyLang(lang){
   var btn = document.getElementById("lang-toggle");
   if (btn) btn.addEventListener("click", function(){
     accelApplyLang(document.documentElement.lang === "zh-CN" ? "en" : "zh");
+  });
+})();
+
+// Color mode: dark by default, light on request, remembered in
+// localStorage, defaulting to the system preference on a first visit.
+var ACCEL_MODE_KEY = "accel-mode";
+function accelApplyMode(mode){
+  if (mode === "light") { document.documentElement.setAttribute("data-mode", "light"); }
+  else { document.documentElement.removeAttribute("data-mode"); }
+  var btn = document.getElementById("mode-toggle");
+  if (btn) btn.textContent = mode === "light" ? "dark" : "light";
+  try { localStorage.setItem(ACCEL_MODE_KEY, mode); } catch (e) {}
+}
+(function(){
+  var start = "";
+  try { start = localStorage.getItem(ACCEL_MODE_KEY) || ""; } catch (e) {}
+  if (!start) {
+    start = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+  }
+  accelApplyMode(start);
+  var btn = document.getElementById("mode-toggle");
+  if (btn) btn.addEventListener("click", function(){
+    accelApplyMode(document.documentElement.getAttribute("data-mode") === "light" ? "dark" : "light");
   });
 })();
 </script>
