@@ -50,6 +50,11 @@ section{padding:64px 0}
 section:last-of-type{padding-bottom:24px}
 section+section{border-top:1px solid var(--divider)}
 
+.skip-link{position:absolute;left:8px;top:calc(-48px - env(safe-area-inset-top,0px));z-index:100;
+  background:var(--accent);color:#1c0d02;font-family:var(--mono);font-weight:700;font-size:.85rem;
+  text-decoration:none;padding:8px 14px;border-radius:6px;transition:top .15s ease}
+.skip-link:focus{top:calc(8px + env(safe-area-inset-top,0px))}
+
 nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--nav-bg);
   backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
 nav .wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;height:56px;max-width:1040px}
@@ -138,6 +143,8 @@ footer a:hover{color:var(--text)}
 </style>
 </head>
 <body>
+
+<a class="skip-link" href="#top" data-en="Skip to content" data-zh="跳到正文">Skip to content</a>
 
 <div class="gpu-bg" aria-hidden="true">
   <div class="grid-lines"></div>
@@ -265,14 +272,6 @@ footer a:hover{color:var(--text)}
   </div>
 </section>
 
-<section class="cta-section">
-  <div class="wrap" style="text-align:center">
-    <h2 data-en="Open, and still moving" data-zh="开源，还在持续推进">Open, and still moving</h2>
-    <p class="lede" style="margin-inline:auto" data-en="Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it." data-zh="这里的每一处改动都从一个 issue 开始，以一个可读的 pull request 结束。少了哪个厂商、哪个数字不对、哪里用起来别扭，都值得报告，哪怕你不是来修它的人。">Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it.</p>
-    <a class="btn primary" href="https://github.com/mesutoezdil/accel" data-en="Star on GitHub →" data-zh="去 GitHub 点个 Star →">Star on GitHub →</a>
-  </div>
-</section>
-
 <section id="install" class="install">
   <div class="wrap">
     <h2 data-en="Install" data-zh="安装">Install</h2>
@@ -300,6 +299,14 @@ chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
   ghcr.io/mesutoezdil/accel:latest</code></pre>
     </div>
     <p class="lede" style="margin-top:18px" data-en-html="Then: <code>accel --demo</code> to explore without hardware, or <code>accel</code> to probe what is on the machine." data-zh-html="然后：用 <code>accel --demo</code> 在没有硬件的情况下体验，或者直接运行 <code>accel</code> 来探测这台机器上有什么。">Then: <code>accel --demo</code> to explore without hardware, or <code>accel</code> to probe what is on the machine.</p>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="wrap" style="text-align:center">
+    <h2 data-en="Open, and still moving" data-zh="开源，还在持续推进">Open, and still moving</h2>
+    <p class="lede" style="margin-inline:auto" data-en="Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it." data-zh="这里的每一处改动都从一个 issue 开始，以一个可读的 pull request 结束。少了哪个厂商、哪个数字不对、哪里用起来别扭，都值得报告，哪怕你不是来修它的人。">Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it.</p>
+    <a class="btn primary" href="https://github.com/mesutoezdil/accel" data-en="Star on GitHub →" data-zh="去 GitHub 点个 Star →">Star on GitHub →</a>
   </div>
 </section>
 
