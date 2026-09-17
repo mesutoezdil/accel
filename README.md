@@ -14,7 +14,7 @@ siltide is a terminal monitor for AI accelerators from 15 vendors: GPUs, NPUs, X
 More on [the site](https://mesutoezdil.github.io/siltide/): every tab, every key, and screenshots.
 
 <p align="center">
-  <img src="assets/overview.png" alt="the Overview tab with a mixed fleet" width="100%">
+  <img src="assets/demo.gif" alt="siltide cycling through the Overview, Devices, History, Links, and Health tabs on a simulated fleet" width="100%">
 </p>
 
 ## Supported accelerators
