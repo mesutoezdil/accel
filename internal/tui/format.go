@@ -175,6 +175,16 @@ func pad(s string, w int) string {
 }
 
 // rpad left-pads s to width w.
+// labelWidth is the widest device label in devs, at least 6, so node-prefixed
+// labels such as "ascend-01:0" keep the columns after them aligned.
+func labelWidth(devs []device.Device) int {
+	w := 6
+	for _, d := range devs {
+		w = max(w, min(len(d.Label()), 14))
+	}
+	return w
+}
+
 func rpad(s string, w int) string {
 	if n := lipgloss.Width(s); n < w {
 		return strings.Repeat(" ", w-n) + s
