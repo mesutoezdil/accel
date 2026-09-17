@@ -126,8 +126,19 @@ func (m Model) hostDetail(h host.Stats) string {
 		mhz = fmt.Sprintf("  %.0f MHz", float64(h.CPU.MHz))
 	}
 	fmt.Fprintf(&b, "%-8s %s  %s %d cores  %s load %s%s\n", "cpu", cpu, th.dim.Render("·"), h.CPU.Cores, th.dim.Render("·"), load, th.dim.Render(mhz))
-	if len(h.CPU.PerCore) > 0 {
-		perLine := max((m.width-10)/14, 1)
+	if perLine := max((m.width-10)/14, 1); len(h.CPU.PerCore) > 4*perLine {
+		// many cores: one cell per core, so a 224-thread host takes 2 lines
+		cells := []rune(" ▁▂▃▄▅▆▇█")
+		var line strings.Builder
+		for i, c := range h.CPU.PerCore {
+			v := min(max(float64(c), 0), 100)
+			line.WriteString(th.level(v).Render(string(cells[int(v/100*float64(len(cells)-1))])))
+			if (i+1)%(m.width-10) == 0 || i == len(h.CPU.PerCore)-1 {
+				b.WriteString("         " + line.String() + "\n")
+				line.Reset()
+			}
+		}
+	} else if len(h.CPU.PerCore) > 0 {
 		var cores []string
 		for i, c := range h.CPU.PerCore {
 			v := float64(c)
