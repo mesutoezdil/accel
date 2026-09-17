@@ -605,6 +605,7 @@ func (m Model) viewDashboard() string {
 		}
 		b.WriteString(th.bold.Render(hm.name) + "\n")
 		linesLeft--
+		lw := labelWidth(devs)
 		for _, d := range devs {
 			if linesLeft < 1 {
 				break
@@ -616,7 +617,7 @@ func (m Model) viewDashboard() string {
 			if len(vals) == 0 {
 				continue
 			}
-			fmt.Fprintf(&b, "  %-6s %-10s %s %s\n", d.Label(), trunc(d.Name, 10), th.role("spark").Render(pad(spark(vals, hm.scale(d, vals), chartW), chartW)), rpad(th.opt(d.Metrics, hm.k), 9))
+			fmt.Fprintf(&b, "  %-*s %-10s %s %s\n", lw, trunc(d.Label(), lw), trunc(d.Name, 10), th.role("spark").Render(pad(spark(vals, hm.scale(d, vals), chartW), chartW)), rpad(th.opt(d.Metrics, hm.k), 9))
 			linesLeft--
 		}
 	}

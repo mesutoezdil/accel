@@ -787,6 +787,7 @@ func (m Model) viewHistory() string {
 	}
 	devs := m.devices()
 	rows := 0
+	lw := labelWidth(devs)
 	for i, d := range devs {
 		if rows >= m.height-12 {
 			break
@@ -808,7 +809,7 @@ func (m Model) viewHistory() string {
 				val = metricText(hm.k, v)
 			}
 		}
-		fmt.Fprintf(&b, "%-6s %-14s %s %s\n", d.Label(), trunc(d.Name, 14), th.role("spark").Render(string(line)), rpad(val, 9))
+		fmt.Fprintf(&b, "%-*s %-14s %s %s\n", lw, trunc(d.Label(), lw), trunc(d.Name, 14), th.role("spark").Render(string(line)), rpad(val, 9))
 		rows++
 	}
 	pick := m.pick
