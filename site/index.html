@@ -49,6 +49,7 @@ h1,h2,h3{font-family:var(--mono);font-weight:600;letter-spacing:-.01em}
 h2{font-size:1.5rem;margin:0 0 .3em}
 .lede{color:var(--dim);margin:0 0 2rem}
 section{padding:64px 0}
+section:last-of-type{padding-bottom:24px}
 section+section{border-top:1px solid var(--border)}
 
 nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(11,10,9,.86);
@@ -98,8 +99,9 @@ nav a.link:hover{color:var(--text)}
 .frame img{width:100%}
 
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px}
-.card .q{font-family:var(--mono);color:var(--text);font-weight:600;margin:0 0 8px}
+.card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;
+  display:flex;flex-direction:column}
+.card .q{font-family:var(--mono);color:var(--text);font-weight:600;margin:0 0 8px;min-height:3.2em}
 .card .tab{display:inline-block;font-family:var(--mono);font-size:.75rem;color:var(--accent);
   background:rgba(255,138,61,.12);border:1px solid rgba(255,138,61,.35);border-radius:999px;padding:2px 9px;margin-bottom:8px}
 .card p{margin:0;color:var(--dim);font-size:.92rem}
@@ -133,7 +135,7 @@ th{color:var(--dim);font-weight:600;font-family:var(--mono);font-size:.78rem;tex
 
 .cta-section h2{margin-bottom:.3em}
 .cta-section .btn{margin-top:8px}
-footer{padding:40px 0;color:var(--dim);font-size:.85rem}
+footer{padding:24px 0 40px;color:var(--dim);font-size:.85rem}
 footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
 footer a{color:var(--dim)}
 footer a:hover{color:var(--text)}
