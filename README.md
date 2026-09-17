@@ -145,31 +145,7 @@ accel --status             # one line for tmux, i3bar, or a shell prompt
 | `H` | Health | the 0-100 score per device with every deduction explained, collector latency and errors, accel's own resource use |
 | `?` | Help | keys, filter syntax, and the command list |
 
-<p align="center">
-  <img src="assets/devices.png" alt="the Devices tab" width="100%">
-</p>
-
-<p align="center">
-  <img src="assets/history.png" alt="the History tab" width="100%">
-</p>
-
-<p align="center">
-  <img src="assets/links.png" alt="the Links tab with the topology matrix" width="100%">
-</p>
-
-<p align="center">
-  <img src="assets/health.png" alt="the Health tab" width="100%">
-</p>
-
-On a MacBook Pro with an M4 Pro, captured on that machine:
-
-<p align="center">
-  <img src="assets/mac-overview.png" alt="accel on an M4 Pro" width="100%">
-</p>
-
-<p align="center">
-  <img src="assets/mac-devices.png" alt="the Devices tab on an M4 Pro" width="100%">
-</p>
+More tabs and a capture on Apple silicon: [SCREENSHOTS.md](SCREENSHOTS.md).
 
 Values accel computes rather than reads (states, outliers, placement hints, anomalies, the health score) are labeled "(derived)".
 
