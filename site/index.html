@@ -4,20 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>accel</title>
-<meta name="description" content="A terminal monitor for AI accelerators from 15 vendors: utilization, memory, processes, power, thermals, and more.">
+<meta name="description" content="One terminal for fifteen accelerator vendors. Find out what a GPU, NPU, or Mac GPU is doing right now, or what it was doing ten minutes ago.">
 <link rel="icon" href="assets/logo.svg">
 <style>
 :root{
-  --bg:#0a0d12; --panel:#0d1117; --panel2:#11161d; --border:#1c2330;
-  --text:#c9d1d9; --dim:#7d8590; --dimmer:#4b5563;
-  --accent:#3fb950; --accent2:#58a6ff; --warn:#d29922; --crit:#ff7b72;
+  --bg:#0b0a09; --panel:#161310; --panel2:#1d1915; --border:#332c24;
+  --text:#ece6db; --dim:#9c9186; --dimmer:#5c5349;
+  --accent:#ff8a3d; --accent2:#2dd4bf; --warn:#e0b23f; --crit:#e8615f;
   --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
-html[data-theme="amber"]{ --accent:#d29922; --accent2:#e3b341; --panel2:#14100a; }
-html[data-theme="ice"]{ --accent:#58a6ff; --accent2:#79c0ff; --panel2:#0a1420; }
-html[data-theme="dracula"]{ --accent:#bd93f9; --accent2:#ff79c6; --panel2:#15111f; }
-html[data-theme="mono"]{ --accent:#c9d1d9; --accent2:#8b949e; --panel2:#111111; }
+/* Accents for the theme preview follow the six built-in TUI palettes
+   (internal/tui/theme.go). default, amber, and ice use bare ANSI slots
+   with no fixed hex there, so those three are representative; dracula
+   and solarized are the literal hex values accel already ships. */
+html[data-theme="amber"]{ --accent:#f5a623; --accent2:#ffcf7a; --panel2:#171008; }
+html[data-theme="ice"]{ --accent:#2fb2e0; --accent2:#8fdcf5; --panel2:#0b1a1f; }
+html[data-theme="dracula"]{ --accent:#bd93f9; --accent2:#ff79c6; --panel2:#181229; }
+html[data-theme="mono"]{ --accent:#c8c2b6; --accent2:#8a8378; --panel2:#151513; }
+html[data-theme="solarized"]{ --accent:#268bd2; --accent2:#2aa198; --panel2:#0c2b33; }
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;
@@ -33,7 +38,7 @@ h2{font-size:1.5rem;margin:0 0 .3em}
 section{padding:64px 0}
 section+section{border-top:1px solid var(--border)}
 
-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(10,13,18,.86);
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(11,10,9,.86);
   backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
 nav .wrap{display:flex;align-items:center;gap:20px;height:56px;max-width:1040px}
 .brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;margin-right:auto}
@@ -42,11 +47,12 @@ nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem}
 nav a.link:hover{color:var(--text)}
 .swatches{display:flex;gap:6px;margin-left:8px}
 .swatch{width:16px;height:16px;border-radius:50%;border:1px solid var(--border);cursor:pointer;padding:0}
-.swatch[data-t="default"]{background:#3fb950}
-.swatch[data-t="amber"]{background:#d29922}
-.swatch[data-t="ice"]{background:#58a6ff}
+.swatch[data-t="default"]{background:#4d7cff}
+.swatch[data-t="amber"]{background:#f5a623}
+.swatch[data-t="ice"]{background:#2fb2e0}
 .swatch[data-t="dracula"]{background:#bd93f9}
-.swatch[data-t="mono"]{background:#8b949e}
+.swatch[data-t="mono"]{background:#c8c2b6}
+.swatch[data-t="solarized"]{background:#268bd2}
 
 .hero{padding:72px 0 48px}
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
@@ -57,7 +63,7 @@ nav a.link:hover{color:var(--text)}
 .cta{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 40px}
 .btn{font-family:var(--mono);font-size:.92rem;padding:10px 18px;border-radius:8px;text-decoration:none;
   border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px}
-.btn.primary{background:var(--accent);color:#04140a;border-color:var(--accent);font-weight:700}
+.btn.primary{background:var(--accent);color:#1c0d02;border-color:var(--accent);font-weight:700}
 .btn.ghost{color:var(--text)}
 .btn.ghost:hover{border-color:var(--dimmer)}
 
@@ -68,7 +74,7 @@ nav a.link:hover{color:var(--text)}
 .card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px}
 .card .q{font-family:var(--mono);color:var(--text);font-weight:600;margin:0 0 8px}
 .card .tab{display:inline-block;font-family:var(--mono);font-size:.75rem;color:var(--accent);
-  background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);border-radius:999px;padding:2px 9px;margin-bottom:8px}
+  background:rgba(255,138,61,.12);border:1px solid rgba(255,138,61,.35);border-radius:999px;padding:2px 9px;margin-bottom:8px}
 .card p{margin:0;color:var(--dim);font-size:.92rem}
 
 .tabgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
@@ -86,7 +92,7 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}
 th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
 th{color:var(--dim);font-weight:600;font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
 .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
-.dot.ok{background:var(--accent)}
+.dot.ok{background:#57c785}
 .dot.warn{background:var(--warn)}
 .tablewrap{overflow-x:auto}
 
@@ -106,7 +112,6 @@ footer{padding:40px 0;color:var(--dim);font-size:.85rem}
 footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
 footer a{color:var(--dim)}
 footer a:hover{color:var(--text)}
-footer .fine{margin-top:18px;color:var(--dimmer);font-size:.78rem;max-width:70ch}
 </style>
 </head>
 <body>
@@ -126,6 +131,7 @@ footer .fine{margin-top:18px;color:var(--dimmer);font-size:.78rem;max-width:70ch
       <button class="swatch" data-t="ice" title="ice"></button>
       <button class="swatch" data-t="dracula" title="dracula"></button>
       <button class="swatch" data-t="mono" title="mono"></button>
+      <button class="swatch" data-t="solarized" title="solarized"></button>
     </div>
   </div>
 </nav>
@@ -138,8 +144,8 @@ footer .fine{margin-top:18px;color:var(--dimmer);font-size:.78rem;max-width:70ch
       <img src="https://img.shields.io/github/v/release/mesutoezdil/accel?include_prereleases&sort=semver" alt="release">
       <img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="license">
     </div>
-    <h1>One terminal.<br><span class="accent">15 accelerator vendors.</span></h1>
-    <p class="lede">accel watches GPUs, NPUs, XPUs, MLUs, DCUs, GCUs, and Apple silicon from a single terminal: utilization, memory, processes, power, thermals, links, and health per device, a time machine on disk, and the fleet as JSON or Prometheus metrics.</p>
+    <h1>Watch every accelerator.<br><span class="accent">From one terminal.</span></h1>
+    <p class="lede">GPUs, NPUs, and the rest of what a rack calls an accelerator today, fifteen vendors deep. accel finds what is on the machine and shows it: who is using it, how hot it is running, and what it did ten minutes ago.</p>
     <div class="cta">
       <a class="btn primary" href="#install">Install →</a>
       <a class="btn ghost" href="https://github.com/mesutoezdil/accel">View source ↗</a>
@@ -151,14 +157,14 @@ footer .fine{margin-top:18px;color:var(--dimmer);font-size:.78rem;max-width:70ch
 <section id="why">
   <div class="wrap">
     <h2>Why accel</h2>
-    <p class="lede">Every view answers a question someone actually has at 2 a.m., not a dashboard to admire.</p>
+    <p class="lede">These are the questions that come up when a job is slow, a device sits idle, or a bill looks wrong. Each one points at a tab.</p>
     <div class="grid">
-      <div class="card"><span class="tab">Overview</span><p class="q">Which device is idle while a pod still holds it?</p><p>Fleet totals, per-device state, and idle-allocated devices, in one table.</p></div>
-      <div class="card"><span class="tab">Workloads</span><p class="q">Which workload is wasting spend?</p><p>Devices held, efficiency, cost per hour, and energy per workload, from your own price list.</p></div>
-      <div class="card"><span class="tab">Kubernetes · Nodes</span><p class="q">Which pod, and which Slurm job, owns this device?</p><p>Process → container → pod → workload, and the same for Slurm jobs, side by side.</p></div>
-      <div class="card"><span class="tab">Links</span><p class="q">Is this device isolated on the fabric?</p><p>PCIe generation and width, NVLink counts and errors, and the topology matrix.</p></div>
-      <div class="card"><span class="tab">History</span><p class="q">What happened 15 minutes ago?</p><p>Scrub any metric back in time, with events pinned at the cursor.</p></div>
-      <div class="card"><span class="tab">Health</span><p class="q">Is this reading real, or a guess?</p><p>Every score explained, and every value either measured or shown as N/A, never 0.</p></div>
+      <div class="card"><span class="tab">Overview</span><p class="q">Which device is idle while a pod still holds it?</p><p>Fleet totals and per-device state land on one screen; idle-allocated devices get flagged there too.</p></div>
+      <div class="card"><span class="tab">Workloads</span><p class="q">Which workload is wasting spend?</p><p>Set your own price per hour, and accel turns held devices into a spend and waste figure per workload.</p></div>
+      <div class="card"><span class="tab">Kubernetes · Nodes</span><p class="q">Which pod, and which Slurm job, owns this device?</p><p>A process traces back through its container to the pod and the workload. Slurm jobs get the same treatment.</p></div>
+      <div class="card"><span class="tab">Links</span><p class="q">Is this device isolated on the fabric?</p><p>PCIe width, NVLink state, and a topology matrix show who shares a switch with whom.</p></div>
+      <div class="card"><span class="tab">History</span><p class="q">What happened 15 minutes ago?</p><p>Every metric can be scrubbed back through the window it kept; events sit right on the timeline.</p></div>
+      <div class="card"><span class="tab">Health</span><p class="q">Is this reading real, or a guess?</p><p>A health score comes with the reasons behind it. What accel could not measure shows up as N/A, never as zero.</p></div>
     </div>
   </div>
 </section>
@@ -211,7 +217,7 @@ footer .fine{margin-top:18px;color:var(--dimmer);font-size:.78rem;max-width:70ch
 <section id="vendors">
   <div class="wrap">
     <h2>15 vendors, honestly labeled</h2>
-    <p class="lede">A vendor a driver reports on is marked so; one accel has not run on real hardware yet is marked that too. Full table in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
+    <p class="lede">Two of these are confirmed on real hardware. The rest are parsers built against captured tool output, waiting on someone with the hardware to run them. The full table, with sources, is in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
     <div class="tablewrap">
     <table>
       <tr><th>Vendor</th><th>Source</th><th>Status</th></tr>
@@ -238,7 +244,7 @@ footer .fine{margin-top:18px;color:var(--dimmer);font-size:.78rem;max-width:70ch
 <section id="install" class="install">
   <div class="wrap">
     <h2>Install</h2>
-    <p class="lede">One static binary. No agent to run first, no database.</p>
+    <p class="lede">One binary. Nothing to run first, nothing to point it at.</p>
     <div class="tabs">
       <button class="tabbtn active" data-p="bin">Binary</button>
       <button class="tabbtn" data-p="brew">Homebrew</button>
@@ -267,7 +273,7 @@ chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
 <footer>
   <div class="wrap">
     <div class="row">
-      <span>Apache-2.0. Not affiliated with any accelerator vendor. NVIDIA, NVML, and NVLink are trademarks of NVIDIA Corporation.</span>
+      <span>Apache-2.0, and no affiliation with any of the vendors above. NVIDIA, NVML, and NVLink belong to NVIDIA Corporation.</span>
       <span>
         <a href="https://github.com/mesutoezdil/accel">GitHub</a> ·
         <a href="https://github.com/mesutoezdil/accel/issues">Issues</a> ·
