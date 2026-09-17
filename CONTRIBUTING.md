@@ -2,6 +2,18 @@
 
 Thanks for helping. Issues and pull requests are welcome; hardware reports most of all, since most vendors are tested only against captured tool output.
 
+## Workflow
+
+Every change starts as an issue, including changes by maintainers, so the reasoning is on record before the code is.
+
+1. Open one issue per problem or feature (bug, hardware report, enhancement, documentation). Say what is wrong or missing and how you would know it is fixed.
+2. Branch from `main`, make the change, and open a pull request whose description says which issues it closes (`Closes #12, #13`). Small pull requests that close a few related issues merge fastest.
+3. CI must be green on the pull request.
+4. A maintainer reviews and replies `LGTM` on the pull request; a change the maintainer wrote gets the same review from a second maintainer when there is one, or a self-review comment that records what was checked.
+5. The pull request is merged with a rebase (no merge commits, no squashing away the history) and the branch is deleted.
+
+Nothing is pushed to `main` directly.
+
 ## Before a pull request
 
 Every one of these must pass; CI runs the same set on Linux and macOS:
