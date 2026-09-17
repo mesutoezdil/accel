@@ -16,6 +16,7 @@ func TestStructLayouts(t *testing.T) {
 		}
 	}
 	check("sizeof memory", unsafe.Sizeof(memory{}), 24)
+	check("sizeof memoryV2", unsafe.Sizeof(memoryV2{}), 40)
 	check("sizeof utilization", unsafe.Sizeof(utilization{}), 8)
 	check("sizeof pciInfo", unsafe.Sizeof(pciInfo{}), 68)
 	check("pciInfo.BusID offset", unsafe.Offsetof(pciInfo{}.BusID), 36)
