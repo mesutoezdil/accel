@@ -6,9 +6,11 @@ COPY . .
 ARG VERSION=dev
 RUN CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o /accel .
 
-# A minimal base rather than scratch: purego's dlopen needs the dynamic
-# loader of the host, which the DaemonSet mounts from /usr.
+# A minimal base rather than scratch: purego's dlopen needs a dynamic
+# loader. The DaemonSet mounts the host's real one over /usr; gcompat
+# covers a plain `docker run`, where NVML's glibc .so has none otherwise.
 FROM alpine:3.20
+RUN apk add --no-cache gcompat
 COPY --from=build /accel /usr/local/bin/accel
 ENTRYPOINT ["accel"]
 CMD ["--service", "--listen", ":9800"]
