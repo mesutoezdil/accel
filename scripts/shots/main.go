@@ -1,9 +1,10 @@
-// Command shots renders every terminal UI (TUI) tab from the simulated fleet
-// to the SVG images under `assets/`. Everything it shows comes from
-// `--demo`, so the numbers are synthetic; the DEMO badge stays visible and
-// the "(simulated)" suffix is dropped for room.
+// Command shots renders terminal UI (TUI) tabs to the SVG images under
+// `assets/`. By default it drives the simulated fleet (synthetic numbers,
+// the "(simulated)" suffix dropped for room); with -live it runs the real
+// providers on this machine for a while first and captures those.
 //
 //	go run ./scripts/shots -out assets
+//	go run ./scripts/shots -live 90s -host m4-pro -tabs overview,devices -prefix mac- -out assets
 package main
 
 import (
@@ -13,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -24,6 +26,7 @@ import (
 	"github.com/mesutoezdil/accel/internal/config"
 	"github.com/mesutoezdil/accel/internal/history"
 	"github.com/mesutoezdil/accel/internal/provider"
+	"github.com/mesutoezdil/accel/internal/provider/apple"
 	"github.com/mesutoezdil/accel/internal/provider/sim"
 	"github.com/mesutoezdil/accel/internal/tui"
 )
@@ -34,15 +37,25 @@ func main() {
 	height := flag.Int("height", 42, "rows")
 	theme := flag.String("theme", "default", "theme name")
 	ans := flag.String("ans", "", "also write the raw ANSI views to this directory")
+	live := flag.Duration("live", 0, "capture the real providers on this machine after collecting this long (0: the demo fleet)")
+	hostLabel := flag.String("host", "", "hostname to show (default: h100-node-07 for the demo, the real one live)")
+	tabsOnly := flag.String("tabs", "", "comma-separated tab names to render (default: all)")
+	prefix := flag.String("prefix", "", "file name prefix, for example mac-")
 	flag.Parse()
-	if err := run(*out, *ans, *width, *height, *theme); err != nil {
+	if err := run(options{out: *out, ans: *ans, w: *width, h: *height, theme: *theme, live: *live, host: *hostLabel, tabs: *tabsOnly, prefix: *prefix}); err != nil {
 		fmt.Fprintln(os.Stderr, "shots:", err)
 		os.Exit(1)
 	}
 }
 
-func run(out, ans string, w, h int, theme string) error {
-	if err := os.MkdirAll(out, 0o755); err != nil {
+type options struct {
+	out, ans, theme, host, tabs, prefix string
+	w, h                                int
+	live                                time.Duration
+}
+
+func run(o options) error {
+	if err := os.MkdirAll(o.out, 0o755); err != nil {
 		return err
 	}
 	// No terminal is attached, so lipgloss would strip every color.
@@ -54,42 +67,63 @@ func run(out, ans string, w, h int, theme string) error {
 	if err != nil {
 		return err
 	}
-	// 30 minutes of history so the History and Dashboard tabs have curves:
-	// the fleet moves on a clock we advance by hand.
-	now := time.Now()
-	clock := now.Add(-30 * time.Minute)
-	sim.Now = func() time.Time { return clock }
-	sim.Suffix = "" // the DEMO badge in the header marks the data
-	prov := sim.Provider(8)
 	ctx := context.Background()
-	for ; clock.Before(now); clock = clock.Add(cfg.History.Resolution) {
-		devs, err := prov.Read(ctx)
-		if err != nil {
-			return err
+	var eng *collect.Engine
+	if o.live > 0 {
+		eng = collect.New([]provider.Provider{apple.Provider()}, cfg, hist, false)
+		defer eng.Close()
+		eng.Detect()
+		for end := time.Now().Add(o.live); time.Now().Before(end); time.Sleep(time.Second) {
+			eng.Collect(ctx)
 		}
-		hist.Record(clock, devs)
+	} else {
+		// 30 minutes of history so the History and Dashboard tabs have
+		// curves: the fleet moves on a clock we advance by hand.
+		now := time.Now()
+		clock := now.Add(-30 * time.Minute)
+		sim.Now = func() time.Time { return clock }
+		sim.Suffix = "" // the DEMO badge in the header marks the data
+		prov := sim.Provider(8)
+		for ; clock.Before(now); clock = clock.Add(cfg.History.Resolution) {
+			devs, err := prov.Read(ctx)
+			if err != nil {
+				return err
+			}
+			hist.Record(clock, devs)
+		}
+		sim.Now = time.Now
+		eng = collect.New([]provider.Provider{prov}, cfg, hist, true)
+		defer eng.Close()
+		eng.Detect()
+		for range 3 {
+			eng.Collect(ctx)
+		}
+		if o.host == "" {
+			o.host = "h100-node-07"
+		}
 	}
-	sim.Now = time.Now
-	eng := collect.New([]provider.Provider{prov}, cfg, hist, true)
-	defer eng.Close()
-	eng.Detect()
-	for range 3 {
-		eng.Collect(ctx)
-	}
-	th, _ := tui.LoadTheme(theme, "", nil, false)
+	th, _ := tui.LoadTheme(o.theme, "", nil, false)
 	m := tui.New(eng, tui.Options{Theme: th, Mouse: true, Currency: "$"})
-	m = update(m, tea.WindowSizeMsg{Width: w, Height: h})
+	m = update(m, tea.WindowSizeMsg{Width: o.w, Height: o.h})
 	host, _ := os.Hostname()
 	for _, tab := range tui.TabKeys() {
-		m = update(m, key(tab.Key))
 		name := strings.ToLower(tab.Name)
-		view := strings.ReplaceAll(m.View(), host, "h100-node-07")
-		view = dropBadge(view)
-		if err := os.WriteFile(filepath.Join(out, name+".svg"), []byte(svg(view, w, h, "accel · "+tab.Name)), 0o644); err != nil {
+		if o.tabs != "" && !slices.Contains(strings.Split(o.tabs, ","), name) {
+			continue
+		}
+		m = update(m, key(tab.Key))
+		view := m.View()
+		if o.host != "" {
+			view = strings.ReplaceAll(view, host, o.host)
+		}
+		if o.live == 0 {
+			view = dropBadge(view)
+		}
+		if err := os.WriteFile(filepath.Join(o.out, o.prefix+name+".svg"), []byte(svg(view, o.w, o.h, "accel · "+tab.Name)), 0o644); err != nil {
 			return err
 		}
-		if ans != "" {
-			if err := os.WriteFile(filepath.Join(ans, name+".ans"), []byte(view), 0o644); err != nil {
+		if o.ans != "" {
+			if err := os.WriteFile(filepath.Join(o.ans, o.prefix+name+".ans"), []byte(view), 0o644); err != nil {
 				return err
 			}
 		}

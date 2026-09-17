@@ -49,10 +49,15 @@ completions: build
 	bin/accel --completion fish > build/extra/accel.fish
 	bin/accel --man > build/extra/accel.1
 
-# Screenshots for README.md, rendered from the simulated fleet.
+# Screenshots for README.md: the fleet set from the simulated fleet, and
+# the Apple silicon set captured on the Mac that runs `make shots-mac`.
 shots:
 	go run ./scripts/shots -out assets
 	scripts/shots/png.sh
+
+shots-mac:
+	go run ./scripts/shots -live 90s -host m4-pro -tabs overview,devices -prefix mac- -out assets
+	scripts/shots/png.sh mac-overview mac-devices
 
 clean:
 	rm -rf bin dist build
