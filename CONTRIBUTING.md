@@ -37,6 +37,10 @@ GOOS=linux CGO_ENABLED=0 go build .
 - Comments and help text: no em dashes, Oxford comma, digits for numbers, acronyms expanded on first use, no marketing words.
 - Commit messages describe the change in the imperative and carry no trailers.
 
+## Changelog
+
+Add a line under `## Unreleased` in `CHANGELOG.md` for anything a user would notice: a new flag, a fixed bug, a new vendor. Skip it for internal refactors and typo fixes.
+
 ## Adding a vendor
 
 1. Add the `device.Vendor` constant in `internal/device`.

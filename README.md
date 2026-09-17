@@ -310,7 +310,7 @@ CI runs gofmt, vet for Linux and macOS, race tests, golangci-lint, and cross bui
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add a vendor and what a change needs before it merges. Security reports: [SECURITY.md](SECURITY.md). The roadmap is the [issue list](https://github.com/mesutoezdil/accel/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add a vendor and what a change needs before it merges. Security reports: [SECURITY.md](SECURITY.md). The roadmap is the [issue list](https://github.com/mesutoezdil/accel/issues); changes are in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
