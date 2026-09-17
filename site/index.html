@@ -10,7 +10,7 @@
 :root{
   --bg:#0b0a09; --panel:#161310; --panel2:#1d1915; --border:#332c24;
   --text:#ece6db; --dim:#9c9186; --dimmer:#5c5349;
-  --accent:#ff8a3d; --accent2:#2dd4bf; --warn:#e0b23f; --crit:#e8615f;
+  --accent:#ff8a3d; --accent2:#ffb35c;
   --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 }
 /* Accents for the theme preview follow the six built-in TUI palettes
@@ -78,7 +78,7 @@ nav a.link:hover{color:var(--text)}
 .hero .cores i{flex:1;min-width:2px;height:100%;border-radius:0 0 2px 2px;font-style:normal;
   background:linear-gradient(to bottom, var(--accent), transparent 85%);
   transform-origin:top;animation:gpuPulse 4s ease-in-out infinite}
-.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#57c785,transparent 85%)}
+.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#8a3d0f,transparent 85%)}
 .hero .cores i:nth-child(5n){background:linear-gradient(to bottom,var(--accent2),transparent 85%)}
 .hero .cores i:nth-child(2n){animation-duration:5.5s;animation-delay:-1.3s}
 .hero .cores i:nth-child(3n+1){animation-duration:3.2s;animation-delay:-2.1s}
@@ -91,7 +91,7 @@ nav a.link:hover{color:var(--text)}
   color:var(--dim);text-decoration:none;background:var(--panel2);border:1px solid var(--border);
   border-radius:999px;padding:4px 12px}
 .pill:hover{color:var(--text);border-color:var(--dimmer)}
-.pill .dot{width:7px;height:7px;border-radius:50%;background:#57c785;flex:none}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
 .hero h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 .4em;color:var(--text)}
 .hero h1 .accent{color:var(--accent)}
 .hero .lede{font-size:1.05rem}
