@@ -168,6 +168,18 @@ func (m Model) empty() string {
 	return msg + "\n\nTry `accel --demo`, or ? for the vendors that were probed."
 }
 
+// procLess orders processes by memory, then utilization, then PID, so a
+// vendor without per-process memory (Apple) still puts the busy ones first.
+func procLess(a, b device.Process) bool {
+	if am, bm := a.Metrics[device.MemUsed], b.Metrics[device.MemUsed]; am != bm {
+		return am > bm
+	}
+	if au, bu := a.Metrics[device.Util], b.Metrics[device.Util]; au != bu {
+		return au > bu
+	}
+	return a.PID < b.PID
+}
+
 func (m Model) topProcs(devs []device.Device, n, w int) string {
 	th := m.th
 	var rows []procRow
@@ -176,9 +188,13 @@ func (m Model) topProcs(devs []device.Device, n, w int) string {
 			rows = append(rows, procRow{d, p})
 		}
 	}
-	sort.SliceStable(rows, func(i, j int) bool { return rows[i].p.Metrics[device.MemUsed] > rows[j].p.Metrics[device.MemUsed] })
+	sort.SliceStable(rows, func(i, j int) bool { return procLess(rows[i].p, rows[j].p) })
+	by := " by memory"
+	if len(rows) > 0 && rows[0].p.Metrics[device.MemUsed] == 0 {
+		by = " by utilization" // no per-process memory on this vendor
+	}
 	var b strings.Builder
-	b.WriteString(th.bold.Render("Top processes") + th.dim.Render(" by memory") + "\n")
+	b.WriteString(th.bold.Render("Top processes") + th.dim.Render(by) + "\n")
 	if len(rows) == 0 {
 		b.WriteString(th.dim.Render("none") + "\n")
 	}
@@ -387,7 +403,7 @@ func (m Model) detail(d device.Device) string {
 		total := d.Metrics.Or(device.MemTotal, 0)
 		b.WriteString("\n" + th.dim.Render(fmt.Sprintf("%-8s %-10s %-16s %9s %5s %5s %8s  %s", "PID", "USER", "PROCESS", "MEM", "MEM%", "UTIL", "RUNTIME", "POD / JOB / COMMAND")) + "\n")
 		procs := append([]device.Process(nil), d.Procs...)
-		sort.SliceStable(procs, func(i, j int) bool { return procs[i].Metrics[device.MemUsed] > procs[j].Metrics[device.MemUsed] })
+		sort.SliceStable(procs, func(i, j int) bool { return procLess(procs[i], procs[j]) })
 		for _, p := range procs {
 			where := p.Command
 			switch {
