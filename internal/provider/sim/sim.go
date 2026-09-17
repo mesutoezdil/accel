@@ -26,6 +26,9 @@ type proc struct {
 	name, user, pod, ns, workload string
 }
 
+// Now is the clock the fleet moves on; tools that seed history replace it.
+var Now = time.Now
+
 // Provider returns a demo provider with n NVIDIA-class devices plus one
 // small group per other vendor. Device 3 of the NVIDIA group is a straggler
 // on a narrow PCIe link; device n-1 is idle but allocated.
@@ -42,13 +45,13 @@ func Provider(n int) provider.Provider {
 		{device.Neuron, "AWS Inferentia2", 1, 32, 0, false, 0, nil},
 		{device.Apple, "Apple M4 Pro 20-core GPU", 1, 48, 0, false, 0, nil},
 	}
-	start := time.Now()
+	start := Now()
 	return provider.Provider{
 		Name: "sim", Label: "Simulated fleet",
 		Detect: func() error { return nil },
 		Read: func(context.Context) ([]device.Device, error) {
 			var out []device.Device
-			t := time.Since(start).Seconds()
+			t := Now().Sub(start).Seconds()
 			for vi, m := range models {
 				for i := 0; i < m.count; i++ {
 					load := 0.5 + 0.45*math.Sin(t/9+float64(vi*3+i))
@@ -59,6 +62,9 @@ func Provider(n int) provider.Provider {
 					if m.vendor == device.NVIDIA && i == m.count-1 && m.count > 1 {
 						d = m.device(i, 0.01, t) // idle but holding a notebook
 						d.Procs = []device.Process{procOf(nb, 9000+i, d.Metrics[device.MemUsed], 0)}
+					}
+					for k := range d.Procs {
+						d.Procs[k].PID += vi * 1000 // one PID space per vendor
 					}
 					out = append(out, d)
 					if m.vendor == device.NVIDIA && i == 6 {

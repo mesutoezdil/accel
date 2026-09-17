@@ -16,10 +16,10 @@ import (
 )
 
 // tabs in display order; the key switches to the tab.
-var tabs = []struct{ key, name string }{
-	{"1", "Overview"}, {"2", "Devices"}, {"3", "Processes"}, {"4", "Memory"}, {"5", "Power"},
-	{"6", "Thermals"}, {"7", "Links"}, {"8", "History"}, {"9", "Events"}, {"0", "Nodes"},
-	{"N", "Network"}, {"K", "Kubernetes"}, {"W", "Workloads"}, {"D", "Dashboard"}, {"H", "Health"}, {"?", "Help"},
+var tabs = []struct{ key, name, short string }{
+	{"1", "Overview", "Overview"}, {"2", "Devices", "Devices"}, {"3", "Processes", "Procs"}, {"4", "Memory", "Memory"}, {"5", "Power", "Power"},
+	{"6", "Thermals", "Thermal"}, {"7", "Links", "Links"}, {"8", "History", "History"}, {"9", "Events", "Events"}, {"0", "Nodes", "Nodes"},
+	{"N", "Network", "Net"}, {"K", "Kubernetes", "Kube"}, {"W", "Workloads", "Work"}, {"D", "Dashboard", "Dash"}, {"H", "Health", "Health"}, {"?", "Help", "Help"},
 }
 
 const (
@@ -863,15 +863,37 @@ func (m *Model) tabBarSpans() string {
 	var b strings.Builder
 	m.tabSpans = m.tabSpans[:0]
 	x := 0
-	compact := m.width < 130
+	// Shorten the names until the bar fits; a wrapped bar breaks every view.
+	// Rungs: full names, short names, 3 letters, keys only.
+	nameOf := func(i, rung int) string {
+		t := tabs[i]
+		switch rung {
+		case 0:
+			return t.name
+		case 1:
+			return t.short
+		case 2:
+			return t.name[:3]
+		}
+		return ""
+	}
+	rung := 0
+	for ; rung < 3; rung++ {
+		total := 0
+		for i := range tabs {
+			if m.tabVisible(i) {
+				total += width(nameOf(i, rung)) + 4 // key, 2 spaces, and the gap
+			}
+		}
+		if total <= m.width {
+			break
+		}
+	}
 	for i, t := range tabs {
 		if !m.tabVisible(i) {
 			continue
 		}
-		name := t.name
-		if compact {
-			name = name[:min(len(name), 4)]
-		}
+		name := nameOf(i, rung)
 		label := " " + t.key + " " + name + " "
 		if i == m.tab {
 			b.WriteString(m.th.tab.Render(label))
@@ -1089,4 +1111,16 @@ func (m *Model) startCompare(args []string) {
 	m.compare = [2]string{args[0], args[1]}
 	m.overlay = overlayCompare
 	m.scroll = 0
+}
+
+// Tab names a tab and the key that opens it.
+type Tab struct{ Key, Name string }
+
+// TabKeys lists the tabs in order, for tools that drive the model.
+func TabKeys() []Tab {
+	out := make([]Tab, len(tabs))
+	for i, t := range tabs {
+		out[i] = Tab{t.key, t.name}
+	}
+	return out
 }
