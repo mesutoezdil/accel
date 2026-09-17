@@ -5,8 +5,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: accel version
-      description: "`accel --version`"
+      label: siltide version
+      description: "`siltide --version`"
     validations:
       required: true
   - type: input
@@ -27,5 +27,5 @@ body:
     id: output
     attributes:
       label: Output
-      description: "`accel --once --json --vendors <vendor>` with anything private removed, or the debug log from `--debug`"
+      description: "`siltide --once --json --vendors <vendor>` with anything private removed, or the debug log from `--debug`"
       render: text

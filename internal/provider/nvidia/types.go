@@ -1,8 +1,8 @@
 package nvidia
 
-import "github.com/mesutoezdil/accel/internal/device"
+import "github.com/mesutoezdil/siltide/internal/device"
 
-// C ABI mirrors of the NVML (NVIDIA Management Library) structs accel passes
+// C ABI mirrors of the NVML (NVIDIA Management Library) structs siltide passes
 // to the driver. They are platform independent so the layout tests run
 // everywhere.
 

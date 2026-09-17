@@ -31,7 +31,7 @@ import (
 	"go.yaml.in/yaml/v3"
 )
 
-// Pod is what accel shows for a Kubernetes pod.
+// Pod is what siltide shows for a Kubernetes pod.
 type Pod struct {
 	Name       string
 	Namespace  string
@@ -118,7 +118,7 @@ func (r *Resolver) inCluster() bool {
 	return true
 }
 
-// kubeconfig is the subset accel reads: token or client certificates.
+// kubeconfig is the subset siltide reads: token or client certificates.
 type kubeconfig struct {
 	Current  string `yaml:"current-context"`
 	Contexts []struct {
@@ -402,7 +402,7 @@ func (r *Resolver) fromAPI() []Pod {
 	}
 	path := "/api/v1/pods?fieldSelector=spec.nodeName=" + url.QueryEscape(r.node)
 	if r.source == "kubeconfig" {
-		path = "/api/v1/pods?limit=2000" // every node: this accel may watch a fleet
+		path = "/api/v1/pods?limit=2000" // every node: this siltide may watch a fleet
 	}
 	if r.get(ctx, path, &list) != nil {
 		return nil

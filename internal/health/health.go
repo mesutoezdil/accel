@@ -1,5 +1,5 @@
 // Package health scores a device from 0 to 100 using only what its vendor
-// reports. The score is accel's opinion, not a vendor metric: every
+// reports. The score is siltide's opinion, not a vendor metric: every
 // deduction comes with a note that says why, and missing data never lowers
 // the score.
 //
@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // Options are the inputs beyond the device itself.

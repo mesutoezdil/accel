@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/provider"
 )
 
 // Spec describes one vendor.
@@ -101,7 +101,7 @@ func Specs() []Spec {
 type Runner func(ctx context.Context, cmdline string) ([]byte, error)
 
 // Remote returns providers that run the CLI vendors through run, for hosts
-// where accel itself is not installed. Vendors that need a library, sysfs
+// where siltide itself is not installed. Vendors that need a library, sysfs
 // or a long-running monitor are left out.
 func Remote(node string, run Runner) []provider.Provider {
 	var out []provider.Provider

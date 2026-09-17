@@ -1,4 +1,4 @@
-// Package history is accel's time machine: a per-device series of
+// Package history is siltide's time machine: a per-device series of
 // downsampled points, kept in memory and optionally appended to plain text
 // files so a restart does not lose the past.
 //
@@ -9,7 +9,7 @@
 // Missing values are written as "-". Throttle bits are OR-ed over every
 // sample since the previous point, so a short burst is never lost to
 // downsampling. The CRC covers everything before it;
-// a torn or corrupted line is skipped on load. A lock file keeps 2 accel
+// a torn or corrupted line is skipped on load. A lock file keeps 2 siltide
 // processes from writing the same directory: the second keeps its history
 // in memory and reports it.
 package history
@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // Tracked are the metrics kept in history, in column order.
@@ -75,8 +75,8 @@ type Store struct {
 	Warning string
 }
 
-// ErrLocked means another accel owns the directory.
-var ErrLocked = errors.New("history directory is in use by another accel")
+// ErrLocked means another siltide owns the directory.
+var ErrLocked = errors.New("history directory is in use by another siltide")
 
 // Open creates a store and loads what the directory still holds.
 func Open(o Options) (*Store, error) {

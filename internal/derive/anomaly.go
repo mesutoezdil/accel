@@ -5,8 +5,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/history"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/history"
 )
 
 // Anomaly is a pattern in a device's history that a single sample cannot

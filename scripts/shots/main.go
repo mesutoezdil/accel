@@ -22,13 +22,13 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
 
-	"github.com/mesutoezdil/accel/internal/collect"
-	"github.com/mesutoezdil/accel/internal/config"
-	"github.com/mesutoezdil/accel/internal/history"
-	"github.com/mesutoezdil/accel/internal/provider"
-	"github.com/mesutoezdil/accel/internal/provider/apple"
-	"github.com/mesutoezdil/accel/internal/provider/sim"
-	"github.com/mesutoezdil/accel/internal/tui"
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/config"
+	"github.com/mesutoezdil/siltide/internal/history"
+	"github.com/mesutoezdil/siltide/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/provider/apple"
+	"github.com/mesutoezdil/siltide/internal/provider/sim"
+	"github.com/mesutoezdil/siltide/internal/tui"
 )
 
 func main() {
@@ -119,7 +119,7 @@ func run(o options) error {
 		if o.live == 0 {
 			view = dropBadge(view)
 		}
-		if err := os.WriteFile(filepath.Join(o.out, o.prefix+name+".svg"), []byte(svg(view, o.w, o.h, "accel · "+tab.Name)), 0o644); err != nil {
+		if err := os.WriteFile(filepath.Join(o.out, o.prefix+name+".svg"), []byte(svg(view, o.w, o.h, "siltide · "+tab.Name)), 0o644); err != nil {
 			return err
 		}
 		if o.ans != "" {

@@ -79,7 +79,7 @@ func ThemeNames() []string {
 	return out
 }
 
-// themeFile is `~/.config/accel/themes/<name>.yaml`.
+// themeFile is `~/.config/siltide/themes/<name>.yaml`.
 type themeFile struct {
 	Name    string            `yaml:"name"`
 	Extends string            `yaml:"extends"`

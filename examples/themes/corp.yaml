@@ -1,4 +1,4 @@
-# A user theme: ~/.config/accel/themes/corp.yaml, then `theme: corp`.
+# A user theme: ~/.config/siltide/themes/corp.yaml, then `theme: corp`.
 # Any role not set here comes from the theme it extends.
 name: corp
 extends: ice

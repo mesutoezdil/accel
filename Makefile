@@ -4,7 +4,7 @@ LDFLAGS := -s -w -X main.version=$(VERSION)
 .PHONY: build test race lint check cross bench demo test-nvidia test-fake-nvml completions clean
 
 build:
-	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/accel .
+	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/siltide .
 
 test:
 	go test ./...
@@ -22,21 +22,21 @@ lint:
 check: lint test cross
 
 cross:
-	GOOS=linux  GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/accel-linux-amd64 .
-	GOOS=linux  GOARCH=arm64 CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/accel-linux-arm64 .
-	GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/accel-darwin-arm64 .
+	GOOS=linux  GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/siltide-linux-amd64 .
+	GOOS=linux  GOARCH=arm64 CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/siltide-linux-arm64 .
+	GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/siltide-darwin-arm64 .
 
 bench:
 	go test -run xxx -bench . -benchmem ./internal/collect/ ./internal/tui/ ./internal/history/
 
 demo: build
-	bin/accel --demo
+	bin/siltide --demo
 
-# Runs against real NVIDIA hardware when present: `accel --once` must list
+# Runs against real NVIDIA hardware when present: `siltide --once` must list
 # the devices `nvidia-smi` sees.
 test-nvidia: build
 	@command -v nvidia-smi >/dev/null || { echo "no nvidia-smi, skipping"; exit 0; }
-	bin/accel --once --vendors nvidia --no-history
+	bin/siltide --once --vendors nvidia --no-history
 
 test-fake-nvml:
 	scripts/test-fake-nvml.sh
@@ -44,10 +44,10 @@ test-fake-nvml:
 # Shell completions and the man page, as the packages ship them.
 completions: build
 	mkdir -p build/extra
-	bin/accel --completion bash > build/extra/accel.bash
-	bin/accel --completion zsh > build/extra/_accel
-	bin/accel --completion fish > build/extra/accel.fish
-	bin/accel --man > build/extra/accel.1
+	bin/siltide --completion bash > build/extra/siltide.bash
+	bin/siltide --completion zsh > build/extra/_siltide
+	bin/siltide --completion fish > build/extra/siltide.fish
+	bin/siltide --man > build/extra/siltide.1
 
 # Screenshots for README.md: the fleet set from the simulated fleet, and
 # the Apple silicon set captured on the Mac that runs `make shots-mac`.

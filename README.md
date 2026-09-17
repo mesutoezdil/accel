@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="assets/wordmark.svg" alt="accel" width="560">
+  <img src="assets/wordmark.svg" alt="siltide" width="560">
 </p>
 
 <p align="center">
-  <a href="https://github.com/mesutoezdil/accel/actions/workflows/ci.yml"><img src="https://github.com/mesutoezdil/accel/actions/workflows/ci.yml/badge.svg" alt="ci"></a>
-  <a href="https://github.com/mesutoezdil/accel/releases"><img src="https://img.shields.io/github/v/release/mesutoezdil/accel?include_prereleases&sort=semver" alt="release"></a>
-  <a href="go.mod"><img src="https://img.shields.io/github/go-mod/go-version/mesutoezdil/accel" alt="go version"></a>
+  <a href="https://github.com/mesutoezdil/siltide/actions/workflows/ci.yml"><img src="https://github.com/mesutoezdil/siltide/actions/workflows/ci.yml/badge.svg" alt="ci"></a>
+  <a href="https://github.com/mesutoezdil/siltide/releases"><img src="https://img.shields.io/github/v/release/mesutoezdil/siltide?include_prereleases&sort=semver" alt="release"></a>
+  <a href="go.mod"><img src="https://img.shields.io/github/go-mod/go-version/mesutoezdil/siltide" alt="go version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="license"></a>
 </p>
 
-accel is a terminal monitor for AI accelerators from 15 vendors: GPUs, NPUs, XPUs, MLUs, DCUs, GCUs, and Apple silicon. It shows utilization, memory, processes, power, thermals, links, and health per device. History stays on disk. Pods and Slurm jobs sit next to processes. JSON and Prometheus cover fleets.
+siltide is a terminal monitor for AI accelerators from 15 vendors: GPUs, NPUs, XPUs, MLUs, DCUs, GCUs, and Apple silicon. It shows utilization, memory, processes, power, thermals, links, and health per device. History stays on disk. Pods and Slurm jobs sit next to processes. JSON and Prometheus cover fleets.
 
-More on [the site](https://mesutoezdil.github.io/accel/): every tab, every key, and screenshots.
+More on [the site](https://mesutoezdil.github.io/siltide/): every tab, every key, and screenshots.
 
 <p align="center">
   <img src="assets/overview.png" alt="the Overview tab with a mixed fleet" width="100%">
@@ -19,7 +19,7 @@ More on [the site](https://mesutoezdil.github.io/accel/): every tab, every key, 
 
 ## Supported accelerators
 
-The vendor list follows the device plugins in [HAMi](https://github.com/Project-HAMi/HAMi/tree/master/pkg/device), plus Apple and Intel. Every vendor is auto-detected. `--vendors nvidia,ascend` limits the probe. NVIDIA (an H100 SXM, driver 570.211.01, every metric checked against `nvidia-smi`) and Apple silicon (an M4 Pro) run on real hardware today. The rest are built against each vendor's documented tool output, with a fixture behind every parser. A hardware report through [an issue](https://github.com/mesutoezdil/accel/issues/new/choose) is the fastest way to move one from "should work" to confirmed.
+The vendor list follows the device plugins in [HAMi](https://github.com/Project-HAMi/HAMi/tree/master/pkg/device), plus Apple and Intel. Every vendor is auto-detected. `--vendors nvidia,ascend` limits the probe. NVIDIA (an H100 SXM, driver 570.211.01, every metric checked against `nvidia-smi`) and Apple silicon (an M4 Pro) run on real hardware today. The rest are built against each vendor's documented tool output, with a fixture behind every parser. A hardware report through [an issue](https://github.com/mesutoezdil/siltide/issues/new/choose) is the fastest way to move one from "should work" to confirmed.
 
 | Vendor | Devices | Source | Processes |
 |---|---|---|---|
@@ -47,62 +47,62 @@ Every release and every push to `main` (pre-release `vX.Y.Z-main.N`) publishes b
 
 ```sh
 # Linux and macOS binary. checksums.txt sits next to it, and macOS
-# needs its quarantine flag cleared: xattr -d com.apple.quarantine accel
-tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/accel/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
-curl -fsSL -o accel "https://github.com/mesutoezdil/accel/releases/download/$tag/accel-linux-amd64"
-chmod +x accel && sudo mv accel /usr/local/bin/
+# needs its quarantine flag cleared: xattr -d com.apple.quarantine siltide
+tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
+curl -fsSL -o siltide "https://github.com/mesutoezdil/siltide/releases/download/$tag/siltide-linux-amd64"
+chmod +x siltide && sudo mv siltide /usr/local/bin/
 
 # deb or rpm, with completions and the man page
-sudo dpkg -i accel_*_amd64.deb   # or: sudo rpm -i accel-*.x86_64.rpm
+sudo dpkg -i siltide_*_amd64.deb   # or: sudo rpm -i siltide-*.x86_64.rpm
 
 # Homebrew (macOS and Linux)
-brew install mesutoezdil/tap/accel
+brew install mesutoezdil/tap/siltide
 
 # Go
-go install github.com/mesutoezdil/accel@latest
+go install github.com/mesutoezdil/siltide@latest
 
 # Container: headless collector with the API and /metrics on port 9800.
 # --pid=host lets it see host processes, not just its own container.
 docker run --rm -p 9800:9800 --gpus all --pid=host \
-  -e NVIDIA_DRIVER_CAPABILITIES=utility ghcr.io/mesutoezdil/accel:latest
+  -e NVIDIA_DRIVER_CAPABILITIES=utility ghcr.io/mesutoezdil/siltide:latest
 ```
 
-A [systemd unit](deploy/systemd/accel.service) and a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) are in `deploy/`.
+A [systemd unit](deploy/systemd/siltide.service) and a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) are in `deploy/`.
 
 ## Quick start
 
 ```sh
-accel                      # interactive terminal UI, vendors auto-detected
-accel --demo               # explore every view with a simulated fleet
-accel --once               # one snapshot on stdout (exit code 3 when nothing was found)
-accel --once --json        # the same snapshot as JSON
-accel --json               # a stream of JSON snapshots, one per refresh
-accel --listen :9800       # the UI plus /api and /metrics
-accel --service            # headless collector for fleets and Prometheus
-accel --remote https://node:9800 --token ...   # the UI attached to a remote accel
-accel --record run.jsonl   # record while running, accel --replay run.jsonl plays it back later
-accel --status             # one line for tmux, i3bar, or a shell prompt
+siltide                      # interactive terminal UI, vendors auto-detected
+siltide --demo               # explore every view with a simulated fleet
+siltide --once               # one snapshot on stdout (exit code 3 when nothing was found)
+siltide --once --json        # the same snapshot as JSON
+siltide --json               # a stream of JSON snapshots, one per refresh
+siltide --listen :9800       # the UI plus /api and /metrics
+siltide --service            # headless collector for fleets and Prometheus
+siltide --remote https://node:9800 --token ...   # the UI attached to a remote siltide
+siltide --record run.jsonl   # record while running, siltide --replay run.jsonl plays it back later
+siltide --status             # one line for tmux, i3bar, or a shell prompt
 ```
 
-`accel --status` prints, for the demo fleet: `17 dev · 59% util · 61% mem · 5035W · 74°C · health 98`.
+`siltide --status` prints, for the demo fleet: `17 dev · 59% util · 61% mem · 5035W · 74°C · health 98`.
 
 ## Configuration and more
 
-`~/.config/accel/config.yaml` or `--config path`, every key documented in [`examples/config.yaml`](examples/config.yaml). `accel --print-config` shows what is active. `?` in the terminal lists every tab, key, and filter.
+`~/.config/siltide/config.yaml` or `--config path`, every key documented in [`examples/config.yaml`](examples/config.yaml). `siltide --print-config` shows what is active. `?` in the terminal lists every tab, key, and filter.
 
-- **Fleets**: `accel --service --listen 0.0.0.0:9800 --gen-token` on each node, then list them under `nodes:` on the machine you watch from, or reach a vendor CLI over `ssh` without installing accel there. Off loopback, `--listen` needs TLS and a token unless `insecure: true`.
+- **Fleets**: `siltide --service --listen 0.0.0.0:9800 --gen-token` on each node, then list them under `nodes:` on the machine you watch from, or reach a vendor CLI over `ssh` without installing siltide there. Off loopback, `--listen` needs TLS and a token unless `insecure: true`.
 - **Kubernetes and Slurm**: pods and Slurm jobs show up next to processes on their own, from `/var/log/pods`, the kubelet pod-resources socket, or `scontrol`. The DaemonSet mounts what it needs.
-- **API and Prometheus**: `--listen` serves `GET /api/snapshot`, `/api/summary`, `/api/events`, `/api/history?id=<device id>&n=600`, and Prometheus `/metrics` (`accel_device_*` and `accel_host_*` gauges), bearer-token authenticated.
+- **API and Prometheus**: `--listen` serves `GET /api/snapshot`, `/api/summary`, `/api/events`, `/api/history?id=<device id>&n=600`, and Prometheus `/metrics` (`siltide_device_*` and `siltide_host_*` gauges), bearer-token authenticated.
 - **Alerts**: built-in ones for temperature, throttling, outliers, idle-allocated devices, row remaps, and link degradation, plus your own rules under `alerts:`.
 - **History**: plain-text hourly files, `--retention` to override how long, `--export` to CSV, `--record`/`--replay` to hand off an incident.
-- **Themes**: `amber`, `default`, `dracula`, `ice`, `mono`, `solarized`, or your own in `~/.config/accel/themes/` (see [`examples/themes/corp.yaml`](examples/themes/corp.yaml)).
+- **Themes**: `amber`, `default`, `dracula`, `ice`, `mono`, `solarized`, or your own in `~/.config/siltide/themes/` (see [`examples/themes/corp.yaml`](examples/themes/corp.yaml)).
 
 ## Building and testing
 
 Go 1.26 or newer, no cgo: NVML and the macOS frameworks load at run time through [purego](https://github.com/ebitengine/purego).
 
 ```sh
-make build          # bin/accel
+make build          # bin/siltide
 make check          # lint, race tests, and cross builds
 make demo           # the simulated fleet
 make test-fake-nvml  # the NVML ABI test against a fake driver (Linux, or Docker elsewhere)
@@ -114,7 +114,7 @@ CI runs gofmt, vet for Linux and macOS, race tests, golangci-lint, and cross bui
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add a vendor and what a change needs before it merges. Security reports: [SECURITY.md](SECURITY.md). Roadmap: the [issue list](https://github.com/mesutoezdil/accel/issues). Changes: [CHANGELOG.md](CHANGELOG.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add a vendor and what a change needs before it merges. Security reports: [SECURITY.md](SECURITY.md). Roadmap: the [issue list](https://github.com/mesutoezdil/siltide/issues). Changes: [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

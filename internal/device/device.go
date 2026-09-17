@@ -1,5 +1,5 @@
 // Package device is the vendor-neutral model of an accelerator: a GPU, NPU,
-// XPU, MLU, or any other card accel can read.
+// XPU, MLU, or any other card siltide can read.
 package device
 
 import (
@@ -227,7 +227,7 @@ type Process struct {
 	Job       string    `json:"job,omitempty"`      // Slurm job ID
 	Started   time.Time `json:"started,omitempty"`
 	// App carries metrics the workload published about itself
-	// (/run/accel/app/<pid>.json or $TMPDIR/accel-app-<pid>.json).
+	// (/run/siltide/app/<pid>.json or $TMPDIR/siltide-app-<pid>.json).
 	App map[string]float64 `json:"app,omitempty"`
 }
 

@@ -5,7 +5,7 @@ import (
 	"unsafe"
 )
 
-// NVML (the NVIDIA Management Library) is a C ABI: every struct accel hands
+// NVML (the NVIDIA Management Library) is a C ABI: every struct siltide hands
 // to the driver must match the header's layout byte for byte. The expected
 // sizes and offsets below are from `nvml.h` (v12 headers) on 64-bit platforms.
 func TestStructLayouts(t *testing.T) {

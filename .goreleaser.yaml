@@ -1,18 +1,18 @@
 version: 2
-project_name: accel
+project_name: siltide
 
 before:
   hooks:
     - mkdir -p build/extra
-    - sh -c "go run . --completion bash > build/extra/accel.bash"
-    - sh -c "go run . --completion zsh > build/extra/_accel"
-    - sh -c "go run . --completion fish > build/extra/accel.fish"
-    - sh -c "go run . --man > build/extra/accel.1"
+    - sh -c "go run . --completion bash > build/extra/siltide.bash"
+    - sh -c "go run . --completion zsh > build/extra/_siltide"
+    - sh -c "go run . --completion fish > build/extra/siltide.fish"
+    - sh -c "go run . --man > build/extra/siltide.1"
 
 builds:
-  - id: accel
+  - id: siltide
     main: .
-    binary: accel
+    binary: siltide
     env: [CGO_ENABLED=0]
     goos: [linux, darwin]
     goarch: [amd64, arm64]
@@ -23,58 +23,58 @@ builds:
 archives:
   - id: binaries
     formats: [binary]
-    name_template: "accel-{{ .Os }}-{{ .Arch }}"
+    name_template: "siltide-{{ .Os }}-{{ .Arch }}"
 
 checksum:
   name_template: checksums.txt
 
 nfpms:
   - id: packages
-    package_name: accel
+    package_name: siltide
     vendor: Mesut Oezdil
-    homepage: https://github.com/mesutoezdil/accel
+    homepage: https://github.com/mesutoezdil/siltide
     maintainer: Mesut Oezdil <versusfinem@gmail.com>
     description: Terminal monitor for GPUs, NPUs, and other AI accelerators.
     license: Apache-2.0
     formats: [deb, rpm]
     bindir: /usr/local/bin
     contents:
-      - src: deploy/systemd/accel.service
-        dst: /lib/systemd/system/accel.service
+      - src: deploy/systemd/siltide.service
+        dst: /lib/systemd/system/siltide.service
       - src: examples/config.yaml
-        dst: /etc/accel/config.yaml
+        dst: /etc/siltide/config.yaml
         type: config|noreplace
-      - src: build/extra/accel.bash
-        dst: /usr/share/bash-completion/completions/accel
-      - src: build/extra/_accel
-        dst: /usr/share/zsh/site-functions/_accel
-      - src: build/extra/accel.fish
-        dst: /usr/share/fish/vendor_completions.d/accel.fish
-      - src: build/extra/accel.1
-        dst: /usr/share/man/man1/accel.1
+      - src: build/extra/siltide.bash
+        dst: /usr/share/bash-completion/completions/siltide
+      - src: build/extra/_siltide
+        dst: /usr/share/zsh/site-functions/_siltide
+      - src: build/extra/siltide.fish
+        dst: /usr/share/fish/vendor_completions.d/siltide.fish
+      - src: build/extra/siltide.1
+        dst: /usr/share/man/man1/siltide.1
 
 dockers:
-  - image_templates: ["ghcr.io/mesutoezdil/accel:{{ .Version }}-amd64"]
+  - image_templates: ["ghcr.io/mesutoezdil/siltide:{{ .Version }}-amd64"]
     goarch: amd64
     dockerfile: Dockerfile.release
     use: buildx
     build_flag_templates: ["--platform=linux/amd64"]
-  - image_templates: ["ghcr.io/mesutoezdil/accel:{{ .Version }}-arm64"]
+  - image_templates: ["ghcr.io/mesutoezdil/siltide:{{ .Version }}-arm64"]
     goarch: arm64
     dockerfile: Dockerfile.release
     use: buildx
     build_flag_templates: ["--platform=linux/arm64"]
 
 docker_manifests:
-  - name_template: ghcr.io/mesutoezdil/accel:{{ .Version }}
+  - name_template: ghcr.io/mesutoezdil/siltide:{{ .Version }}
     image_templates:
-      - ghcr.io/mesutoezdil/accel:{{ .Version }}-amd64
-      - ghcr.io/mesutoezdil/accel:{{ .Version }}-arm64
-  - name_template: ghcr.io/mesutoezdil/accel:latest
+      - ghcr.io/mesutoezdil/siltide:{{ .Version }}-amd64
+      - ghcr.io/mesutoezdil/siltide:{{ .Version }}-arm64
+  - name_template: ghcr.io/mesutoezdil/siltide:latest
     skip_push: "{{ .Prerelease }}"
     image_templates:
-      - ghcr.io/mesutoezdil/accel:{{ .Version }}-amd64
-      - ghcr.io/mesutoezdil/accel:{{ .Version }}-arm64
+      - ghcr.io/mesutoezdil/siltide:{{ .Version }}-amd64
+      - ghcr.io/mesutoezdil/siltide:{{ .Version }}-arm64
 
 release:
   prerelease: auto
@@ -82,10 +82,10 @@ release:
     Single static binaries for Linux and macOS, deb and rpm packages, a
     container image, and a Homebrew tap. Install:
 
-        curl -fLo accel https://github.com/mesutoezdil/accel/releases/download/{{ .Tag }}/accel-linux-amd64
-        chmod +x accel && sudo install accel /usr/local/bin/
+        curl -fLo siltide https://github.com/mesutoezdil/siltide/releases/download/{{ .Tag }}/siltide-linux-amd64
+        chmod +x siltide && sudo install siltide /usr/local/bin/
 
-    On macOS clear the quarantine flag first: `xattr -d com.apple.quarantine accel`.
+    On macOS clear the quarantine flag first: `xattr -d com.apple.quarantine siltide`.
 
 changelog:
   use: git

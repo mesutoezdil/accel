@@ -1,4 +1,4 @@
-// accel monitors GPUs, NPUs, and other AI accelerators from the terminal.
+// siltide monitors GPUs, NPUs, and other AI accelerators from the terminal.
 package main
 
 import (
@@ -18,20 +18,20 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/collect"
-	"github.com/mesutoezdil/accel/internal/config"
-	"github.com/mesutoezdil/accel/internal/history"
-	"github.com/mesutoezdil/accel/internal/provider"
-	"github.com/mesutoezdil/accel/internal/provider/apple"
-	"github.com/mesutoezdil/accel/internal/provider/dcgm"
-	"github.com/mesutoezdil/accel/internal/provider/nvidia"
-	"github.com/mesutoezdil/accel/internal/provider/remote"
-	"github.com/mesutoezdil/accel/internal/provider/replay"
-	"github.com/mesutoezdil/accel/internal/provider/sim"
-	"github.com/mesutoezdil/accel/internal/provider/smi"
-	"github.com/mesutoezdil/accel/internal/provider/sshp"
-	"github.com/mesutoezdil/accel/internal/server"
-	"github.com/mesutoezdil/accel/internal/tui"
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/config"
+	"github.com/mesutoezdil/siltide/internal/history"
+	"github.com/mesutoezdil/siltide/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/provider/apple"
+	"github.com/mesutoezdil/siltide/internal/provider/dcgm"
+	"github.com/mesutoezdil/siltide/internal/provider/nvidia"
+	"github.com/mesutoezdil/siltide/internal/provider/remote"
+	"github.com/mesutoezdil/siltide/internal/provider/replay"
+	"github.com/mesutoezdil/siltide/internal/provider/sim"
+	"github.com/mesutoezdil/siltide/internal/provider/smi"
+	"github.com/mesutoezdil/siltide/internal/provider/sshp"
+	"github.com/mesutoezdil/siltide/internal/server"
+	"github.com/mesutoezdil/siltide/internal/tui"
 )
 
 // version is set by the release build.
@@ -45,7 +45,7 @@ const (
 )
 
 func main() {
-	fs := flag.NewFlagSet("accel", flag.ContinueOnError)
+	fs := flag.NewFlagSet("siltide", flag.ContinueOnError)
 	cfgPath := fs.String("config", "", "config file (default "+config.Path()+")")
 	interval := fs.Duration("interval", 0, "refresh interval (overrides refresh in the config)")
 	demo := fs.Bool("demo", false, "show a simulated mixed fleet instead of real hardware")
@@ -55,7 +55,7 @@ func main() {
 	only := fs.String("vendors", "", "comma-separated vendors to probe (default: config, then all)")
 	listen := fs.String("listen", "", "serve /api and /metrics on this address, e.g. 127.0.0.1:9800 (overrides the config)")
 	service := fs.Bool("service", false, "run headless: collect, keep history, and serve; needs --listen or listen in the config")
-	remoteURL := fs.String("remote", "", "watch a remote accel service instead of local hardware, e.g. https://node:9800")
+	remoteURL := fs.String("remote", "", "watch a remote siltide service instead of local hardware, e.g. https://node:9800")
 	token := fs.String("token", "", "bearer token for --remote or --listen (overrides the config)")
 	genToken := fs.Bool("gen-token", false, "print a fresh API token and its SHA-256 digest and exit")
 	noHistory := fs.Bool("no-history", false, "keep no history on disk")
@@ -63,7 +63,7 @@ func main() {
 	theme := fs.String("theme", "", "theme name (overrides the config)")
 	listThemes := fs.Bool("list-themes", false, "list built-in and user themes and exit")
 	printConfig := fs.Bool("print-config", false, "print the effective configuration and exit")
-	debug := fs.Bool("debug", false, "log collector activity to --log-file (default state dir/accel.log)")
+	debug := fs.Bool("debug", false, "log collector activity to --log-file (default state dir/siltide.log)")
 	logFile := fs.String("log-file", "", "debug log file")
 	showVersion := fs.Bool("version", false, "print the version and exit")
 	recordPath := fs.String("record", "", "append every snapshot as JSON to this file (replay with --replay)")
@@ -73,18 +73,18 @@ func main() {
 	completionShell := fs.String("completion", "", "print a completion script for bash, zsh, or fish and exit")
 	man := fs.Bool("man", false, "print the manual page (roff) and exit")
 	fs.Usage = func() {
-		_, _ = fmt.Fprintf(fs.Output(), `accel %s: GPU, NPU, and AI accelerator monitor for the terminal
+		_, _ = fmt.Fprintf(fs.Output(), `siltide %s: GPU, NPU, and AI accelerator monitor for the terminal
 
 Usage:
-  accel                      interactive terminal UI (TUI), vendors auto-detected
-  accel --demo               explore every view with a simulated fleet
-  accel --once [--json]      one snapshot on stdout
-  accel --json               stream one JSON snapshot per refresh
-  accel --listen :9800       TUI plus API and Prometheus /metrics
-  accel --service            headless collector for fleets and Prometheus
-  accel --remote URL         TUI attached to another accel's --listen
-  accel --record f.jsonl     record while running; accel --replay f.jsonl plays it back
-  accel --status             one line for tmux, i3bar, or a prompt
+  siltide                      interactive terminal UI (TUI), vendors auto-detected
+  siltide --demo               explore every view with a simulated fleet
+  siltide --once [--json]      one snapshot on stdout
+  siltide --json               stream one JSON snapshot per refresh
+  siltide --listen :9800       TUI plus API and Prometheus /metrics
+  siltide --service            headless collector for fleets and Prometheus
+  siltide --remote URL         TUI attached to another siltide's --listen
+  siltide --record f.jsonl     record while running; siltide --replay f.jsonl plays it back
+  siltide --status             one line for tmux, i3bar, or a prompt
 
 Vendors: %s
 
@@ -100,7 +100,7 @@ Flags:
 	}
 	switch {
 	case *showVersion:
-		fmt.Println("accel", version)
+		fmt.Println("siltide", version)
 		return
 	case *completionShell != "":
 		script, err := completion(*completionShell)
@@ -172,7 +172,7 @@ Flags:
 	if *debug || cfg.Log != "" {
 		logPath := cfg.Log
 		if logPath == "" {
-			logPath = filepath.Join(config.StateDir(), "accel.log")
+			logPath = filepath.Join(config.StateDir(), "siltide.log")
 		}
 		_ = os.MkdirAll(filepath.Dir(logPath), 0o755)
 		f, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o644)
@@ -181,7 +181,7 @@ Flags:
 		}
 		defer func() { _ = f.Close() }()
 		log.SetOutput(f)
-		log.Printf("accel %s starting, config %s", version, path)
+		log.Printf("siltide %s starting, config %s", version, path)
 	} else {
 		log.SetOutput(nullWriter{})
 	}
@@ -256,7 +256,7 @@ Flags:
 	defer stop()
 	th, terr := tui.LoadTheme(cfg.Theme, filepath.Join(config.ConfigDir(), "themes"), cfg.Colors, cfg.Transparent)
 	if terr != nil {
-		fmt.Fprintln(os.Stderr, "accel:", terr, "(using default)")
+		fmt.Fprintln(os.Stderr, "siltide:", terr, "(using default)")
 	}
 
 	if *status {
@@ -303,7 +303,7 @@ Flags:
 	go eng.Run(ctx)
 	switch {
 	case *service:
-		fmt.Fprintf(os.Stderr, "accel %s serving on %s\n", version, cfg.Listen)
+		fmt.Fprintf(os.Stderr, "siltide %s serving on %s\n", version, cfg.Listen)
 		<-ctx.Done()
 	case *asJSON:
 		ch := eng.Changed()
@@ -376,6 +376,6 @@ func providers(only []string) ([]provider.Provider, error) {
 }
 
 func fail(err error) {
-	fmt.Fprintln(os.Stderr, "accel:", err)
+	fmt.Fprintln(os.Stderr, "siltide:", err)
 	os.Exit(exitError)
 }

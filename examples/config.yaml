@@ -1,6 +1,6 @@
-# accel configuration. Copy to `~/.config/accel/config.yaml` (or pass `--config`).
+# siltide configuration. Copy to `~/.config/siltide/config.yaml` (or pass `--config`).
 # Every key is optional; these are the defaults unless noted. Unknown keys
-# are rejected with their line number. `accel --print-config` shows the
+# are rejected with their line number. `siltide --print-config` shows the
 # effective result.
 
 refresh: 1s            # sampling interval
@@ -9,7 +9,7 @@ vendors: []            # probe every vendor; or e.g. [nvidia, ascend]
 history:
   keep: 24h            # how far back the time machine goes
   resolution: 5s       # one point per device per resolution
-  persist: true        # write to ~/.local/state/accel/history
+  persist: true        # write to ~/.local/state/siltide/history
   dir: ""              # override the history directory
   max_disk_mb: 256     # oldest hourly files go first
 
@@ -21,7 +21,7 @@ thresholds:
   outlier_delta: 20    # percentage points below siblings: outlier
 
 listen: ""             # "127.0.0.1:9800" serves /api/snapshot, /api/summary, /api/events, /api/history, and /metrics
-token: ""              # bearer token, or "sha256:<digest>" from `accel --gen-token` so the plaintext never sits here
+token: ""              # bearer token, or "sha256:<digest>" from `siltide --gen-token` so the plaintext never sits here
 tls:                   # required to listen outside loopback (unless insecure: true)
   cert: ""             # server certificate (PEM)
   key: ""              # server key (PEM)
@@ -30,11 +30,11 @@ insecure: false        # allow a non-loopback listen without TLS and a token
 
 nodes: []              # remote sources shown in the same fleet
 # nodes:
-#   - name: gpu-node-01              # another accel with --listen
+#   - name: gpu-node-01              # another siltide with --listen
 #     url: https://gpu-node-01:9800
-#     token_file: ~/.config/accel/tokens/gpu-node-01
-#     ca: ~/.config/accel/ca.pem
-#   - name: hpc-07                   # no accel there: vendor tools over ssh
+#     token_file: ~/.config/siltide/tokens/gpu-node-01
+#     ca: ~/.config/siltide/ca.pem
+#   - name: hpc-07                   # no siltide there: vendor tools over ssh
 #     ssh: root@hpc-07
 #     key: ~/.ssh/id_ed25519
 
@@ -71,7 +71,7 @@ alerts:
 carbon:
   g_per_kwh: 0         # grid intensity of your region in gCO2/kWh; 0 hides carbon
 
-theme: default         # amber, default, dracula, ice, mono, solarized, or a file in ~/.config/accel/themes
+theme: default         # amber, default, dracula, ice, mono, solarized, or a file in ~/.config/siltide/themes
 colors: {}             # role overrides; roles: accent text dim title border ok mid warn crit info
                        #   bar_low bar_mid bar_high bar_track spark tab_active_bg tab_active_fg selection_bg selection_fg
 transparent: false     # keep the terminal background

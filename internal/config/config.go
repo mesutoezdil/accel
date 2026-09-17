@@ -1,4 +1,4 @@
-// Package config loads accel's YAML configuration.
+// Package config loads siltide's YAML configuration.
 package config
 
 import (
@@ -13,7 +13,7 @@ import (
 	"go.yaml.in/yaml/v3"
 )
 
-// Config is the file at `~/.config/accel/config.yaml` (or `--config`).
+// Config is the file at `~/.config/siltide/config.yaml` (or `--config`).
 type Config struct {
 	Refresh time.Duration `yaml:"refresh"` // sampling interval
 	Vendors []string      `yaml:"vendors"` // empty: probe every vendor
@@ -46,7 +46,7 @@ type Config struct {
 	// Insecure allows `--listen` outside loopback without TLS and a token.
 	Insecure bool `yaml:"insecure"`
 
-	Nodes []Node `yaml:"nodes"` // remote accel services or SSH hosts in the fleet
+	Nodes []Node `yaml:"nodes"` // remote siltide services or SSH hosts in the fleet
 
 	Kubernetes struct {
 		Kubeconfig string `yaml:"kubeconfig"` // outside the cluster; "" uses in-cluster or ~/.kube/config
@@ -71,7 +71,7 @@ type Config struct {
 		GramsPerKWh float64 `yaml:"g_per_kwh"` // grid intensity; 0 hides carbon
 	} `yaml:"carbon"`
 
-	Theme       string            `yaml:"theme"`       // built-in name or a file under ~/.config/accel/themes
+	Theme       string            `yaml:"theme"`       // built-in name or a file under ~/.config/siltide/themes
 	Colors      map[string]string `yaml:"colors"`      // role: color, overrides the theme
 	Transparent bool              `yaml:"transparent"` // keep the terminal background
 	Keys        map[string]string `yaml:"keys"`        // action: key
@@ -89,8 +89,8 @@ type Rule struct {
 	Severity string        `yaml:"severity"` // info, warning, critical (default warning)
 }
 
-// Node is a remote source: an accel service (url) or an SSH host whose
-// vendor tools accel runs itself (ssh).
+// Node is a remote source: an siltide service (url) or an SSH host whose
+// vendor tools siltide runs itself (ssh).
 type Node struct {
 	Name      string `yaml:"name"`
 	URL       string `yaml:"url"`
@@ -123,25 +123,25 @@ func Default() Config {
 
 // Path is the default config file location.
 func Path() string {
-	if d := os.Getenv("ACCEL_CONFIG"); d != "" {
+	if d := os.Getenv("SILTIDE_CONFIG"); d != "" {
 		return d
 	}
 	return filepath.Join(ConfigDir(), "config.yaml")
 }
 
-// ConfigDir is ~/.config/accel (XDG aware).
+// ConfigDir is ~/.config/siltide (XDG aware).
 func ConfigDir() string {
 	base := os.Getenv("XDG_CONFIG_HOME")
 	if base == "" {
 		home, _ := os.UserHomeDir()
 		base = filepath.Join(home, ".config")
 	}
-	return filepath.Join(base, "accel")
+	return filepath.Join(base, "siltide")
 }
 
 // StateDir is where history lives.
 func StateDir() string {
-	if d := os.Getenv("ACCEL_STATE_DIR"); d != "" {
+	if d := os.Getenv("SILTIDE_STATE_DIR"); d != "" {
 		return d
 	}
 	base := os.Getenv("XDG_STATE_HOME")
@@ -149,7 +149,7 @@ func StateDir() string {
 		home, _ := os.UserHomeDir()
 		base = filepath.Join(home, ".local", "state")
 	}
-	return filepath.Join(base, "accel")
+	return filepath.Join(base, "siltide")
 }
 
 // Load reads path over the defaults. A missing default file is fine; a
@@ -175,12 +175,12 @@ func Load(path string, explicit bool) (Config, error) {
 	return c, c.Validate()
 }
 
-// env applies `ACCEL_TOKEN` and `ACCEL_LISTEN`, useful in containers.
+// env applies `SILTIDE_TOKEN` and `SILTIDE_LISTEN`, useful in containers.
 func (c *Config) env() error {
-	if v := os.Getenv("ACCEL_TOKEN"); v != "" {
+	if v := os.Getenv("SILTIDE_TOKEN"); v != "" {
 		c.Token = v
 	}
-	if v := os.Getenv("ACCEL_LISTEN"); v != "" {
+	if v := os.Getenv("SILTIDE_LISTEN"); v != "" {
 		c.Listen = v
 	}
 	return nil

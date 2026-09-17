@@ -1,5 +1,5 @@
 /*
- * A stand-in for `libnvidia-ml.so.1` with the exact C signatures accel binds,
+ * A stand-in for `libnvidia-ml.so.1` with the exact C signatures siltide binds,
  * so the purego bindings and struct layouts can be exercised on any Linux
  * box without a GPU. Build: `cc -shared -fPIC -o libnvidia-ml.so.1 fakenvml.c`
  *

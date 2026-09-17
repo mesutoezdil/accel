@@ -4,6 +4,6 @@ FROM alpine:3.20
 # The binary sits at / so a host /usr mounted over the container's /usr
 # (for vendor libraries and CLIs) cannot hide it.
 RUN apk add --no-cache gcompat
-COPY accel /accel
-ENTRYPOINT ["/accel"]
+COPY siltide /siltide
+ENTRYPOINT ["/siltide"]
 CMD ["--service", "--listen", ":9800", "--insecure"]

@@ -8,7 +8,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // Thresholds tune the rules.

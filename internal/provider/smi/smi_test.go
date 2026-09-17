@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 const mib = 1 << 20

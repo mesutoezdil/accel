@@ -3,7 +3,7 @@ package cost
 import (
 	"testing"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 func TestSummarize(t *testing.T) {

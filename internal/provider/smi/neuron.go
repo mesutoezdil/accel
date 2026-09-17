@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // Neuron reads AWS Inferentia and Trainium devices. `neuron-ls -j` gives the
@@ -36,7 +36,7 @@ type neuronDev struct {
 	Cores  []int  `json:"neuroncore_ids"`
 }
 
-// neuronReport is the part of a `neuron-monitor` report accel uses.
+// neuronReport is the part of a `neuron-monitor` report siltide uses.
 type neuronReport struct {
 	Runtimes []struct {
 		Report struct {

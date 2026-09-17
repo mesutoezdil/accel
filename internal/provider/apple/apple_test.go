@@ -3,7 +3,7 @@ package apple
 import (
 	"testing"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 func TestParse(t *testing.T) {

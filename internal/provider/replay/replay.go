@@ -1,4 +1,4 @@
-// Package replay drives accel from a recording made with `--record`: the
+// Package replay drives siltide from a recording made with `--record`: the
 // JSON stream of snapshots becomes a provider that hands out the recorded
 // devices at their original cadence. Share the file and the other side
 // sees what you saw.
@@ -14,8 +14,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/provider"
 )
 
 // frame is the part of a snapshot a replay needs.

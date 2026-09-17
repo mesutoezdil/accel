@@ -16,7 +16,7 @@ import (
 
 // The kubelet's pod-resources API tells which pod holds which device even
 // when nothing is running on it: a pod that requested a device and sleeps
-// still owns it. It is gRPC over a unix socket; accel speaks just enough
+// still owns it. It is gRPC over a unix socket; siltide speaks just enough
 // HTTP/2 and protobuf to call List, so no gRPC dependency is pulled in.
 
 // Allocation is one device handed to a container.
@@ -41,7 +41,7 @@ type PodResources struct {
 
 // NewPodResources returns a client; nil when the socket does not exist.
 func NewPodResources() *PodResources {
-	for _, s := range []string{os.Getenv("ACCEL_POD_RESOURCES_SOCKET"), "/var/lib/kubelet/pod-resources/kubelet.sock"} {
+	for _, s := range []string{os.Getenv("SILTIDE_POD_RESOURCES_SOCKET"), "/var/lib/kubelet/pod-resources/kubelet.sock"} {
 		if s == "" {
 			continue
 		}

@@ -10,12 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/provider"
 )
 
 // TestFakeNVML builds `testdata/fakenvml.c` into `libnvidia-ml.so.1` and
-// runs the real bindings against it: every struct accel passes through
+// runs the real bindings against it: every struct siltide passes through
 // purego must match the C ABI or the values come back wrong. Skipped without
 // a C compiler.
 func TestFakeNVML(t *testing.T) {

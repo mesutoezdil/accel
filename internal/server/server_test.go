@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mesutoezdil/accel/internal/collect"
-	"github.com/mesutoezdil/accel/internal/config"
-	"github.com/mesutoezdil/accel/internal/provider"
-	"github.com/mesutoezdil/accel/internal/provider/sim"
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/config"
+	"github.com/mesutoezdil/siltide/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/provider/sim"
 )
 
 func TestServer(t *testing.T) {
@@ -48,7 +48,7 @@ func TestServer(t *testing.T) {
 		t.Fatalf("healthz needs no token: %d", code)
 	}
 	code, body := get("/metrics", "secret")
-	if code != http.StatusOK || !strings.Contains(body, `accel_device_util_percent{node=`) || !strings.Contains(body, "accel_device_health_score") {
+	if code != http.StatusOK || !strings.Contains(body, `siltide_device_util_percent{node=`) || !strings.Contains(body, "siltide_device_health_score") {
 		t.Fatalf("metrics %d %s", code, body[:min(len(body), 300)])
 	}
 	if code, body := get("/api/snapshot", "secret"); code != http.StatusOK || !strings.Contains(body, `"devices"`) {

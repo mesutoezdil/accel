@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 func dev(util float64) device.Device {

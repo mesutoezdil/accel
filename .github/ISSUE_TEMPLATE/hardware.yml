@@ -1,5 +1,5 @@
 name: Hardware report
-description: You ran accel on real accelerators; tell us what worked and what did not
+description: You ran siltide on real accelerators; tell us what worked and what did not
 labels: [hardware]
 body:
   - type: dropdown

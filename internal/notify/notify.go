@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/events"
+	"github.com/mesutoezdil/siltide/internal/events"
 )
 
 // Options are the alert outputs from the config.
@@ -92,7 +92,7 @@ func (n *Notifier) deliver(ctx context.Context, alerts []events.Event) {
 		for _, a := range alerts {
 			lines = append(lines, fmt.Sprintf("%s *%s* #%s %s", icon(a.Severity), a.Severity, a.Label, a.Message))
 		}
-		if e := n.post(ctx, n.o.Slack, map[string]any{"text": fmt.Sprintf("accel on %s\n%s", n.o.Host, strings.Join(lines, "\n"))}); e != nil {
+		if e := n.post(ctx, n.o.Slack, map[string]any{"text": fmt.Sprintf("siltide on %s\n%s", n.o.Host, strings.Join(lines, "\n"))}); e != nil {
 			err = e
 		}
 	}
@@ -100,7 +100,7 @@ func (n *Notifier) deliver(ctx context.Context, alerts []events.Event) {
 		var payload []map[string]any
 		for _, a := range alerts {
 			payload = append(payload, map[string]any{
-				"labels":      map[string]string{"alertname": "accel_" + a.Kind, "severity": string(a.Severity), "instance": n.o.Host, "device": a.Device, "label": a.Label},
+				"labels":      map[string]string{"alertname": "siltide_" + a.Kind, "severity": string(a.Severity), "instance": n.o.Host, "device": a.Device, "label": a.Label},
 				"annotations": map[string]string{"summary": a.Message},
 				"startsAt":    a.Time.UTC().Format(time.RFC3339),
 			})
