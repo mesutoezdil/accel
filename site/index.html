@@ -12,6 +12,7 @@
   --text:#ece6db; --dim:#9c9186; --dimmer:#5c5349;
   --accent:#ff8a3d; --accent2:#ffb35c; --nav-bg:rgba(11,10,9,.86);
   --grid-line:rgba(236,230,219,.05); --frame-shadow:0 30px 60px -30px rgba(0,0,0,.7);
+  --divider:rgba(236,230,219,.08);
   --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 }
 html[data-mode="light"]{
@@ -19,6 +20,7 @@ html[data-mode="light"]{
   --text:#241f19; --dim:#6b6156; --dimmer:#a89c8c;
   --accent2:#d9650f; --nav-bg:rgba(247,244,239,.86);
   --grid-line:rgba(36,31,25,.06); --frame-shadow:0 20px 40px -24px rgba(36,31,25,.18);
+  --divider:rgba(36,31,25,.09);
 }
 *{box-sizing:border-box}
 html{background:var(--bg)}
@@ -46,17 +48,17 @@ h2{font-size:1.5rem;margin:0 0 .3em}
 .lede{color:var(--dim);margin:0 0 2rem}
 section{padding:64px 0}
 section:last-of-type{padding-bottom:24px}
-section+section{border-top:1px solid var(--border)}
+section+section{border-top:1px solid var(--divider)}
 
 nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--nav-bg);
   backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
 nav .wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;height:56px;max-width:1040px}
-.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap;justify-self:start}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap;justify-self:start;grid-column:1}
 .brand img{width:22px;height:22px}
 nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem;white-space:nowrap}
 nav a.link:hover{color:var(--text)}
-.nav-sections{display:flex;gap:20px;justify-self:center}
-.nav-right{display:flex;align-items:center;gap:16px;min-width:0;justify-self:end}
+.nav-sections{display:flex;gap:20px;justify-self:center;grid-column:2}
+.nav-right{display:flex;align-items:center;gap:16px;min-width:0;justify-self:end;grid-column:3}
 .lang-btn,.mode-btn{font-family:var(--mono);font-size:.8rem;background:none;border:1px solid var(--border);
   color:var(--dim);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap;flex:none}
 .lang-btn:hover,.mode-btn:hover{color:var(--text);border-color:var(--dimmer)}
