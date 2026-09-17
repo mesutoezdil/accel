@@ -7,6 +7,18 @@ import "github.com/mesutoezdil/accel/internal/device"
 // everywhere.
 
 type memory struct{ Total, Free, Used uint64 }
+
+// memoryV2 mirrors nvmlMemory_v2_t. Newer drivers count a reserved region
+// (row-remap and similar bookkeeping) as part of memory.Used in the plain
+// nvmlMemory_t struct, so Total keeps equaling Used+Free; the v2 call keeps
+// Reserved apart, which is the number `nvidia-smi` shows as used. Version
+// must be set to sizeof(nvmlMemory_v2_t)|(2<<24) before the call.
+type memoryV2 struct {
+	Version                     uint32
+	_                           uint32 // padding to align the uint64 fields
+	Total, Reserved, Free, Used uint64
+}
+
 type utilization struct{ GPU, Memory uint32 }
 
 // pciInfo mirrors nvmlPciInfo_t (v3): 16-byte legacy id, 5 u32s, 32-byte id.

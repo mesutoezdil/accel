@@ -32,8 +32,10 @@ var lib struct {
 	uuid     func(uintptr, *byte, uint32) int32
 	util     func(uintptr, *utilization) int32
 	meminfo  func(uintptr, *memory) int32
-	temp     func(uintptr, uint32, *uint32) int32
-	power    func(uintptr, *uint32) int32
+	// optional; preferred over meminfo when the driver has it (see types.go)
+	meminfoV2 func(uintptr, *memoryV2) int32
+	temp      func(uintptr, uint32, *uint32) int32
+	power     func(uintptr, *uint32) int32
 	// optional
 	pci      func(uintptr, *pciInfo) int32
 	powerCap func(uintptr, *uint32) int32
@@ -105,6 +107,8 @@ const (
 	fieldNvlinkTx = 90 // NVML_FI_DEV_NVLINK_THROUGHPUT_DATA_TX, KiB
 	fieldNvlinkRx = 91
 	fieldMemTemp  = 82 // NVML_FI_DEV_MEMORY_TEMP
+
+	nvmlMemoryV2Version = 40 | (2 << 24) // sizeof(nvmlMemory_v2_t) is 40 bytes
 )
 
 // libName is the library to load; tests point it at a fake.
@@ -138,6 +142,7 @@ func load() error {
 				return
 			}
 		}
+		bind(h, &lib.meminfoV2, "nvmlDeviceGetMemoryInfo_v2")
 		bind(h, &lib.pci, "nvmlDeviceGetPciInfo_v3")
 		bind(h, &lib.powerCap, "nvmlDeviceGetEnforcedPowerLimit")
 		bind(h, &lib.clock, "nvmlDeviceGetClockInfo")
@@ -198,6 +203,25 @@ func Provider() provider.Provider {
 	}
 }
 
+// readMemory returns used and total device memory in bytes. It prefers
+// nvmlDeviceGetMemoryInfo_v2, whose Used excludes the reserved region a
+// modern driver carves out; the plain call folds that region into Used to
+// keep its own Total = Used + Free, which overstates what a workload
+// actually holds by several hundred megabytes on an otherwise idle H100.
+func readMemory(h uintptr) (used, total uint64, ok bool) {
+	if lib.meminfoV2 != nil {
+		m := memoryV2{Version: nvmlMemoryV2Version}
+		if lib.meminfoV2(h, &m) == rcOK {
+			return m.Used, m.Total, true
+		}
+	}
+	var m memory
+	if lib.meminfo(h, &m) == rcOK {
+		return m.Used, m.Total, true
+	}
+	return 0, 0, false
+}
+
 func cstr(b []byte) string {
 	if i := strings.IndexByte(string(b), 0); i >= 0 {
 		b = b[:i]
@@ -243,9 +267,8 @@ func read(context.Context) ([]device.Device, error) {
 		if lib.util(h, &u) == rcOK {
 			m[device.Util], m[device.MemBandwidth] = float64(u.GPU), float64(u.Memory)
 		}
-		var mem memory
-		if lib.meminfo(h, &mem) == rcOK {
-			m[device.MemUsed], m[device.MemTotal] = float64(mem.Used), float64(mem.Total)
+		if used, total, ok := readMemory(h); ok {
+			m[device.MemUsed], m[device.MemTotal] = float64(used), float64(total)
 		}
 		var v32 uint32
 		if lib.temp(h, tempGPU, &v32) == rcOK {
@@ -606,9 +629,8 @@ func partitions(h uintptr, parent device.Device) []device.Device {
 		}
 		p := device.New(device.NVIDIA, int(i), name, uuid, parent.Bus)
 		p.Source, p.Parent = "nvml", parent.ID
-		var mem memory
-		if lib.meminfo(mh, &mem) == rcOK {
-			p.Metrics[device.MemUsed], p.Metrics[device.MemTotal] = float64(mem.Used), float64(mem.Total)
+		if used, total, ok := readMemory(mh); ok {
+			p.Metrics[device.MemUsed], p.Metrics[device.MemTotal] = float64(used), float64(total)
 		}
 		var u utilization
 		if lib.util(mh, &u) == rcOK { // newer drivers answer for instances
