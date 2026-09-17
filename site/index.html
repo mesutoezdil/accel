@@ -15,7 +15,7 @@
 }
 /* Accents for the theme preview follow the six built-in TUI palettes
    (internal/tui/theme.go). default, amber, and ice use bare ANSI slots
-   with no fixed hex there, so those three are representative; dracula
+   with no fixed hex there, so those three are representative. dracula
    and solarized are the literal hex values accel already ships. */
 html[data-theme="amber"]{ --accent:#f5a623; --accent2:#ffcf7a; --panel2:#171008; }
 html[data-theme="ice"]{ --accent:#2fb2e0; --accent2:#8fdcf5; --panel2:#0b1a1f; }
@@ -190,11 +190,11 @@ footer a:hover{color:var(--text)}
     <h2>Why accel</h2>
     <p class="lede">These are the questions that come up when a job is slow, a device sits idle, or a bill looks wrong. Each one points at a tab.</p>
     <div class="grid">
-      <div class="card"><span class="tab">Overview</span><p class="q">Which device is idle while a pod still holds it?</p><p>Fleet totals and per-device state land on one screen; idle-allocated devices get flagged there too.</p></div>
+      <div class="card"><span class="tab">Overview</span><p class="q">Which device is idle while a pod still holds it?</p><p>Fleet totals and per-device state land on one screen. Idle-allocated devices get flagged there too.</p></div>
       <div class="card"><span class="tab">Workloads</span><p class="q">Which workload is wasting spend?</p><p>Set your own price per hour, and accel turns held devices into a spend and waste figure per workload.</p></div>
       <div class="card"><span class="tab">Kubernetes · Nodes</span><p class="q">Which pod, and which Slurm job, owns this device?</p><p>A process traces back through its container to the pod and the workload. Slurm jobs get the same treatment.</p></div>
       <div class="card"><span class="tab">Links</span><p class="q">Is this device isolated on the fabric?</p><p>PCIe width, NVLink state, and a topology matrix show who shares a switch with whom.</p></div>
-      <div class="card"><span class="tab">History</span><p class="q">What happened 15 minutes ago?</p><p>Every metric can be scrubbed back through the window it kept; events sit right on the timeline.</p></div>
+      <div class="card"><span class="tab">History</span><p class="q">What happened 15 minutes ago?</p><p>Every metric can be scrubbed back through the window it kept. Events sit right on the timeline.</p></div>
       <div class="card"><span class="tab">Health</span><p class="q">Is this reading real, or a guess?</p><p>A health score comes with the reasons behind it. What accel could not measure shows up as N/A, never as zero.</p></div>
     </div>
   </div>
@@ -248,7 +248,7 @@ footer a:hover{color:var(--text)}
 <section id="vendors">
   <div class="wrap">
     <h2>15 vendors</h2>
-    <p class="lede">NVIDIA and Apple silicon run on real hardware today; the rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
+    <p class="lede">NVIDIA and Apple silicon run on real hardware today. The rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
     <div class="tablewrap">
     <table>
       <tr><th>Vendor</th><th>Source</th></tr>
@@ -313,7 +313,7 @@ chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
 <footer>
   <div class="wrap">
     <div class="row">
-      <span>Apache-2.0. accel is an independent project; the vendor names above belong to their own companies.</span>
+      <span>Apache-2.0. accel is an independent project. The vendor names above belong to their own companies.</span>
       <span>
         <a href="https://github.com/mesutoezdil/accel">GitHub</a> ·
         <a href="https://github.com/mesutoezdil/accel/issues">Issues</a> ·
