@@ -66,7 +66,13 @@ func (c *Cache) Lookup(pid int) Info {
 	return info
 }
 
+// readOS replaces the `/proc` reader on systems without one.
+var readOS func(pid int) Info
+
 func read(root string, pid int) Info {
+	if readOS != nil && root == "/proc" {
+		return readOS(pid)
+	}
 	dir := root + "/" + strconv.Itoa(pid)
 	var info Info
 	if b, err := os.ReadFile(dir + "/cmdline"); err == nil {
