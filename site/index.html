@@ -84,7 +84,11 @@ nav a.link:hover{color:var(--text)}
 .hero .cores i:nth-child(11n){animation-duration:7.1s;animation-delay:-4.8s}
 @keyframes gpuPulse{0%,100%{transform:scaleY(.12)}50%{transform:scaleY(1)}}
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-.badges img{height:20px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.78rem;
+  color:var(--dim);text-decoration:none;background:var(--panel2);border:1px solid var(--border);
+  border-radius:999px;padding:4px 12px}
+.pill:hover{color:var(--text);border-color:var(--dimmer)}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:#57c785;flex:none}
 .hero h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 .4em;color:var(--text)}
 .hero h1 .accent{color:var(--accent)}
 .hero .lede{font-size:1.05rem}
@@ -172,9 +176,9 @@ footer a:hover{color:var(--text)}
   <div class="cores" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="wrap">
     <div class="badges">
-      <img src="https://github.com/mesutoezdil/accel/actions/workflows/ci.yml/badge.svg" alt="ci">
-      <img src="https://img.shields.io/github/v/release/mesutoezdil/accel?include_prereleases&sort=semver" alt="release">
-      <img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="license">
+      <a class="pill" href="https://github.com/mesutoezdil/accel/actions/workflows/ci.yml"><span class="dot"></span>CI</a>
+      <a class="pill" id="release-pill" href="https://github.com/mesutoezdil/accel/releases">Releases</a>
+      <a class="pill" href="LICENSE">Apache-2.0</a>
     </div>
     <h1><span class="accent">accel</span> finds every accelerator in the machine.</h1>
     <p class="lede">Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago.</p>
@@ -328,6 +332,13 @@ chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
 </footer>
 
 <script>
+fetch("https://api.github.com/repos/mesutoezdil/accel/releases?per_page=1")
+  .then(function(r){ return r.ok ? r.json() : []; })
+  .then(function(list){
+    var el = document.getElementById("release-pill");
+    if (el && list[0]) el.textContent = list[0].tag_name;
+  })
+  .catch(function(){});
 document.querySelectorAll(".swatch").forEach(function(b){
   b.addEventListener("click", function(){ document.documentElement.dataset.theme = b.dataset.t; });
 });
