@@ -53,21 +53,6 @@ nfpms:
       - src: build/extra/accel.1
         dst: /usr/share/man/man1/accel.1
 
-homebrew_casks:
-  - name: accel
-    repository:
-      owner: mesutoezdil
-      name: homebrew-tap
-    homepage: https://github.com/mesutoezdil/accel
-    description: Terminal monitor for GPUs, NPUs, and other AI accelerators.
-    license: Apache-2.0
-    binary: accel
-    manpages: [build/extra/accel.1]
-    completions:
-      bash: build/extra/accel.bash
-      zsh: build/extra/_accel
-      fish: build/extra/accel.fish
-
 dockers:
   - image_templates: ["ghcr.io/mesutoezdil/accel:{{ .Version }}-amd64"]
     goarch: amd64

@@ -91,7 +91,7 @@ only when the owner says so.
 - [x] Compare two devices or two moments side by side
 - [x] Per-vendor depth beyond utilization (processes for AMD, Ascend, Cambricon)
 - [x] README with screenshots rendered from `--demo` (`make shots`), logo, contributing, security, and issue templates
-- [ ] Homebrew tap: create `mesutoezdil/homebrew-tap`, add a token secret, drop `--skip=homebrew` from the workflows
+- [x] Homebrew tap: `mesutoezdil/homebrew-tap` renders its formula from the newest release on a schedule, so no cross-repository token is needed
 - [ ] eBPF kernel-launch visibility (long term)
 
 ## Remaining gaps against the inspiration
