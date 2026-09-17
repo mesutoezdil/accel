@@ -59,10 +59,14 @@ func Provider(n int) provider.Provider {
 			t := Now().Sub(start).Seconds()
 			for vi, m := range models {
 				for i := 0; i < m.count; i++ {
-					load := 0.5 + 0.45*math.Sin(t/9+float64(vi*3+i))
+					load := 0.5 + 0.4*math.Sin(t/540+float64(vi*3+i)) + 0.06*jitter(t, vi*8+i)
 					if m.vendor == device.NVIDIA { // a training job: pinned high, straggler aside
-						load = 0.9 + 0.08*math.Sin(t/7+float64(i))
+						load = 0.93 + 0.05*jitter(t, i)
+						if math.Mod(t+300, 600) < 45 { // a checkpoint every 10 minutes
+							load = 0.12 + 0.05*jitter(t, i)
+						}
 					}
+					load = min(max(load, 0.01), 0.99)
 					d := m.device(i, load, t)
 					if m.vendor == device.NVIDIA && i == m.count-1 && m.count > 1 {
 						d = m.device(i, 0.01, t) // idle but holding a notebook
@@ -82,6 +86,11 @@ func Provider(n int) provider.Provider {
 	}
 }
 
+// jitter is a deterministic wobble in [-1, 1] that differs per device.
+func jitter(t float64, k int) float64 {
+	return math.Sin(t*1.7+float64(k)*13.1) * math.Cos(t*0.37+float64(k))
+}
+
 // device builds one device at the given load (0..1).
 func (m model) device(i int, load, t float64) device.Device {
 	d := device.New(m.vendor, i, m.name+Suffix, "", "")
@@ -95,6 +104,9 @@ func (m model) device(i int, load, t float64) device.Device {
 	}
 	d.Metrics[device.Util] = math.Round(load * 100)
 	d.Metrics[device.MemUsed] = math.Round((0.2 + 0.7*load) * gib)
+	if m.vendor == device.NVIDIA && load > 0.05 { // a training job keeps its memory through checkpoints
+		d.Metrics[device.MemUsed] = math.Round((0.74 + 0.06*jitter(t, i+50)) * gib)
+	}
 	d.Metrics[device.MemTotal] = gib
 	if m.temp {
 		d.Metrics[device.Temp] = math.Round(35 + 40*load)
@@ -117,6 +129,20 @@ func (m model) device(i int, load, t float64) device.Device {
 	}
 	if m.vendor == device.NVIDIA {
 		d.Metrics[device.NUMANode] = float64(i / 4)
+		d.Metrics[device.MemTemp] = d.Metrics[device.Temp] + 9
+		d.Metrics[device.ClockMem] = 2619
+		d.Metrics[device.PState] = 0
+		d.Metrics[device.Energy] = math.Round(m.watts*0.8*t) + float64(i)*1e6
+		d.Metrics[device.RemappedRows], d.Metrics[device.RetiredPages] = 0, 0
+		d.Metrics[device.RemapPending], d.Metrics[device.RemapFailed] = 0, 0
+		d.Metrics[device.PCIeReplays] = float64(i * 3 % 7)
+		d.Metrics[device.ViolationPower], d.Metrics[device.ViolationTherm] = 0, 0
+		if i == 3 {
+			d.Metrics[device.ViolationPower] = 37
+		}
+		if i == 5 {
+			d.Metrics[device.RemappedRows] = 2
+		}
 		d.Topology = map[int]string{}
 		for peer := 0; peer < m.count; peer++ {
 			switch {
