@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en" data-theme="default">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>accel</title>
+<meta name="description" content="A terminal monitor for AI accelerators from 15 vendors: utilization, memory, processes, power, thermals, and more.">
+<link rel="icon" href="assets/logo.svg">
+<style>
+:root{
+  --bg:#0a0d12; --panel:#0d1117; --panel2:#11161d; --border:#1c2330;
+  --text:#c9d1d9; --dim:#7d8590; --dimmer:#4b5563;
+  --accent:#3fb950; --accent2:#58a6ff; --warn:#d29922; --crit:#ff7b72;
+  --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+html[data-theme="amber"]{ --accent:#d29922; --accent2:#e3b341; --panel2:#14100a; }
+html[data-theme="ice"]{ --accent:#58a6ff; --accent2:#79c0ff; --panel2:#0a1420; }
+html[data-theme="dracula"]{ --accent:#bd93f9; --accent2:#ff79c6; --panel2:#15111f; }
+html[data-theme="mono"]{ --accent:#c9d1d9; --accent2:#8b949e; --panel2:#111111; }
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%;display:block}
+a{color:var(--accent2)}
+[hidden]{display:none!important}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:20px}
+code,.mono{font-family:var(--mono)}
+h1,h2,h3{font-family:var(--mono);font-weight:600;letter-spacing:-.01em}
+h2{font-size:1.5rem;margin:0 0 .3em}
+.lede{color:var(--dim);max-width:56ch;margin:0 0 2rem}
+section{padding:64px 0}
+section+section{border-top:1px solid var(--border)}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(10,13,18,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+nav .wrap{display:flex;align-items:center;gap:20px;height:56px;max-width:1040px}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;margin-right:auto}
+.brand img{width:22px;height:22px}
+nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem}
+nav a.link:hover{color:var(--text)}
+.swatches{display:flex;gap:6px;margin-left:8px}
+.swatch{width:16px;height:16px;border-radius:50%;border:1px solid var(--border);cursor:pointer;padding:0}
+.swatch[data-t="default"]{background:#3fb950}
+.swatch[data-t="amber"]{background:#d29922}
+.swatch[data-t="ice"]{background:#58a6ff}
+.swatch[data-t="dracula"]{background:#bd93f9}
+.swatch[data-t="mono"]{background:#8b949e}
+
+.hero{padding:72px 0 48px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.badges img{height:20px}
+.hero h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 .4em;color:var(--text)}
+.hero h1 .accent{color:var(--accent)}
+.hero .lede{font-size:1.05rem;max-width:60ch}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 40px}
+.btn{font-family:var(--mono);font-size:.92rem;padding:10px 18px;border-radius:8px;text-decoration:none;
+  border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px}
+.btn.primary{background:var(--accent);color:#04140a;border-color:var(--accent);font-weight:700}
+.btn.ghost{color:var(--text)}
+.btn.ghost:hover{border-color:var(--dimmer)}
+
+.frame{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+.frame img{width:100%}
+
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px}
+.card .q{font-family:var(--mono);color:var(--text);font-weight:600;margin:0 0 8px}
+.card .tab{display:inline-block;font-family:var(--mono);font-size:.75rem;color:var(--accent);
+  background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);border-radius:999px;padding:2px 9px;margin-bottom:8px}
+.card p{margin:0;color:var(--dim);font-size:.92rem}
+
+.tabgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.tabcell{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.tabcell b{font-family:var(--mono);display:block;font-size:.9rem;color:var(--text)}
+.tabcell span{font-size:.82rem;color:var(--dim)}
+
+.keys{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.keyrow{display:flex;align-items:center;gap:10px;font-size:.9rem}
+kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;
+  border-radius:5px;padding:2px 7px;font-size:.82rem;color:var(--text)}
+.keyrow .what{color:var(--dim)}
+
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
+th{color:var(--dim);font-weight:600;font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
+.dot.ok{background:var(--accent)}
+.dot.warn{background:var(--warn)}
+.tablewrap{overflow-x:auto}
+
+.install pre{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;
+  overflow-x:auto;position:relative;font-size:.86rem}
+.install .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.install .tabbtn{font-family:var(--mono);font-size:.82rem;background:none;border:1px solid var(--border);
+  color:var(--dim);border-radius:7px;padding:6px 12px;cursor:pointer}
+.install .tabbtn.active{color:var(--text);border-color:var(--accent)}
+.copy{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:.75rem;background:var(--panel);
+  border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 9px;cursor:pointer}
+.copy:hover{color:var(--text)}
+.install-panel{display:none}
+.install-panel.active{display:block}
+
+footer{padding:40px 0;color:var(--dim);font-size:.85rem}
+footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
+footer a{color:var(--dim)}
+footer a:hover{color:var(--text)}
+footer .fine{margin-top:18px;color:var(--dimmer);font-size:.78rem;max-width:70ch}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/logo.svg" alt=""> accel</a>
+    <a class="link" href="#why">Why</a>
+    <a class="link" href="#views">Views</a>
+    <a class="link" href="#keys">Keys</a>
+    <a class="link" href="#vendors">Vendors</a>
+    <a class="link" href="#install">Install</a>
+    <a class="link" href="https://github.com/mesutoezdil/accel">GitHub ↗</a>
+    <div class="swatches" aria-label="preview a theme">
+      <button class="swatch" data-t="default" title="default"></button>
+      <button class="swatch" data-t="amber" title="amber"></button>
+      <button class="swatch" data-t="ice" title="ice"></button>
+      <button class="swatch" data-t="dracula" title="dracula"></button>
+      <button class="swatch" data-t="mono" title="mono"></button>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+<section class="hero">
+  <div class="wrap">
+    <div class="badges">
+      <img src="https://github.com/mesutoezdil/accel/actions/workflows/ci.yml/badge.svg" alt="ci">
+      <img src="https://img.shields.io/github/v/release/mesutoezdil/accel?include_prereleases&sort=semver" alt="release">
+      <img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="license">
+    </div>
+    <h1>One terminal.<br><span class="accent">15 accelerator vendors.</span></h1>
+    <p class="lede">accel watches GPUs, NPUs, XPUs, MLUs, DCUs, GCUs, and Apple silicon from a single terminal: utilization, memory, processes, power, thermals, links, and health per device, a time machine on disk, and the fleet as JSON or Prometheus metrics.</p>
+    <div class="cta">
+      <a class="btn primary" href="#install">Install →</a>
+      <a class="btn ghost" href="https://github.com/mesutoezdil/accel">View source ↗</a>
+    </div>
+    <div class="frame"><img src="assets/overview.png" alt="accel Overview tab showing a mixed fleet of accelerators" loading="lazy"></div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <h2>Why accel</h2>
+    <p class="lede">Every view answers a question someone actually has at 2 a.m., not a dashboard to admire.</p>
+    <div class="grid">
+      <div class="card"><span class="tab">Overview</span><p class="q">Which device is idle while a pod still holds it?</p><p>Fleet totals, per-device state, and idle-allocated devices, in one table.</p></div>
+      <div class="card"><span class="tab">Workloads</span><p class="q">Which workload is wasting spend?</p><p>Devices held, efficiency, cost per hour, and energy per workload, from your own price list.</p></div>
+      <div class="card"><span class="tab">Kubernetes · Nodes</span><p class="q">Which pod, and which Slurm job, owns this device?</p><p>Process → container → pod → workload, and the same for Slurm jobs, side by side.</p></div>
+      <div class="card"><span class="tab">Links</span><p class="q">Is this device isolated on the fabric?</p><p>PCIe generation and width, NVLink counts and errors, and the topology matrix.</p></div>
+      <div class="card"><span class="tab">History</span><p class="q">What happened 15 minutes ago?</p><p>Scrub any metric back in time, with events pinned at the cursor.</p></div>
+      <div class="card"><span class="tab">Health</span><p class="q">Is this reading real, or a guess?</p><p>Every score explained, and every value either measured or shown as N/A, never 0.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="views">
+  <div class="wrap">
+    <h2>16 tabs</h2>
+    <p class="lede">A tab hides itself when it has nothing to show: Links without link data, Kubernetes without a pod source.</p>
+    <div class="tabgrid">
+      <div class="tabcell"><b>Overview</b><span>Fleet summary, top processes, alerts</span></div>
+      <div class="tabcell"><b>Devices</b><span>Table plus a full detail pane</span></div>
+      <div class="tabcell"><b>Processes</b><span>Sortable, searchable, pod-aware</span></div>
+      <div class="tabcell"><b>Memory</b><span>Usage, bandwidth, ECC, remaps</span></div>
+      <div class="tabcell"><b>Power</b><span>Draw, cap, energy, throttle</span></div>
+      <div class="tabcell"><b>Thermals</b><span>Core and memory temperature</span></div>
+      <div class="tabcell"><b>Links</b><span>PCIe, NVLink, topology matrix</span></div>
+      <div class="tabcell"><b>History</b><span>The time machine</span></div>
+      <div class="tabcell"><b>Events</b><span>Xids, throttles, process starts</span></div>
+      <div class="tabcell"><b>Nodes</b><span>Per-node totals across a fleet</span></div>
+      <div class="tabcell"><b>Network</b><span>NICs and InfiniBand</span></div>
+      <div class="tabcell"><b>Kubernetes</b><span>Pods, describe, logs</span></div>
+      <div class="tabcell"><b>Workloads</b><span>Cost, waste, efficiency</span></div>
+      <div class="tabcell"><b>Dashboard</b><span>Reliability table, wide charts</span></div>
+      <div class="tabcell"><b>Health</b><span>0-100 score, every deduction</span></div>
+      <div class="tabcell"><b>Help</b><span>Keys, filters, commands</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="keys">
+  <div class="wrap">
+    <h2>Keyboard first</h2>
+    <p class="lede">Every action is rebindable in the config. The mouse works too: click a tab, a row, or a header.</p>
+    <div class="keys">
+      <div class="keyrow"><kbd>1</kbd>…<kbd>0</kbd><span class="what">jump to a tab</span></div>
+      <div class="keyrow"><kbd>tab</kbd> <kbd>shift+tab</kbd><span class="what">next / previous tab</span></div>
+      <div class="keyrow"><kbd>/</kbd><span class="what">search</span></div>
+      <div class="keyrow"><kbd>:</kbd><span class="what">command bar, tab completion</span></div>
+      <div class="keyrow"><kbd>h</kbd> <kbd>,</kbd> <kbd>.</kbd><span class="what">history, scrub back / forward</span></div>
+      <div class="keyrow"><kbd>s</kbd> <kbd>S</kbd><span class="what">sort column, reverse</span></div>
+      <div class="keyrow"><kbd>d</kbd> <kbd>l</kbd><span class="what">describe pod, pod logs</span></div>
+      <div class="keyrow"><kbd>ctrl+n</kbd> <kbd>ctrl+p</kbd><span class="what">next / previous node</span></div>
+      <div class="keyrow"><kbd>p</kbd><span class="what">pause the display</span></div>
+      <div class="keyrow"><kbd>ctrl+e</kbd><span class="what">export the table to CSV</span></div>
+      <div class="keyrow"><kbd>?</kbd><span class="what">help</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="vendors">
+  <div class="wrap">
+    <h2>15 vendors, honestly labeled</h2>
+    <p class="lede">A vendor a driver reports on is marked so; one accel has not run on real hardware yet is marked that too. Full table in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Vendor</th><th>Source</th><th>Status</th></tr>
+      <tr><td>NVIDIA</td><td>NVML, dlopen, no cgo</td><td><span class="dot warn"></span>tested against a fake NVML library; not yet run on a host</td></tr>
+      <tr><td>Apple silicon</td><td>ioreg, IOReport, SMC</td><td><span class="dot ok"></span>verified on an M4 Pro</td></tr>
+      <tr><td>AMD</td><td>sysfs, DRM fdinfo</td><td><span class="dot warn"></span>from kernel docs; not yet run on hardware</td></tr>
+      <tr><td>Intel</td><td>sysfs, DRM fdinfo</td><td><span class="dot warn"></span>from kernel docs; not yet run on hardware</td></tr>
+      <tr><td>Huawei Ascend</td><td>npu-smi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>AWS Neuron</td><td>neuron-ls, neuron-monitor</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>Cambricon</td><td>cnmon</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>Enflame</td><td>efsmi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>Hygon</td><td>hy-smi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>Iluvatar CoreX</td><td>ixsmi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>Kunlunxin</td><td>xpu_smi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>MetaX</td><td>mx-smi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>Moore Threads</td><td>mthreads-gmi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
+      <tr><td>Biren</td><td>brsmi</td><td><span class="dot warn"></span>from vendor docs; no public sample</td></tr>
+      <tr><td>VastAI</td><td>PCI sysfs</td><td><span class="dot warn"></span>device presence only</td></tr>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section id="install" class="install">
+  <div class="wrap">
+    <h2>Install</h2>
+    <p class="lede">One static binary. No agent to run first, no database.</p>
+    <div class="tabs">
+      <button class="tabbtn active" data-p="bin">Binary</button>
+      <button class="tabbtn" data-p="brew">Homebrew</button>
+      <button class="tabbtn" data-p="go">Go</button>
+      <button class="tabbtn" data-p="docker">Container</button>
+    </div>
+    <div class="install-panel active" id="p-bin">
+<pre><button class="copy">copy</button><code>curl -fsSL -o accel https://github.com/mesutoezdil/accel/releases/latest/download/accel-linux-amd64
+chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
+    </div>
+    <div class="install-panel" id="p-brew">
+<pre><button class="copy">copy</button><code>brew install mesutoezdil/tap/accel</code></pre>
+    </div>
+    <div class="install-panel" id="p-go">
+<pre><button class="copy">copy</button><code>go install github.com/mesutoezdil/accel@latest</code></pre>
+    </div>
+    <div class="install-panel" id="p-docker">
+<pre><button class="copy">copy</button><code>docker run --rm -p 9800:9800 --gpus all --pid=host \
+  -e NVIDIA_DRIVER_CAPABILITIES=utility \
+  ghcr.io/mesutoezdil/accel:latest</code></pre>
+    </div>
+    <p class="lede" style="margin-top:18px">Then: <code>accel --demo</code> to explore without hardware, or <code>accel</code> to probe what is on the machine.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span>Apache-2.0. Not affiliated with any accelerator vendor. NVIDIA, NVML, and NVLink are trademarks of NVIDIA Corporation.</span>
+      <span>
+        <a href="https://github.com/mesutoezdil/accel">GitHub</a> ·
+        <a href="https://github.com/mesutoezdil/accel/issues">Issues</a> ·
+        <a href="https://github.com/mesutoezdil/accel/blob/main/CONTRIBUTING.md">Contributing</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll(".swatch").forEach(function(b){
+  b.addEventListener("click", function(){ document.documentElement.dataset.theme = b.dataset.t; });
+});
+document.querySelectorAll(".install .tabbtn").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".install .tabbtn").forEach(function(x){ x.classList.remove("active"); });
+    document.querySelectorAll(".install-panel").forEach(function(x){ x.classList.remove("active"); });
+    b.classList.add("active");
+    document.getElementById("p-" + b.dataset.p).classList.add("active");
+  });
+});
+document.querySelectorAll(".copy").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    var text = btn.parentElement.innerText.replace(/^copy\n?/, "");
+    navigator.clipboard.writeText(text).then(function(){
+      var was = btn.textContent; btn.textContent = "copied";
+      setTimeout(function(){ btn.textContent = was; }, 1200);
+    });
+  });
+});
+</script>
+</body>
+</html>
