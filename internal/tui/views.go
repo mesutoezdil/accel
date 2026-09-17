@@ -147,7 +147,8 @@ func (m Model) viewOverview() string {
 		b.WriteString("\n")
 	}
 	mm := m
-	b.WriteString(mm.deviceTable(devs, m.tableHeight()) + "\n\n")
+	b.WriteString(mm.deviceTable(devs, m.tableHeight()) + "\n")
+	b.WriteString(hr(th, m.width) + "\n")
 
 	left := m.topProcs(devs, 6, m.width/2-1)
 	right := m.alertsBox(6, m.width-m.width/2-1)
@@ -286,6 +287,15 @@ func (m Model) eventLine(e events.Event, withTime bool) string {
 		where = "#" + e.Label + " "
 	}
 	return t + mark + " " + where + e.Message
+}
+
+// hr draws a faint rule the width of the screen, used to separate
+// unrelated blocks within a tab (the device table from the panes below it).
+func hr(th Theme, w int) string {
+	if w <= 0 {
+		return ""
+	}
+	return th.border.Render(strings.Repeat("─", w))
 }
 
 func sideBySide(left, right string, lw, rw int) string {
