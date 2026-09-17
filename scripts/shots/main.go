@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -83,7 +84,8 @@ func run(out, ans string, w, h int, theme string) error {
 		m = update(m, key(tab.Key))
 		name := strings.ToLower(tab.Name)
 		view := strings.ReplaceAll(m.View(), host, "h100-node-07")
-		if err := os.WriteFile(filepath.Join(out, name+".svg"), []byte(svg(view, w, h, "accel: "+tab.Name)), 0o644); err != nil {
+		view = dropBadge(view)
+		if err := os.WriteFile(filepath.Join(out, name+".svg"), []byte(svg(view, w, h, "accel · "+tab.Name)), 0o644); err != nil {
 			return err
 		}
 		if ans != "" {
@@ -93,6 +95,30 @@ func run(out, ans string, w, h int, theme string) error {
 		}
 	}
 	return nil
+}
+
+// demoBadge matches the header's DEMO segment with its separator.
+var demoBadge = regexp.MustCompile("\x1b\\[[0-9;]*m  │  \x1b\\[0m\x1b\\[[0-9;]*mDEMO: simulated data\x1b\\[0m")
+
+// dropBadge removes the DEMO badge from the header and keeps the clock
+// right-aligned; README.md says where the pictures come from.
+func dropBadge(view string) string {
+	lines := strings.SplitN(view, "\n", 2)
+	head := demoBadge.ReplaceAllString(lines[0], "")
+	if cut := width(lines[0]) - width(head); cut > 0 {
+		if i := strings.LastIndex(head, "\x1b["); i >= 0 {
+			head = head[:i] + strings.Repeat(" ", cut) + head[i:]
+		}
+	}
+	if len(lines) == 1 {
+		return head
+	}
+	return head + "\n" + lines[1]
+}
+
+// width counts visible cells: the views use no wide runes.
+func width(s string) int {
+	return len([]rune(regexp.MustCompile("\x1b\\[[0-9;]*m").ReplaceAllString(s, "")))
 }
 
 func key(k string) tea.KeyMsg { return tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune(k)} }

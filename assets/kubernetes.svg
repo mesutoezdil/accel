@@ -1,18 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1384" height="220" viewBox="0 0 1384 220" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace" font-size="14">
-<rect width="100%" height="100%" rx="12" fill="#0d1117"/>
-<circle cx="20" cy="18" r="6" fill="#ff5f57"/>
-<circle cx="40" cy="18" r="6" fill="#febc2e"/>
-<circle cx="60" cy="18" r="6" fill="#28c840"/>
-<text x="50%" y="22" text-anchor="middle" fill="#8b949e" font-size="12">accel: Kubernetes</text>
-<g xml:space="preserve">
-<text y="70.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#79c0ff" font-weight="bold">accel</tspan><tspan x="62.0" fill="#6e7681">  │  </tspan><tspan x="104.0">h100-node-07</tspan><tspan x="204.8" fill="#6e7681">  │  </tspan><tspan x="246.8">17 devices</tspan><tspan x="330.8" fill="#6e7681">  │  </tspan><tspan x="372.8">7 nodes</tspan><tspan x="431.6" fill="#6e7681">  │  </tspan><tspan x="473.6" fill="#ffa198">DEMO: simulated data</tspan><tspan x="641.6" fill="#6e7681">  │  </tspan><tspan x="683.6" fill="#ffa198">▲ 5 alerts</tspan><tspan x="1288.4" fill="#6e7681">08:04:00</tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1456" height="292" viewBox="0 0 1456 292" font-family="JetBrains Mono, SFMono-Regular, Menlo, Consolas, Liberation Mono, monospace" font-size="14">
+<defs><linearGradient id="desk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f2a3a"/><stop offset="1" stop-color="#0b0e14"/></linearGradient><filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000" flood-opacity="0.55"/></filter></defs>
+<rect width="100%" height="100%" fill="url(#desk)"/>
+<rect x="36" y="36" width="1384" height="220" rx="12" fill="#0d1117" filter="url(#shadow)"/>
+<rect x="36" y="36" width="1384" height="36" rx="12" fill="#161b22"/><rect x="36" y="60" width="1384" height="12" fill="#161b22"/>
+<circle cx="56" cy="54" r="6" fill="#ff5f57"/>
+<circle cx="76" cy="54" r="6" fill="#febc2e"/>
+<circle cx="96" cy="54" r="6" fill="#28c840"/>
+<text x="50%" y="58" text-anchor="middle" fill="#8b949e" font-size="12">accel · Kubernetes</text>
+<g xml:space="preserve" transform="translate(36 36)">
+<text y="70.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#79c0ff" font-weight="bold">accel</tspan><tspan x="62.0" fill="#6e7681">  │  </tspan><tspan x="104.0">h100-node-07</tspan><tspan x="204.8" fill="#6e7681">  │  </tspan><tspan x="246.8">17 devices</tspan><tspan x="330.8" fill="#6e7681">  │  </tspan><tspan x="372.8">7 nodes</tspan><tspan x="431.6" fill="#6e7681">  │  </tspan><tspan x="473.6" fill="#ffa198">▲ 5 alerts</tspan><tspan x="1078.4" fill="#6e7681">08:10:33                         </tspan></text>
 <rect x="927.2" y="74.0" width="67.2" height="18.0" fill="#79c0ff"/>
 <text y="88.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">1</tspan><tspan x="28.4"> Overview  </tspan><tspan x="120.8" fill="#6e7681">2</tspan><tspan x="129.2"> Devices  </tspan><tspan x="213.2" fill="#6e7681">3</tspan><tspan x="221.6"> Procs  </tspan><tspan x="288.8" fill="#6e7681">4</tspan><tspan x="297.2"> Memory  </tspan><tspan x="372.8" fill="#6e7681">5</tspan><tspan x="381.2"> Power  </tspan><tspan x="448.4" fill="#6e7681">6</tspan><tspan x="456.8"> Thermal  </tspan><tspan x="540.8" fill="#6e7681">7</tspan><tspan x="549.2"> Links  </tspan><tspan x="616.4" fill="#6e7681">8</tspan><tspan x="624.8"> History  </tspan><tspan x="708.8" fill="#6e7681">9</tspan><tspan x="717.2"> Events  </tspan><tspan x="792.8" fill="#6e7681">0</tspan><tspan x="801.2"> Nodes  </tspan><tspan x="868.4" fill="#6e7681">N</tspan><tspan x="876.8"> Net  </tspan><tspan x="927.2" fill="#484f58" font-weight="bold"> K Kube </tspan><tspan x="994.4" fill="#6e7681">W</tspan><tspan x="1002.8"> Work  </tspan><tspan x="1061.6" fill="#6e7681">D</tspan><tspan x="1070.0"> Dash  </tspan><tspan x="1128.8" fill="#6e7681">H</tspan><tspan x="1137.2"> Health  </tspan><tspan x="1212.8" fill="#6e7681">?</tspan><tspan x="1221.2"> Help  </tspan></text>
 <text y="106.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" font-weight="bold">Pods on accelerators</tspan><tspan x="188.0" fill="#6e7681">  source: kubeconfig  ·  held = allocated through the kubelet with no process yet  ·  ⏎ describe, l logs, :ns NAME</tspan></text>
 <text y="124.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">NAMESPACE        POD                                  CONTAINERS   DEVICES HELD PROCS       MEM   UTIL IDLE WORKLOAD                      </tspan></text>
 <rect x="20.0" y="128.0" width="1344.0" height="18.0" fill="#c9d1d9"/>
-<text y="142.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#0d1117">inference        chat-api-7d9f8b6c5-x2k9p             main               8          8    264.8G   296%      Deployment/chat-api                                 </tspan></text>
-<text y="160.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">ml               llama-70b-pretrain-0                 main               9          9    312.8G   442%      StatefulSet/llama-70b-pretrain</tspan></text>
+<text y="142.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#0d1117">inference        chat-api-7d9f8b6c5-x2k9p             main               8          8    328.9G   362%      Deployment/chat-api                                 </tspan></text>
+<text y="160.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">ml               llama-70b-pretrain-0                 main               9          9    299.9G   445%      StatefulSet/llama-70b-pretrain</tspan></text>
 <text y="178.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0">notebooks        notebook-bob-0                       main               1          1     16.6G     0%      StatefulSet/notebook-bob      </tspan></text>
 <text y="196.0" fill="#c9d1d9" xml:space="preserve" style="white-space:pre"><tspan x="20.0" fill="#6e7681">⏎ describe  l logs  / search  : ns NAME  ? help</tspan></text>
 </g>
