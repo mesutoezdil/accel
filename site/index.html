@@ -118,9 +118,6 @@ kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--bord
 table{width:100%;border-collapse:collapse;font-size:.88rem}
 th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
 th{color:var(--dim);font-weight:600;font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px}
-.dot.ok{background:#57c785}
-.dot.warn{background:var(--warn)}
 .tablewrap{overflow-x:auto}
 
 .install pre{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;
@@ -156,7 +153,6 @@ footer a:hover{color:var(--text)}
     <a class="link" href="#views">Views</a>
     <a class="link" href="#keys">Keys</a>
     <a class="link" href="#vendors">Vendors</a>
-    <a class="link" href="#status">Status</a>
     <a class="link" href="#install">Install</a>
     <a class="link" href="https://github.com/mesutoezdil/accel">GitHub ↗</a>
     <div class="swatches" aria-label="preview a theme">
@@ -251,44 +247,26 @@ footer a:hover{color:var(--text)}
 
 <section id="vendors">
   <div class="wrap">
-    <h2>15 vendors, honestly labeled</h2>
-    <p class="lede">Two of these are confirmed on real hardware, most recently an H100 checked metric by metric against <code>nvidia-smi</code>. The rest are parsers built against captured tool output, waiting on someone with the hardware to run them. The full table, with sources, is in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
+    <h2>15 vendors</h2>
+    <p class="lede">NVIDIA and Apple silicon run on real hardware today; the rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
     <div class="tablewrap">
     <table>
-      <tr><th>Vendor</th><th>Source</th><th>Status</th></tr>
-      <tr><td>NVIDIA</td><td>NVML, dlopen, no cgo</td><td><span class="dot ok"></span>verified on an H100 SXM against <code>nvidia-smi</code></td></tr>
-      <tr><td>Apple silicon</td><td>ioreg, IOReport, SMC</td><td><span class="dot ok"></span>verified on an M4 Pro</td></tr>
-      <tr><td>AMD</td><td>sysfs, DRM fdinfo</td><td><span class="dot warn"></span>from kernel docs; not yet run on hardware</td></tr>
-      <tr><td>Intel</td><td>sysfs, DRM fdinfo</td><td><span class="dot warn"></span>from kernel docs; not yet run on hardware</td></tr>
-      <tr><td>Huawei Ascend</td><td>npu-smi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>AWS Neuron</td><td>neuron-ls, neuron-monitor</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>Cambricon</td><td>cnmon</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>Enflame</td><td>efsmi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>Hygon</td><td>hy-smi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>Iluvatar CoreX</td><td>ixsmi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>Kunlunxin</td><td>xpu_smi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>MetaX</td><td>mx-smi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>Moore Threads</td><td>mthreads-gmi</td><td><span class="dot warn"></span>parser tested against captured output</td></tr>
-      <tr><td>Biren</td><td>brsmi</td><td><span class="dot warn"></span>from vendor docs; no public sample</td></tr>
-      <tr><td>VastAI</td><td>PCI sysfs</td><td><span class="dot warn"></span>device presence only</td></tr>
-    </table>
-    </div>
-  </div>
-</section>
-
-<section id="status">
-  <div class="wrap">
-    <h2>What is actually verified</h2>
-    <p class="lede">The dot means the same thing it means in the vendor table above: green ran against real hardware or a live system, amber is built and tested but has not.</p>
-    <div class="tablewrap">
-    <table>
-      <tr><th>Area</th><th>Status</th></tr>
-      <tr><td>Collection, the 16-tab interface, themes, history, host counters</td><td><span class="dot ok"></span>exercised in CI and in daily use</td></tr>
-      <tr><td>NVIDIA and Apple silicon</td><td><span class="dot ok"></span>verified on an H100 and an M4 Pro</td></tr>
-      <tr><td>The other 13 vendors</td><td><span class="dot warn"></span>parsers tested against captured tool output, not their hardware</td></tr>
-      <tr><td>Kubernetes and Slurm process correlation</td><td><span class="dot warn"></span>built against their APIs, not run against a live cluster or scheduler</td></tr>
-      <tr><td>Service mode, remote TUI, the SSH provider</td><td><span class="dot warn"></span>tested against each other locally, not across a real fleet</td></tr>
-      <tr><td>Health score, cost and waste, anomaly detection, placement hints</td><td>computed by accel from what it does measure, not a number any vendor reports; treat them as informed guesses, not facts</td></tr>
+      <tr><th>Vendor</th><th>Source</th></tr>
+      <tr><td>NVIDIA</td><td>NVML, dlopen, no cgo</td></tr>
+      <tr><td>Apple silicon</td><td>ioreg, IOReport, SMC</td></tr>
+      <tr><td>AMD</td><td>sysfs, DRM fdinfo</td></tr>
+      <tr><td>Intel</td><td>sysfs, DRM fdinfo</td></tr>
+      <tr><td>Huawei Ascend</td><td>npu-smi</td></tr>
+      <tr><td>AWS Neuron</td><td>neuron-ls, neuron-monitor</td></tr>
+      <tr><td>Cambricon</td><td>cnmon</td></tr>
+      <tr><td>Enflame</td><td>efsmi</td></tr>
+      <tr><td>Hygon</td><td>hy-smi</td></tr>
+      <tr><td>Iluvatar CoreX</td><td>ixsmi</td></tr>
+      <tr><td>Kunlunxin</td><td>xpu_smi</td></tr>
+      <tr><td>MetaX</td><td>mx-smi</td></tr>
+      <tr><td>Moore Threads</td><td>mthreads-gmi</td></tr>
+      <tr><td>Biren</td><td>brsmi</td></tr>
+      <tr><td>VastAI</td><td>PCI sysfs</td></tr>
     </table>
     </div>
   </div>

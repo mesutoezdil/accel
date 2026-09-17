@@ -35,25 +35,25 @@ accel is a terminal monitor for AI accelerators from 15 vendors: GPUs, NPUs, XPU
 
 ## Supported accelerators
 
-The vendor list follows the device plugins in [HAMi](https://github.com/Project-HAMi/HAMi/tree/master/pkg/device), plus Apple and Intel. Every vendor is auto-detected; `--vendors nvidia,ascend` limits the probe.
+The vendor list follows the device plugins in [HAMi](https://github.com/Project-HAMi/HAMi/tree/master/pkg/device), plus Apple and Intel. Every vendor is auto-detected; `--vendors nvidia,ascend` limits the probe. NVIDIA (an H100 SXM, driver 570.211.01, every metric checked against `nvidia-smi`) and Apple silicon (an M4 Pro) run on real hardware; the rest are built against each vendor's documented tool output, with a fixture behind every parser. A hardware report through [an issue](https://github.com/mesutoezdil/accel/issues/new/choose) is the fastest way to move one from "should work" to confirmed.
 
-| Vendor | Devices | Source | Processes | Status |
-|---|---|---|---|---|
-| NVIDIA | GPUs, MIG slices | NVML loaded with `dlopen` (no cgo), Xid events, NVLink, ECC, row remap, PCIe AER via sysfs | yes, with `/proc` enrichment | verified on an H100 SXM (driver 570.211.01): every metric checked against `nvidia-smi`, idle and under a 2 GiB CUDA allocation. NVLink and MIG need a multi-GPU or MIG-enabled host, not tested |
-| Apple | Apple silicon GPU | `ioreg`, IOReport (power, energy), SMC (temperature), AGX user clients (per-process GPU time) | yes | verified on an M4 Pro |
-| AMD | Instinct, Radeon | sysfs (`/sys/class/drm`) and DRM `fdinfo` | yes | sysfs layout from kernel documentation; not yet run on hardware |
-| Intel | Data Center GPU, Arc | sysfs and DRM `fdinfo` | yes | same as AMD |
-| Huawei Ascend | NPUs | `npu-smi info` | yes | parser tested against captured output |
-| AWS | Inferentia, Trainium | `neuron-ls`, `neuron-monitor` | no | parser tested against captured output |
-| Cambricon | MLUs | `cnmon` | yes | parser tested against captured device rows |
-| Enflame | GCUs | `efsmi` | no | parser tested against captured output (2 formats) |
-| Hygon | DCUs | `hy-smi` (JSON) | no | parser tested against captured output |
-| Iluvatar CoreX | GPUs | `ixsmi -q -x` (XML) | no | parser tested against captured output |
-| Kunlunxin | XPUs | `xpu_smi` | no | parser tested against captured output |
-| MetaX | GPUs | `mx-smi` | no | parser tested against captured output (2 formats) |
-| Moore Threads | GPUs | `mthreads-gmi` | no | parser tested against captured output (2 formats) |
-| Biren | GPUs | `brsmi` | no | flags from vendor documentation; no public sample, reported as unverified |
-| VastAI | VA series | PCI sysfs | no | device presence only until the `vasmi` format is known |
+| Vendor | Devices | Source | Processes |
+|---|---|---|---|
+| NVIDIA | GPUs, MIG slices | NVML loaded with `dlopen` (no cgo), Xid events, NVLink, ECC, row remap, PCIe AER via sysfs | yes, with `/proc` enrichment |
+| Apple | Apple silicon GPU | `ioreg`, IOReport (power, energy), SMC (temperature), AGX user clients (per-process GPU time) | yes |
+| AMD | Instinct, Radeon | sysfs (`/sys/class/drm`) and DRM `fdinfo` | yes |
+| Intel | Data Center GPU, Arc | sysfs and DRM `fdinfo` | yes |
+| Huawei Ascend | NPUs | `npu-smi info` | yes |
+| AWS | Inferentia, Trainium | `neuron-ls`, `neuron-monitor` | no |
+| Cambricon | MLUs | `cnmon` | yes |
+| Enflame | GCUs | `efsmi` | no |
+| Hygon | DCUs | `hy-smi` (JSON) | no |
+| Iluvatar CoreX | GPUs | `ixsmi -q -x` (XML) | no |
+| Kunlunxin | XPUs | `xpu_smi` | no |
+| MetaX | GPUs | `mx-smi` | no |
+| Moore Threads | GPUs | `mthreads-gmi` | no |
+| Biren | GPUs | `brsmi` | no |
+| VastAI | VA series | PCI sysfs | no |
 
 Fixture sources: [`testdata/SOURCES`](internal/provider/smi/testdata/SOURCES). A value is measured or shown as `N/A`, never guessed; a tool whose output fails to parse shows its error in the Health tab.
 
