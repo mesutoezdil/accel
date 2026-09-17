@@ -86,6 +86,7 @@ spec:
             - {name: dev, mountPath: /dev}
             - {name: sys, mountPath: /sys, readOnly: true}
             - {name: pods, mountPath: /var/log/pods, readOnly: true}
+            - {name: podres, mountPath: /var/lib/kubelet/pod-resources, readOnly: true}
             - {name: state, mountPath: /var/lib/accel}
       volumes:
         - {name: usr, hostPath: {path: /usr}}
@@ -93,4 +94,5 @@ spec:
         - {name: dev, hostPath: {path: /dev}}
         - {name: sys, hostPath: {path: /sys}}
         - {name: pods, hostPath: {path: /var/log/pods}}
+        - {name: podres, hostPath: {path: /var/lib/kubelet/pod-resources}}
         - {name: state, hostPath: {path: /var/lib/accel, type: DirectoryOrCreate}}

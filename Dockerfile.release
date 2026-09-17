@@ -1,5 +1,7 @@
 # Used by goreleaser: the binary is already built for the target platform.
 FROM alpine:3.20
-COPY accel /usr/local/bin/accel
-ENTRYPOINT ["accel"]
+# The binary sits at / so a host /usr mounted over the container's /usr
+# (for vendor libraries and CLIs) cannot hide it.
+COPY accel /accel
+ENTRYPOINT ["/accel"]
 CMD ["--service", "--listen", ":9800", "--insecure"]
