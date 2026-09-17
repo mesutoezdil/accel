@@ -1,4 +1,4 @@
-// Package provider defines how accel talks to one accelerator vendor.
+// Package provider defines how siltide talks to one accelerator vendor.
 package provider
 
 import (
@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // Provider reads every device of one vendor. A provider whose hardware or

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/collect"
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/events"
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/events"
 )
 
 func deviceColumns(w int, devs []device.Device) []column {
@@ -169,7 +169,7 @@ func (m Model) empty() string {
 			}
 		}
 	}
-	return msg + "\n\nTry `accel --demo`, or ? for the vendors that were probed."
+	return msg + "\n\nTry `siltide --demo`, or ? for the vendors that were probed."
 }
 
 // procLess orders processes by memory, then utilization, then PID, so a
@@ -361,7 +361,7 @@ func (m Model) detail(d device.Device) string {
 	}
 	fmt.Fprintf(&b, "%s  %s  %s\n", th.bold.Render(d.Name), th.dim.Render(meta), m.state(d))
 	if en, ok := m.snap.Energy[d.ID]; ok {
-		line := fmt.Sprintf("%s %.3f kWh since accel started (%s)", th.dim.Render("energy"), en.KWh, en.Method)
+		line := fmt.Sprintf("%s %.3f kWh since siltide started (%s)", th.dim.Render("energy"), en.KWh, en.Method)
 		if en.CO2g > 0 {
 			line += fmt.Sprintf(", %.0f g CO2", en.CO2g)
 		}
@@ -946,7 +946,7 @@ func (m Model) viewHelp() string {
 		{"node <name>|local", "show one node only; :node clears"}, {"ns <namespace>", "pods of one namespace"}, {"<pod name>", "jump to a pod"},
 		{"describe | logs", "for the selected pod"}, {"metric util|memory|power|temp|clock", "history metric"}, {"window 15m|1h|24h", "history window"},
 		{"compare 3 5 | compare 3 15:04", "2 devices, or one device now and then"},
-		{"theme <name>", "built in: " + strings.Join(ThemeNames(), ", ") + ", or a file in ~/.config/accel/themes"},
+		{"theme <name>", "built in: " + strings.Join(ThemeNames(), ", ") + ", or a file in ~/.config/siltide/themes"},
 		{"live", "leave the time machine"}, {"pause", "toggle updates"}, {"refresh", "collect now"},
 	} {
 		fmt.Fprintf(&b, "  %-38s %s\n", c[0], th.dim.Render(c[1]))
@@ -967,14 +967,14 @@ func (m Model) viewHelp() string {
 			fmt.Fprintf(&b, "  %-56s %s\n", "", th.dim.Render(trunc(p.Hint, m.width-60)))
 		}
 	}
-	b.WriteString("\n" + th.dim.Render("Health scores, states, outliers, idle-allocated flags, and costs are derived by accel, not reported by vendors."))
+	b.WriteString("\n" + th.dim.Render("Health scores, states, outliers, idle-allocated flags, and costs are derived by siltide, not reported by vendors."))
 	return b.String()
 }
 
 // Plain renders the overview for `--once` without a selection.
 func Plain(s collect.Snapshot, th Theme, w int) string {
 	m := Model{snap: s, th: th, width: w, height: 1000, sel: -1, sortCol: -1, sels: map[int]int{}, currency: "$"}
-	head := fmt.Sprintf("accel  %s  %d devices  %s", s.Host, len(s.Devices), s.Time.Format(time.DateTime))
+	head := fmt.Sprintf("siltide  %s  %d devices  %s", s.Host, len(s.Devices), s.Time.Format(time.DateTime))
 	if s.Demo {
 		head += "  [DEMO: simulated data]"
 	}

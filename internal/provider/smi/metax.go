@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // MetaX reads GPUs from the default `mx-smi` table. Its column order changed

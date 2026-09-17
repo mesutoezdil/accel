@@ -11,13 +11,13 @@ import (
 
 	"github.com/ebitengine/purego"
 
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/provider"
 )
 
 // NVML (the NVIDIA Management Library) is loaded at runtime with purego, so
 // the binary is static and still starts on hosts without the NVIDIA driver.
-// Only the calls accel needs are bound; optional ones degrade to absent
+// Only the calls siltide needs are bound; optional ones degrade to absent
 // metrics when the driver is older.
 
 var lib struct {

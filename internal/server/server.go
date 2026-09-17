@@ -1,5 +1,5 @@
 // Package server exposes the collector over HTTP: a JSON API for remote
-// accel instances and a Prometheus scrape endpoint. No dependencies: the
+// siltide instances and a Prometheus scrape endpoint. No dependencies: the
 // exposition format is a few lines of text.
 //
 // Security: the token is compared as a SHA-256 digest in constant time, so
@@ -25,9 +25,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/collect"
-	"github.com/mesutoezdil/accel/internal/config"
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/config"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // Schema is the JSON snapshot schema version served by the API.
@@ -166,44 +166,44 @@ var gauges = []struct {
 	name string
 	help string
 }{
-	{device.Util, "accel_device_util_percent", "Device utilization in percent."},
-	{device.MemUsed, "accel_device_memory_used_bytes", "Device memory in use."},
-	{device.MemTotal, "accel_device_memory_total_bytes", "Device memory installed."},
-	{device.MemBandwidth, "accel_device_memory_bandwidth_percent", "Memory bandwidth utilization."},
-	{device.Temp, "accel_device_temperature_celsius", "Device temperature."},
-	{device.MemTemp, "accel_device_memory_temperature_celsius", "Memory temperature."},
-	{device.Power, "accel_device_power_watts", "Power draw."},
-	{device.PowerCap, "accel_device_power_cap_watts", "Enforced power limit."},
-	{device.Energy, "accel_device_energy_joules_total", "Energy since driver load."},
-	{device.ClockCore, "accel_device_clock_core_mhz", "Core clock."},
-	{device.ClockMem, "accel_device_clock_memory_mhz", "Memory clock."},
-	{device.Fan, "accel_device_fan_percent", "Fan speed."},
-	{device.PState, "accel_device_pstate", "Performance state, 0 is fastest."},
-	{device.Throttle, "accel_device_throttle_bits", "Active throttle reasons as a bitmask (1 idle, 2 power cap, 4 thermal, 8 hardware, 16 other)."},
-	{device.EccCorrected, "accel_device_ecc_corrected_total", "Corrected ECC (error-correcting code) errors since driver load."},
-	{device.EccUncorrected, "accel_device_ecc_uncorrected_total", "Uncorrected ECC errors since driver load."},
-	{device.RemappedRows, "accel_device_remapped_rows_total", "Rows remapped after memory errors."},
-	{device.RemapPending, "accel_device_remap_pending", "1 when a reset is needed to apply row remaps."},
-	{device.RemapFailed, "accel_device_remap_failed", "1 when a row remap failed."},
-	{device.RetiredPages, "accel_device_retired_pages_total", "Pages retired after memory errors."},
-	{device.PCIeGen, "accel_device_pcie_generation", "Current PCIe link generation."},
-	{device.PCIeWidth, "accel_device_pcie_width", "Current PCIe link width."},
-	{device.PCIeReplays, "accel_device_pcie_replays_total", "PCIe link replays."},
-	{device.PCIeRx, "accel_device_pcie_rx_bytes_per_second", "PCIe traffic into the device."},
-	{device.PCIeTx, "accel_device_pcie_tx_bytes_per_second", "PCIe traffic out of the device."},
-	{device.LinksActive, "accel_device_links_active", "Interconnect links that are up."},
-	{device.LinksTotal, "accel_device_links_total", "Interconnect links present."},
-	{device.ViolationPower, "accel_device_violation_power_percent", "Share of time clocks were held down by power."},
-	{device.ViolationTherm, "accel_device_violation_thermal_percent", "Share of time clocks were held down by heat."},
-	{device.Encoder, "accel_device_encoder_percent", "Video encoder utilization."},
-	{device.Decoder, "accel_device_decoder_percent", "Video decoder utilization."},
-	{device.SMActive, "accel_device_sm_active_percent", "Share of time a streaming multiprocessor (SM) was busy (from DCGM, NVIDIA's Data Center GPU Manager)."},
-	{device.SMOccupancy, "accel_device_sm_occupancy_percent", "Share of warps resident (DCGM profiling)."},
-	{device.TensorActive, "accel_device_tensor_active_percent", "Share of time tensor cores were busy (DCGM profiling)."},
-	{device.DRAMActive, "accel_device_dram_active_percent", "Share of time memory was busy (DCGM profiling)."},
-	{device.NUMANode, "accel_device_numa_node", "NUMA (non-uniform memory access) node of the device."},
-	{device.AERCorrected, "accel_device_pcie_aer_correctable_total", "PCIe AER (Advanced Error Reporting) correctable errors."},
-	{device.AERFatal, "accel_device_pcie_aer_uncorrectable_total", "PCIe AER uncorrectable errors."},
+	{device.Util, "siltide_device_util_percent", "Device utilization in percent."},
+	{device.MemUsed, "siltide_device_memory_used_bytes", "Device memory in use."},
+	{device.MemTotal, "siltide_device_memory_total_bytes", "Device memory installed."},
+	{device.MemBandwidth, "siltide_device_memory_bandwidth_percent", "Memory bandwidth utilization."},
+	{device.Temp, "siltide_device_temperature_celsius", "Device temperature."},
+	{device.MemTemp, "siltide_device_memory_temperature_celsius", "Memory temperature."},
+	{device.Power, "siltide_device_power_watts", "Power draw."},
+	{device.PowerCap, "siltide_device_power_cap_watts", "Enforced power limit."},
+	{device.Energy, "siltide_device_energy_joules_total", "Energy since driver load."},
+	{device.ClockCore, "siltide_device_clock_core_mhz", "Core clock."},
+	{device.ClockMem, "siltide_device_clock_memory_mhz", "Memory clock."},
+	{device.Fan, "siltide_device_fan_percent", "Fan speed."},
+	{device.PState, "siltide_device_pstate", "Performance state, 0 is fastest."},
+	{device.Throttle, "siltide_device_throttle_bits", "Active throttle reasons as a bitmask (1 idle, 2 power cap, 4 thermal, 8 hardware, 16 other)."},
+	{device.EccCorrected, "siltide_device_ecc_corrected_total", "Corrected ECC (error-correcting code) errors since driver load."},
+	{device.EccUncorrected, "siltide_device_ecc_uncorrected_total", "Uncorrected ECC errors since driver load."},
+	{device.RemappedRows, "siltide_device_remapped_rows_total", "Rows remapped after memory errors."},
+	{device.RemapPending, "siltide_device_remap_pending", "1 when a reset is needed to apply row remaps."},
+	{device.RemapFailed, "siltide_device_remap_failed", "1 when a row remap failed."},
+	{device.RetiredPages, "siltide_device_retired_pages_total", "Pages retired after memory errors."},
+	{device.PCIeGen, "siltide_device_pcie_generation", "Current PCIe link generation."},
+	{device.PCIeWidth, "siltide_device_pcie_width", "Current PCIe link width."},
+	{device.PCIeReplays, "siltide_device_pcie_replays_total", "PCIe link replays."},
+	{device.PCIeRx, "siltide_device_pcie_rx_bytes_per_second", "PCIe traffic into the device."},
+	{device.PCIeTx, "siltide_device_pcie_tx_bytes_per_second", "PCIe traffic out of the device."},
+	{device.LinksActive, "siltide_device_links_active", "Interconnect links that are up."},
+	{device.LinksTotal, "siltide_device_links_total", "Interconnect links present."},
+	{device.ViolationPower, "siltide_device_violation_power_percent", "Share of time clocks were held down by power."},
+	{device.ViolationTherm, "siltide_device_violation_thermal_percent", "Share of time clocks were held down by heat."},
+	{device.Encoder, "siltide_device_encoder_percent", "Video encoder utilization."},
+	{device.Decoder, "siltide_device_decoder_percent", "Video decoder utilization."},
+	{device.SMActive, "siltide_device_sm_active_percent", "Share of time a streaming multiprocessor (SM) was busy (from DCGM, NVIDIA's Data Center GPU Manager)."},
+	{device.SMOccupancy, "siltide_device_sm_occupancy_percent", "Share of warps resident (DCGM profiling)."},
+	{device.TensorActive, "siltide_device_tensor_active_percent", "Share of time tensor cores were busy (DCGM profiling)."},
+	{device.DRAMActive, "siltide_device_dram_active_percent", "Share of time memory was busy (DCGM profiling)."},
+	{device.NUMANode, "siltide_device_numa_node", "NUMA (non-uniform memory access) node of the device."},
+	{device.AERCorrected, "siltide_device_pcie_aer_correctable_total", "PCIe AER (Advanced Error Reporting) correctable errors."},
+	{device.AERFatal, "siltide_device_pcie_aer_uncorrectable_total", "PCIe AER uncorrectable errors."},
 }
 
 // Prometheus renders a snapshot in the text exposition format. Labels are
@@ -230,35 +230,35 @@ func Prometheus(s collect.Snapshot) string {
 		}
 		fmt.Fprintf(&b, "# HELP %s %s\n# TYPE %s gauge\n%s\n", g.name, g.help, g.name, strings.Join(lines, "\n"))
 	}
-	b.WriteString("# HELP accel_device_health_score Health score 0-100 derived by accel.\n# TYPE accel_device_health_score gauge\n")
+	b.WriteString("# HELP siltide_device_health_score Health score 0-100 derived by siltide.\n# TYPE siltide_device_health_score gauge\n")
 	for _, d := range s.Devices {
-		fmt.Fprintf(&b, "accel_device_health_score{%s} %d\n", labels(d), d.Health)
+		fmt.Fprintf(&b, "siltide_device_health_score{%s} %d\n", labels(d), d.Health)
 	}
-	b.WriteString("# HELP accel_device_processes Processes holding the device.\n# TYPE accel_device_processes gauge\n")
+	b.WriteString("# HELP siltide_device_processes Processes holding the device.\n# TYPE siltide_device_processes gauge\n")
 	for _, d := range s.Devices {
-		fmt.Fprintf(&b, "accel_device_processes{%s} %d\n", labels(d), len(d.Procs))
+		fmt.Fprintf(&b, "siltide_device_processes{%s} %d\n", labels(d), len(d.Procs))
 	}
-	b.WriteString("# HELP accel_device_idle_allocated Device has processes but sits idle (derived).\n# TYPE accel_device_idle_allocated gauge\n")
+	b.WriteString("# HELP siltide_device_idle_allocated Device has processes but sits idle (derived).\n# TYPE siltide_device_idle_allocated gauge\n")
 	for _, d := range s.Devices {
-		fmt.Fprintf(&b, "accel_device_idle_allocated{%s} %d\n", labels(d), b2i(d.IdleAlloc))
+		fmt.Fprintf(&b, "siltide_device_idle_allocated{%s} %d\n", labels(d), b2i(d.IdleAlloc))
 	}
 	if len(s.Energy) > 0 {
-		b.WriteString("# HELP accel_device_energy_kwh Energy since accel started (derived).\n# TYPE accel_device_energy_kwh counter\n")
+		b.WriteString("# HELP siltide_device_energy_kwh Energy since siltide started (derived).\n# TYPE siltide_device_energy_kwh counter\n")
 		for _, d := range s.Devices {
 			if en, ok := s.Energy[d.ID]; ok {
-				fmt.Fprintf(&b, "accel_device_energy_kwh{%s} %g\n", labels(d), en.KWh)
+				fmt.Fprintf(&b, "siltide_device_energy_kwh{%s} %g\n", labels(d), en.KWh)
 			}
 		}
 	}
 	if len(s.Anomalies) > 0 {
-		b.WriteString("# HELP accel_device_anomaly Anomaly detected in recent history (derived).\n# TYPE accel_device_anomaly gauge\n")
+		b.WriteString("# HELP siltide_device_anomaly Anomaly detected in recent history (derived).\n# TYPE siltide_device_anomaly gauge\n")
 		for _, a := range s.Anomalies {
-			fmt.Fprintf(&b, "accel_device_anomaly{id=%q,kind=%q} 1\n", a.Device, a.Kind)
+			fmt.Fprintf(&b, "siltide_device_anomaly{id=%q,kind=%q} 1\n", a.Device, a.Kind)
 		}
 	}
-	b.WriteString("# HELP accel_device_outlier Device trails its siblings (derived).\n# TYPE accel_device_outlier gauge\n")
+	b.WriteString("# HELP siltide_device_outlier Device trails its siblings (derived).\n# TYPE siltide_device_outlier gauge\n")
 	for _, d := range s.Devices {
-		fmt.Fprintf(&b, "accel_device_outlier{%s} %d\n", labels(d), b2i(d.Outlier))
+		fmt.Fprintf(&b, "siltide_device_outlier{%s} %d\n", labels(d), b2i(d.Outlier))
 	}
 	kinds := map[string]int{}
 	for _, a := range s.Alerts {
@@ -269,25 +269,25 @@ func Prometheus(s collect.Snapshot) string {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	b.WriteString("# HELP accel_alerts_active Active alerts by severity.\n# TYPE accel_alerts_active gauge\n")
+	b.WriteString("# HELP siltide_alerts_active Active alerts by severity.\n# TYPE siltide_alerts_active gauge\n")
 	for _, k := range keys {
-		fmt.Fprintf(&b, "accel_alerts_active{severity=%q} %d\n", k, kinds[k])
+		fmt.Fprintf(&b, "siltide_alerts_active{severity=%q} %d\n", k, kinds[k])
 	}
 	if h := s.Host2; h != nil {
 		if !h.CPU.Percent.Unknown() {
-			fmt.Fprintf(&b, "# HELP accel_host_cpu_percent Host CPU busy share.\n# TYPE accel_host_cpu_percent gauge\naccel_host_cpu_percent %g\n", float64(h.CPU.Percent))
+			fmt.Fprintf(&b, "# HELP siltide_host_cpu_percent Host CPU busy share.\n# TYPE siltide_host_cpu_percent gauge\naccel_host_cpu_percent %g\n", float64(h.CPU.Percent))
 		}
 		if !h.Mem.Used.Unknown() {
-			fmt.Fprintf(&b, "# HELP accel_host_memory_used_bytes Host memory in use.\n# TYPE accel_host_memory_used_bytes gauge\naccel_host_memory_used_bytes %g\n", float64(h.Mem.Used))
+			fmt.Fprintf(&b, "# HELP siltide_host_memory_used_bytes Host memory in use.\n# TYPE siltide_host_memory_used_bytes gauge\naccel_host_memory_used_bytes %g\n", float64(h.Mem.Used))
 		}
 		if len(h.Nets) > 0 {
-			b.WriteString("# HELP accel_host_net_rx_bytes_per_second Interface receive rate.\n# TYPE accel_host_net_rx_bytes_per_second gauge\n")
+			b.WriteString("# HELP siltide_host_net_rx_bytes_per_second Interface receive rate.\n# TYPE siltide_host_net_rx_bytes_per_second gauge\n")
 			for _, n := range h.Nets {
-				fmt.Fprintf(&b, "accel_host_net_rx_bytes_per_second{iface=%q} %g\n", n.Name, n.RxBps)
+				fmt.Fprintf(&b, "siltide_host_net_rx_bytes_per_second{iface=%q} %g\n", n.Name, n.RxBps)
 			}
 		}
 	}
-	fmt.Fprintf(&b, "# HELP accel_snapshot_age_seconds Seconds since the last collection.\n# TYPE accel_snapshot_age_seconds gauge\naccel_snapshot_age_seconds %g\n", time.Since(s.Time).Seconds())
+	fmt.Fprintf(&b, "# HELP siltide_snapshot_age_seconds Seconds since the last collection.\n# TYPE siltide_snapshot_age_seconds gauge\naccel_snapshot_age_seconds %g\n", time.Since(s.Time).Seconds())
 	return b.String()
 }
 

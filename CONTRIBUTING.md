@@ -52,4 +52,4 @@ Add a line under `## Unreleased` in `CHANGELOG.md` for anything a user would not
 
 ## Reporting a hardware run
 
-Open an issue with the vendor, the tool version (`npu-smi -v`, `nvidia-smi --version`, and so on), the output of `accel --once --json --vendors <vendor>`, and what looked wrong. Strip anything private from command lines first; `/api/snapshot` already does that, `--once --json` does not.
+Open an issue with the vendor, the tool version (`npu-smi -v`, `nvidia-smi --version`, and so on), the output of `siltide --once --json --vendors <vendor>`, and what looked wrong. Strip anything private from command lines first; `/api/snapshot` already does that, `--once --json` does not.

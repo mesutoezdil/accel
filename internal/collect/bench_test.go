@@ -5,15 +5,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/config"
-	"github.com/mesutoezdil/accel/internal/history"
-	"github.com/mesutoezdil/accel/internal/provider"
-	"github.com/mesutoezdil/accel/internal/provider/sim"
+	"github.com/mesutoezdil/siltide/internal/config"
+	"github.com/mesutoezdil/siltide/internal/history"
+	"github.com/mesutoezdil/siltide/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/provider/sim"
 )
 
 // BenchmarkCollect measures one full pass (read, enrich, derive, health,
 // events, history) on the simulated fleet; the vendor call itself is free,
-// so this is accel's own overhead per device count.
+// so this is siltide's own overhead per device count.
 func BenchmarkCollect(b *testing.B) {
 	for _, n := range []int{1, 8, 64} {
 		b.Run(itoa(n), func(b *testing.B) {

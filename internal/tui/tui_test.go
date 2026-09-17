@@ -8,11 +8,11 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/mesutoezdil/accel/internal/collect"
-	"github.com/mesutoezdil/accel/internal/config"
-	"github.com/mesutoezdil/accel/internal/history"
-	"github.com/mesutoezdil/accel/internal/provider"
-	"github.com/mesutoezdil/accel/internal/provider/sim"
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/config"
+	"github.com/mesutoezdil/siltide/internal/history"
+	"github.com/mesutoezdil/siltide/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/provider/sim"
 )
 
 func demoEngine(t *testing.T) *collect.Engine {

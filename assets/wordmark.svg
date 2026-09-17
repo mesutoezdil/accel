@@ -15,6 +15,6 @@
     <rect x="136" y="100" width="18" height="68" rx="3" fill="#d9650f"/>
     <rect x="162" y="84" width="18" height="84" rx="3" fill="#8a3d0f"/>
   </g>
-  <text x="176" y="92" font-size="64" font-weight="bold" fill="#ece6db">accel</text>
+  <text x="176" y="92" font-size="64" font-weight="bold" fill="#ece6db">siltide</text>
   <text x="178" y="130" font-size="20" fill="#9c9186">one terminal for every AI accelerator</text>
 </svg>

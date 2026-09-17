@@ -42,7 +42,7 @@ func TestStartTimeAndApp(t *testing.T) {
 		t.Fatalf("age %v", age)
 	}
 	t.Setenv("TMPDIR", root)
-	if err := os.WriteFile(filepath.Join(root, "accel-app-7.json"), []byte(`{"samples_per_s": 1830}`), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(root, "siltide-app-7.json"), []byte(`{"samples_per_s": 1830}`), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	if m := appMetrics(7); m["samples_per_s"] != 1830 {

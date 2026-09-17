@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // Severity of an event or alert.

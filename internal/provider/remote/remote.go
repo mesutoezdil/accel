@@ -1,4 +1,4 @@
-// Package remote reads devices from another accel running with `--listen`, so
+// Package remote reads devices from another siltide running with `--listen`, so
 // one terminal can watch a whole fleet without an agent or a database.
 package remote
 
@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/provider"
 )
 
 // Options describe one node.
@@ -69,8 +69,8 @@ func Provider(o Options) provider.Provider {
 		return json.NewDecoder(resp.Body).Decode(out)
 	}
 	return provider.Provider{
-		Name: "node:" + o.Name, Label: "accel on " + o.Name + " (" + url + ")",
-		Hint: "Start accel with --listen on that node and make sure the port is reachable.",
+		Name: "node:" + o.Name, Label: "siltide on " + o.Name + " (" + url + ")",
+		Hint: "Start siltide with --listen on that node and make sure the port is reachable.",
 		Detect: func() error {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()

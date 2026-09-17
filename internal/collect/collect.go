@@ -14,23 +14,23 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/config"
-	"github.com/mesutoezdil/accel/internal/cost"
-	"github.com/mesutoezdil/accel/internal/derive"
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/events"
-	"github.com/mesutoezdil/accel/internal/health"
-	"github.com/mesutoezdil/accel/internal/history"
-	"github.com/mesutoezdil/accel/internal/host"
-	"github.com/mesutoezdil/accel/internal/kube"
-	"github.com/mesutoezdil/accel/internal/notify"
-	"github.com/mesutoezdil/accel/internal/procinfo"
-	"github.com/mesutoezdil/accel/internal/provider"
-	"github.com/mesutoezdil/accel/internal/slurm"
+	"github.com/mesutoezdil/siltide/internal/config"
+	"github.com/mesutoezdil/siltide/internal/cost"
+	"github.com/mesutoezdil/siltide/internal/derive"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/events"
+	"github.com/mesutoezdil/siltide/internal/health"
+	"github.com/mesutoezdil/siltide/internal/history"
+	"github.com/mesutoezdil/siltide/internal/host"
+	"github.com/mesutoezdil/siltide/internal/kube"
+	"github.com/mesutoezdil/siltide/internal/notify"
+	"github.com/mesutoezdil/siltide/internal/procinfo"
+	"github.com/mesutoezdil/siltide/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/slurm"
 )
 
 // Schema is the JSON snapshot schema version.
-const Schema = "accel.snapshot/v1"
+const Schema = "siltide.snapshot/v1"
 
 // Status is what became of one provider.
 type Status struct {
@@ -44,7 +44,7 @@ type Status struct {
 	Devices int           `json:"devices"`
 }
 
-// Self is accel's own footprint.
+// Self is siltide's own footprint.
 type Self struct {
 	RSS       float64       `json:"rss_bytes"`
 	CPU       float64       `json:"cpu_percent"` // of one core, since the previous pass
@@ -54,7 +54,7 @@ type Self struct {
 	Started   time.Time     `json:"started"`
 }
 
-// Energy is what a device consumed since accel started, from the vendor's
+// Energy is what a device consumed since siltide started, from the vendor's
 // energy counter when there is one, else power integrated over time.
 type Energy struct {
 	KWh    float64 `json:"kwh"`
@@ -299,7 +299,7 @@ func (e *Engine) Collect(ctx context.Context) Snapshot {
 	return snap
 }
 
-// trackEnergy accumulates kWh per device since accel started.
+// trackEnergy accumulates kWh per device since siltide started.
 func (e *Engine) trackEnergy(now time.Time, devs []device.Device) map[string]Energy {
 	out := map[string]Energy{}
 	g := e.cfg.Carbon.GramsPerKWh
@@ -357,7 +357,7 @@ func (e *Engine) drainEvents(now time.Time, devs []device.Device) {
 	}
 }
 
-// self measures accel's own footprint.
+// self measures siltide's own footprint.
 func (e *Engine) self(now time.Time, pass time.Duration) Self {
 	var ms runtime.MemStats
 	runtime.ReadMemStats(&ms)
@@ -388,7 +388,7 @@ func (e *Engine) enrich(ctx context.Context, devs []device.Device) {
 	for i := range devs {
 		d := &devs[i]
 		if d.Node != "" {
-			continue // the remote accel already did this
+			continue // the remote siltide already did this
 		}
 		for j := range d.Procs {
 			p := &d.Procs[j]

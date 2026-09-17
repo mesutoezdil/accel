@@ -11,8 +11,8 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/mesutoezdil/accel/internal/collect"
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 // tabs in display order; the key switches to the tab.
@@ -446,7 +446,7 @@ func (m *Model) exportCSV() {
 		m.say("history is disabled")
 		return
 	}
-	path := "accel-history-" + time.Now().Format("20060102-150405") + ".csv"
+	path := "siltide-history-" + time.Now().Format("20060102-150405") + ".csv"
 	f, err := createFile(path)
 	if err != nil {
 		m.say(err.Error())
@@ -832,7 +832,7 @@ func (m Model) header() string {
 	for _, d := range s.Devices {
 		nodes[d.Node] = true
 	}
-	parts := []string{th.title.Render("accel"), s.Host, fmt.Sprintf("%d devices", len(s.Devices))}
+	parts := []string{th.title.Render("siltide"), s.Host, fmt.Sprintf("%d devices", len(s.Devices))}
 	if len(nodes) > 1 {
 		parts = append(parts, fmt.Sprintf("%d nodes", len(nodes)))
 	}
@@ -854,7 +854,7 @@ func (m Model) header() string {
 		clock = "starting"
 	}
 	if m.width < 80 {
-		left = th.title.Render("accel") + " " + fmt.Sprintf("%d devices", len(s.Devices))
+		left = th.title.Render("siltide") + " " + fmt.Sprintf("%d devices", len(s.Devices))
 	}
 	return left + rpad(th.dim.Render(clock), max(m.width-width(left), 0))
 }
@@ -1096,7 +1096,7 @@ func (m Model) columnNames() []string {
 
 func themeDir() string {
 	home, _ := userHome()
-	return home + "/.config/accel/themes"
+	return home + "/.config/siltide/themes"
 }
 
 // startCompare sets up a side-by-side view of 2 devices or of one device

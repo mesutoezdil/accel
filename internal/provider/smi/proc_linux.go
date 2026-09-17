@@ -5,7 +5,7 @@ import (
 	"syscall"
 )
 
-// killWithParent stops a background tool when accel dies without Close.
+// killWithParent stops a background tool when siltide dies without Close.
 func killWithParent(cmd *exec.Cmd) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
 }

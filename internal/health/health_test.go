@@ -3,7 +3,7 @@ package health
 import (
 	"testing"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 func TestScore(t *testing.T) {

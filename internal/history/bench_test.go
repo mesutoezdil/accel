@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
+	"github.com/mesutoezdil/siltide/internal/device"
 )
 
 func BenchmarkRecord(b *testing.B) {

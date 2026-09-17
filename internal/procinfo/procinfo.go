@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-// Info is what accel could find out about a process.
+// Info is what siltide could find out about a process.
 type Info struct {
 	User      string
 	Command   string
@@ -126,11 +126,11 @@ func startTime(stat, root string) time.Time {
 }
 
 // appMetrics reads metrics a workload published about itself: a JSON
-// object of numbers at `/run/accel/app/<pid>.json` or
-// `$TMPDIR/accel-app-<pid>.json`, for example {"samples_per_s": 1830,
+// object of numbers at `/run/siltide/app/<pid>.json` or
+// `$TMPDIR/siltide-app-<pid>.json`, for example {"samples_per_s": 1830,
 // "nccl_gbps": 210}. Nothing in the vendor stack reports these.
 func appMetrics(pid int) map[string]float64 {
-	for _, p := range []string{"/run/accel/app/" + strconv.Itoa(pid) + ".json", filepath.Join(os.TempDir(), "accel-app-"+strconv.Itoa(pid)+".json")} {
+	for _, p := range []string{"/run/siltide/app/" + strconv.Itoa(pid) + ".json", filepath.Join(os.TempDir(), "siltide-app-"+strconv.Itoa(pid)+".json")} {
 		b, err := os.ReadFile(p)
 		if err != nil {
 			continue

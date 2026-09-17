@@ -1,4 +1,4 @@
-// Package sshp reads accelerators on hosts where accel is not installed by
+// Package sshp reads accelerators on hosts where siltide is not installed by
 // running the vendor tools over the system ssh client. Nothing to deploy
 // on the far side: the node needs its vendor driver and an ssh login.
 package sshp
@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/provider"
-	"github.com/mesutoezdil/accel/internal/provider/smi"
+	"github.com/mesutoezdil/siltide/internal/provider"
+	"github.com/mesutoezdil/siltide/internal/provider/smi"
 )
 
 // Providers returns one provider per CLI vendor for target ("user@host" or

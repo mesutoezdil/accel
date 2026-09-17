@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/history"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/history"
 )
 
 // topologyMatrix renders the device-to-device connection levels of one

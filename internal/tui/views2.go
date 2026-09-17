@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/host"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/host"
 )
 
 // ---- Nodes and Network ----
@@ -95,7 +95,7 @@ func (m *Model) viewNodes() string {
 	}
 	m.headSpans = nil
 	var b strings.Builder
-	b.WriteString(th.bold.Render("Nodes") + th.dim.Render("  add remote accel services or ssh hosts under nodes: in the config") + "\n")
+	b.WriteString(th.bold.Render("Nodes") + th.dim.Render("  add remote siltide services or ssh hosts under nodes: in the config") + "\n")
 	b.WriteString(th.table(cols, out, m.sel, min(len(out), max(m.height/3, 3)), m.width, -1, false) + "\n\n")
 	if h := m.snap.Host2; h != nil && (m.sel == 0 || m.sel >= len(rows)) {
 		b.WriteString(m.hostDetail(*h))
@@ -358,7 +358,7 @@ func (m *Model) describe() {
 	defer cancel()
 	text, err := m.eng.Kube().Describe(ctx, r.ns, r.name)
 	if err != nil {
-		text = "describe: " + err.Error() + "\n\nWhat accel knows from processes:\n"
+		text = "describe: " + err.Error() + "\n\nWhat siltide knows from processes:\n"
 	}
 	var b strings.Builder
 	b.WriteString(text)
@@ -555,7 +555,7 @@ func (m *Model) viewWorkloads() string {
 	if spend > 0 {
 		footer = "\n\n" + fmt.Sprintf("%s %s%.2f/h across priced workloads, %s%.2f/h of it wasted (set cost.per_hour in the config)", th.dim.Render("cost"), m.currency, spend, m.currency, waste)
 	}
-	return th.bold.Render("Workloads") + th.dim.Render("  grouped by owner; idle-alloc counts devices held without work; kWh and CO2 since accel started (derived)") + "\n" +
+	return th.bold.Render("Workloads") + th.dim.Render("  grouped by owner; idle-alloc counts devices held without work; kWh and CO2 since siltide started (derived)") + "\n" +
 		th.table(cols, out, m.sel, m.height-8, m.width, -1, false) + footer
 }
 
@@ -651,7 +651,7 @@ func (m *Model) viewHealth() string {
 		rows = append(rows, []string{d.Label(), d.Name, m.health(d), band, strings.Join(d.HealthNotes, "; ")})
 	}
 	m.headSpans = nil
-	b.WriteString(th.bold.Render("Health") + th.dim.Render("  0-100, derived by accel; every deduction is explained") + "\n")
+	b.WriteString(th.bold.Render("Health") + th.dim.Render("  0-100, derived by siltide; every deduction is explained") + "\n")
 	b.WriteString(th.table(cols, rows, m.sel, max(min(len(rows), m.height/2-4), 3), m.width, -1, false) + "\n\n")
 
 	if len(s.Anomalies) > 0 {
@@ -673,7 +673,7 @@ func (m *Model) viewHealth() string {
 		fmt.Fprintf(&b, "  %-44s %3d devices  %6s  %3d errors  %s\n", trunc(p.Label, 44), p.Devices, p.Latency.Truncate(time.Millisecond), p.Errors, state)
 	}
 	self := s.Self
-	fmt.Fprintf(&b, "\n%s  rss %s  cpu %.1f%%  goroutines %d  last pass %s  passes %d  up %s\n", th.bold.Render("accel itself"),
+	fmt.Fprintf(&b, "\n%s  rss %s  cpu %.1f%%  goroutines %d  last pass %s  passes %d  up %s\n", th.bold.Render("siltide itself"),
 		bytes(self.RSS), self.CPU, self.Goroutine, self.Collect.Truncate(time.Millisecond), self.Passes, time.Since(self.Started).Truncate(time.Second))
 	if src := s.KubeFrom; src != "" {
 		fmt.Fprintf(&b, "%s Kubernetes via %s", th.dim.Render("sources:"), src)

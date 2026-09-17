@@ -2,9 +2,9 @@
 
 ## Reporting
 
-Report a vulnerability through [GitHub private vulnerability reporting](https://github.com/mesutoezdil/accel/security/advisories/new). Please do not open a public issue for it. You should hear back within 7 days.
+Report a vulnerability through [GitHub private vulnerability reporting](https://github.com/mesutoezdil/siltide/security/advisories/new). Please do not open a public issue for it. You should hear back within 7 days.
 
-## What accel exposes
+## What siltide exposes
 
 - `--listen` serves the snapshot, events, history, and Prometheus metrics. Off loopback it refuses to start without TLS and a token, unless `insecure: true` is set.
 - Tokens are compared as SHA-256 digests in constant time; `--gen-token` prints a token and its digest so the config holds only the digest.

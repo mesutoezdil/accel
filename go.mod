@@ -1,4 +1,4 @@
-module github.com/mesutoezdil/accel
+module github.com/mesutoezdil/siltide
 
 go 1.26.0
 

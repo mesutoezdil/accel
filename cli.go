@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mesutoezdil/accel/internal/collect"
-	"github.com/mesutoezdil/accel/internal/device"
-	"github.com/mesutoezdil/accel/internal/tui"
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/tui"
 )
 
 // flagNames are every long flag, for completions.
@@ -24,8 +24,8 @@ func completion(shell string) (string, error) {
 	flags := "--" + strings.Join(flagNames, " --")
 	switch shell {
 	case "bash":
-		return fmt.Sprintf(`# accel bash completion: source this file or drop it in /etc/bash_completion.d
-_accel() {
+		return fmt.Sprintf(`# siltide bash completion: source this file or drop it in /etc/bash_completion.d
+_siltide() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
     case "$prev" in
@@ -36,27 +36,27 @@ _accel() {
     esac
     COMPREPLY=($(compgen -W "%s" -- "$cur"))
 }
-complete -F _accel accel
+complete -F _siltide siltide
 `, strings.Join(tui.ThemeNames(), " "), strings.Join(names(), " "), flags), nil
 	case "zsh":
 		var lines []string
 		for _, f := range flagNames {
 			lines = append(lines, fmt.Sprintf("  '--%s'", f))
 		}
-		return fmt.Sprintf(`#compdef accel
-# accel zsh completion: put this file in a directory on $fpath as _accel
+		return fmt.Sprintf(`#compdef siltide
+# siltide zsh completion: put this file in a directory on $fpath as _siltide
 _arguments \
 %s
 `, strings.Join(lines, " \\\n")), nil
 	case "fish":
 		var b strings.Builder
-		b.WriteString("# accel fish completion: ~/.config/fish/completions/accel.fish\n")
+		b.WriteString("# siltide fish completion: ~/.config/fish/completions/siltide.fish\n")
 		for _, f := range flagNames {
-			fmt.Fprintf(&b, "complete -c accel -l %s\n", f)
+			fmt.Fprintf(&b, "complete -c siltide -l %s\n", f)
 		}
-		fmt.Fprintf(&b, "complete -c accel -l theme -xa '%s'\n", strings.Join(tui.ThemeNames(), " "))
-		fmt.Fprintf(&b, "complete -c accel -l vendors -xa '%s'\n", strings.Join(names(), " "))
-		b.WriteString("complete -c accel -l completion -xa 'bash zsh fish'\n")
+		fmt.Fprintf(&b, "complete -c siltide -l theme -xa '%s'\n", strings.Join(tui.ThemeNames(), " "))
+		fmt.Fprintf(&b, "complete -c siltide -l vendors -xa '%s'\n", strings.Join(names(), " "))
+		b.WriteString("complete -c siltide -l completion -xa 'bash zsh fish'\n")
 		return b.String(), nil
 	}
 	return "", fmt.Errorf("unknown shell %q (bash, zsh, fish)", shell)
@@ -77,7 +77,7 @@ func manPage() string {
 		case "service":
 			flags.WriteString("Run headless: collect, keep history, and serve the API and /metrics.\n")
 		case "remote":
-			flags.WriteString("Watch a remote accel service (URL) instead of local hardware.\n")
+			flags.WriteString("Watch a remote siltide service (URL) instead of local hardware.\n")
 		case "record":
 			flags.WriteString("Append every snapshot as JSON to this file; replay it with --replay.\n")
 		case "replay":
@@ -89,17 +89,17 @@ func manPage() string {
 		case "completion":
 			flags.WriteString("Print a completion script for bash, zsh, or fish.\n")
 		default:
-			flags.WriteString("See accel --help.\n")
+			flags.WriteString("See siltide --help.\n")
 		}
 	}
-	return fmt.Sprintf(`.TH ACCEL 1 "%s" "accel %s" "User Commands"
+	return fmt.Sprintf(`.TH SILTIDE 1 "%s" "siltide %s" "User Commands"
 .SH NAME
-accel \- terminal monitor for GPUs, NPUs, and other AI accelerators
+siltide \- terminal monitor for GPUs, NPUs, and other AI accelerators
 .SH SYNOPSIS
-.B accel
+.B siltide
 [\fIflags\fR]
 .SH DESCRIPTION
-accel shows what every accelerator in the box (or the fleet) is doing right
+siltide shows what every accelerator in the box (or the fleet) is doing right
 now and, with its built-in time machine, what it did earlier. It reads NVIDIA,
 AMD, Intel, Apple silicon, Huawei Ascend, AWS Inferentia and Trainium, Biren,
 Cambricon, Enflame, Hygon, Iluvatar, Kunlunxin, MetaX, Moore Threads, and VastAI
@@ -110,13 +110,13 @@ Prometheus metrics.
 %s
 .SH FILES
 .TP
-.I ~/.config/accel/config.yaml
+.I ~/.config/siltide/config.yaml
 Configuration; see examples/config.yaml. Unknown keys are rejected.
 .TP
-.I ~/.config/accel/themes/*.yaml
+.I ~/.config/siltide/themes/*.yaml
 User themes.
 .TP
-.I ~/.local/state/accel/history/
+.I ~/.local/state/siltide/history/
 History files, one per hour, plain text with a CRC per line.
 .SH EXIT STATUS
 0 on success, 1 on error, 2 on usage, 3 when --once found no accelerator.
@@ -128,7 +128,7 @@ nvidia-smi(1), npu-smi(1)
 // statusLine is the one-line summary for status bars.
 func statusLine(s collect.Snapshot) string {
 	if len(s.Devices) == 0 {
-		return "accel: no accelerators"
+		return "siltide: no accelerators"
 	}
 	f := s.Fleet
 	parts := []string{fmt.Sprintf("%d dev", f.Devices)}
@@ -177,6 +177,6 @@ func exportHistory(path string, eng *collect.Engine) error {
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(os.Stderr, "accel: wrote %d rows to %s\n", n, path)
+	fmt.Fprintf(os.Stderr, "siltide: wrote %d rows to %s\n", n, path)
 	return nil
 }

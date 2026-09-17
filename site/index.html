@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>accel</title>
-<meta name="description" content="accel finds every accelerator in the machine: fifteen vendors, one terminal, and a rewindable history of what each device was doing.">
+<title>siltide</title>
+<meta name="description" content="siltide finds every accelerator in the machine: fifteen vendors, one terminal, and a rewindable history of what each device was doing.">
 <link rel="icon" href="assets/logo.svg">
 <style>
 :root{
@@ -28,7 +28,7 @@ body{margin:0;color:var(--text);font-family:var(--mono);line-height:1.6;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 
 /* A fixed backdrop: a faint chip-like grid and a row of cores pulsing like
-   a live utilization wall, standing in for the terminal accel draws once
+   a live utilization wall, standing in for the terminal siltide draws once
    it is running. Static and low-contrast enough to read text over. */
 .gpu-bg{position:fixed;inset:0;z-index:-1;background:var(--bg);overflow:hidden}
 .gpu-bg .grid-lines{position:absolute;inset:-1px;
@@ -152,7 +152,7 @@ footer a:hover{color:var(--text)}
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#top"><img src="assets/logo.svg" alt=""> accel</a>
+    <a class="brand" href="#top"><img src="assets/logo.svg" alt=""> siltide</a>
     <div class="nav-sections">
       <a class="link" href="#why" data-en="Why" data-zh="为什么">Why</a>
       <a class="link" href="#views" data-en="Views" data-zh="功能">Views</a>
@@ -161,7 +161,7 @@ footer a:hover{color:var(--text)}
       <a class="link" href="#install" data-en="Install" data-zh="安装">Install</a>
     </div>
     <div class="nav-right">
-      <a class="link" href="https://github.com/mesutoezdil/accel">GitHub ↗</a>
+      <a class="link" href="https://github.com/mesutoezdil/siltide">GitHub ↗</a>
       <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
       <button class="mode-btn" id="mode-toggle" title="switch color mode" type="button">light</button>
     </div>
@@ -172,27 +172,27 @@ footer a:hover{color:var(--text)}
 <section class="hero">
   <div class="cores" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="wrap">
-    <h1><span class="accent">accel</span> <span data-en="finds every accelerator in the machine." data-zh="能找到机器里的每一块加速卡。">finds every accelerator in the machine.</span></h1>
+    <h1><span class="accent">siltide</span> <span data-en="finds every accelerator in the machine." data-zh="能找到机器里的每一块加速卡。">finds every accelerator in the machine.</span></h1>
     <p class="lede" data-en="Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago." data-zh="目前支持十五家厂商：GPU、NPU、苹果自研芯片，以及机架里能叫得上名字的其他加速器。它会显示谁在用每一块设备、温度多高，还有十分钟前发生了什么。">Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago.</p>
     <div class="cta">
       <a class="btn primary" href="#install" data-en="Install →" data-zh="安装 →">Install →</a>
-      <a class="btn ghost" href="https://github.com/mesutoezdil/accel" data-en="View source ↗" data-zh="查看源码 ↗">View source ↗</a>
+      <a class="btn ghost" href="https://github.com/mesutoezdil/siltide" data-en="View source ↗" data-zh="查看源码 ↗">View source ↗</a>
     </div>
-    <div class="frame"><img src="assets/overview.png" alt="accel Overview tab showing a mixed fleet of accelerators" loading="lazy"></div>
+    <div class="frame"><img src="assets/overview.png" alt="siltide Overview tab showing a mixed fleet of accelerators" loading="lazy"></div>
   </div>
 </section>
 
 <section id="why">
   <div class="wrap">
-    <h2 data-en="Why accel" data-zh="为什么选择 accel">Why accel</h2>
+    <h2 data-en="Why siltide" data-zh="为什么选择 siltide">Why siltide</h2>
     <p class="lede" data-en="These are the questions that come up when a job is slow, a device sits idle, or a bill looks wrong. Each one points at a tab." data-zh="这些是任务变慢、设备闲置或账单不对劲时会问的问题，每一个都对应一个标签页。">These are the questions that come up when a job is slow, a device sits idle, or a bill looks wrong. Each one points at a tab.</p>
     <div class="grid">
       <div class="card"><span class="tab">Overview</span><p class="q" data-en="Which device is idle while a pod still holds it?" data-zh="哪块设备处于闲置状态，却仍被某个 Pod 占用？">Which device is idle while a pod still holds it?</p><p data-en="Fleet totals and per-device state land on one screen. Idle-allocated devices get flagged there too." data-zh="集群汇总和每块设备的状态都在同一屏幕上，闲置却仍被占用的设备也会在这里标出来。">Fleet totals and per-device state land on one screen. Idle-allocated devices get flagged there too.</p></div>
-      <div class="card"><span class="tab">Workloads</span><p class="q" data-en="Which workload is wasting spend?" data-zh="哪个工作负载在浪费开销？">Which workload is wasting spend?</p><p data-en="Set your own price per hour, and accel turns held devices into a spend and waste figure per workload." data-zh="设置好每小时的价格，accel 就能把占用的设备换算成每个工作负载的花费和浪费金额。">Set your own price per hour, and accel turns held devices into a spend and waste figure per workload.</p></div>
+      <div class="card"><span class="tab">Workloads</span><p class="q" data-en="Which workload is wasting spend?" data-zh="哪个工作负载在浪费开销？">Which workload is wasting spend?</p><p data-en="Set your own price per hour, and siltide turns held devices into a spend and waste figure per workload." data-zh="设置好每小时的价格，siltide 就能把占用的设备换算成每个工作负载的花费和浪费金额。">Set your own price per hour, and siltide turns held devices into a spend and waste figure per workload.</p></div>
       <div class="card"><span class="tab">Kubernetes · Nodes</span><p class="q" data-en="Which pod, and which Slurm job, owns this device?" data-zh="这块设备属于哪个 Pod，或者哪个 Slurm 作业？">Which pod, and which Slurm job, owns this device?</p><p data-en="A process traces back through its container to the pod and the workload. Slurm jobs get the same treatment." data-zh="进程会一路追溯到容器、Pod 和工作负载，Slurm 作业也是同样的处理方式。">A process traces back through its container to the pod and the workload. Slurm jobs get the same treatment.</p></div>
       <div class="card"><span class="tab">Links</span><p class="q" data-en="Is this device isolated on the fabric?" data-zh="这块设备在互联网络里是不是被隔离了？">Is this device isolated on the fabric?</p><p data-en="PCIe width, NVLink state, and a topology matrix show who shares a switch with whom." data-zh="PCIe 带宽、NVLink 状态和拓扑矩阵会显示哪些设备共享同一个交换机。">PCIe width, NVLink state, and a topology matrix show who shares a switch with whom.</p></div>
       <div class="card"><span class="tab">History</span><p class="q" data-en="What happened 15 minutes ago?" data-zh="十五分钟前发生了什么？">What happened 15 minutes ago?</p><p data-en="Every metric can be scrubbed back through the window it kept. Events sit right on the timeline." data-zh="保留下来的每一项指标都能往回拖动查看，事件也标在同一条时间线上。">Every metric can be scrubbed back through the window it kept. Events sit right on the timeline.</p></div>
-      <div class="card"><span class="tab">Health</span><p class="q" data-en="Is this reading real, or a guess?" data-zh="这个数值是实测的，还是猜的？">Is this reading real, or a guess?</p><p data-en="A health score comes with the reasons behind it. What accel could not measure shows up as N/A, never as zero." data-zh="健康分会附带扣分原因。accel 测不到的数据会显示为 N/A，绝不会写成 0。">A health score comes with the reasons behind it. What accel could not measure shows up as N/A, never as zero.</p></div>
+      <div class="card"><span class="tab">Health</span><p class="q" data-en="Is this reading real, or a guess?" data-zh="这个数值是实测的，还是猜的？">Is this reading real, or a guess?</p><p data-en="A health score comes with the reasons behind it. What siltide could not measure shows up as N/A, never as zero." data-zh="健康分会附带扣分原因。siltide 测不到的数据会显示为 N/A，绝不会写成 0。">A health score comes with the reasons behind it. What siltide could not measure shows up as N/A, never as zero.</p></div>
     </div>
   </div>
 </section>
@@ -248,7 +248,7 @@ footer a:hover{color:var(--text)}
 <section id="vendors">
   <div class="wrap">
     <h2 data-en="15 vendors" data-zh="15 家厂商">15 vendors</h2>
-    <p class="lede" data-en-html="NVIDIA and Apple silicon run on real hardware today. The rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href='https://github.com/mesutoezdil/accel#supported-accelerators'>the README</a>." data-zh-html="NVIDIA 和苹果自研芯片已经在真实硬件上验证过，其余厂商都是照着各自工具的输出实现的，每个解析器都配有一份真实样本。完整表格和来源见<a href='https://github.com/mesutoezdil/accel#supported-accelerators'>README</a>。">NVIDIA and Apple silicon run on real hardware today. The rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
+    <p class="lede" data-en-html="NVIDIA and Apple silicon run on real hardware today. The rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href='https://github.com/mesutoezdil/siltide#supported-accelerators'>the README</a>." data-zh-html="NVIDIA 和苹果自研芯片已经在真实硬件上验证过，其余厂商都是照着各自工具的输出实现的，每个解析器都配有一份真实样本。完整表格和来源见<a href='https://github.com/mesutoezdil/siltide#supported-accelerators'>README</a>。">NVIDIA and Apple silicon run on real hardware today. The rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href="https://github.com/mesutoezdil/siltide#supported-accelerators">the README</a>.</p>
     <div class="tablewrap">
     <table>
       <tr><th>Vendor</th><th>Source</th></tr>
@@ -283,22 +283,22 @@ footer a:hover{color:var(--text)}
       <button class="tabbtn" data-p="docker" data-en="Container" data-zh="容器">Container</button>
     </div>
     <div class="install-panel active" id="p-bin">
-<pre><button class="copy">copy</button><code>tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/accel/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
-curl -fsSL -o accel "https://github.com/mesutoezdil/accel/releases/download/$tag/accel-linux-amd64"
-chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
+<pre><button class="copy">copy</button><code>tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
+curl -fsSL -o siltide "https://github.com/mesutoezdil/siltide/releases/download/$tag/siltide-linux-amd64"
+chmod +x siltide && sudo mv siltide /usr/local/bin/</code></pre>
     </div>
     <div class="install-panel" id="p-brew">
-<pre><button class="copy">copy</button><code>brew install mesutoezdil/tap/accel</code></pre>
+<pre><button class="copy">copy</button><code>brew install mesutoezdil/tap/siltide</code></pre>
     </div>
     <div class="install-panel" id="p-go">
-<pre><button class="copy">copy</button><code>go install github.com/mesutoezdil/accel@latest</code></pre>
+<pre><button class="copy">copy</button><code>go install github.com/mesutoezdil/siltide@latest</code></pre>
     </div>
     <div class="install-panel" id="p-docker">
 <pre><button class="copy">copy</button><code>docker run --rm -p 9800:9800 --gpus all --pid=host \
   -e NVIDIA_DRIVER_CAPABILITIES=utility \
-  ghcr.io/mesutoezdil/accel:latest</code></pre>
+  ghcr.io/mesutoezdil/siltide:latest</code></pre>
     </div>
-    <p class="lede" style="margin-top:18px" data-en-html="Then: <code>accel --demo</code> to explore without hardware, or <code>accel</code> to probe what is on the machine." data-zh-html="然后：用 <code>accel --demo</code> 在没有硬件的情况下体验，或者直接运行 <code>accel</code> 来探测这台机器上有什么。">Then: <code>accel --demo</code> to explore without hardware, or <code>accel</code> to probe what is on the machine.</p>
+    <p class="lede" style="margin-top:18px" data-en-html="Then: <code>siltide --demo</code> to explore without hardware, or <code>siltide</code> to probe what is on the machine." data-zh-html="然后：用 <code>siltide --demo</code> 在没有硬件的情况下体验，或者直接运行 <code>siltide</code> 来探测这台机器上有什么。">Then: <code>siltide --demo</code> to explore without hardware, or <code>siltide</code> to probe what is on the machine.</p>
   </div>
 </section>
 
@@ -306,18 +306,18 @@ chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
   <div class="wrap" style="text-align:center">
     <h2 data-en="Open, and still moving" data-zh="开源，还在持续推进">Open, and still moving</h2>
     <p class="lede" style="margin-inline:auto" data-en="Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it." data-zh="这里的每一处改动都从一个 issue 开始，以一个可读的 pull request 结束。少了哪个厂商、哪个数字不对、哪里用起来别扭，都值得报告，哪怕你不是来修它的人。">Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it.</p>
-    <a class="btn primary" href="https://github.com/mesutoezdil/accel" data-en="Star on GitHub →" data-zh="去 GitHub 点个 Star →">Star on GitHub →</a>
+    <a class="btn primary" href="https://github.com/mesutoezdil/siltide" data-en="Star on GitHub →" data-zh="去 GitHub 点个 Star →">Star on GitHub →</a>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
     <div class="row">
-      <span data-en="Apache-2.0. accel is an independent project. The vendor names above belong to their own companies." data-zh="Apache-2.0 协议。accel 是一个独立项目，上面提到的厂商名称都属于各自公司。">Apache-2.0. accel is an independent project. The vendor names above belong to their own companies.</span>
+      <span data-en="Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies." data-zh="Apache-2.0 协议。siltide 是一个独立项目，上面提到的厂商名称都属于各自公司。">Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies.</span>
       <span>
-        <a href="https://github.com/mesutoezdil/accel">GitHub</a> ·
-        <a href="https://github.com/mesutoezdil/accel/issues" data-en="Issues" data-zh="问题反馈">Issues</a> ·
-        <a href="https://github.com/mesutoezdil/accel/blob/main/CONTRIBUTING.md" data-en="Contributing" data-zh="参与贡献">Contributing</a>
+        <a href="https://github.com/mesutoezdil/siltide">GitHub</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/issues" data-en="Issues" data-zh="问题反馈">Issues</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/blob/main/CONTRIBUTING.md" data-en="Contributing" data-zh="参与贡献">Contributing</a>
       </span>
     </div>
   </div>
@@ -346,7 +346,7 @@ document.querySelectorAll(".copy").forEach(function(btn){
 // data-en-html/data-zh-html (the few with an inline link or code span)
 // swaps on click, remembered in localStorage, defaulting to the browser's
 // language on a first visit.
-var ACCEL_LANG_KEY = "accel-lang";
+var SILTIDE_LANG_KEY = "siltide-lang";
 function accelApplyLang(lang){
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
   document.querySelectorAll("[data-en]").forEach(function(el){
@@ -357,11 +357,11 @@ function accelApplyLang(lang){
   });
   var btn = document.getElementById("lang-toggle");
   if (btn) btn.textContent = lang === "zh" ? "EN" : "中文";
-  try { localStorage.setItem(ACCEL_LANG_KEY, lang); } catch (e) {}
+  try { localStorage.setItem(SILTIDE_LANG_KEY, lang); } catch (e) {}
 }
 (function(){
   var start = "en";
-  try { start = localStorage.getItem(ACCEL_LANG_KEY) || ""; } catch (e) {}
+  try { start = localStorage.getItem(SILTIDE_LANG_KEY) || ""; } catch (e) {}
   if (!start) {
     start = (navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh" : "en";
   }
@@ -374,17 +374,17 @@ function accelApplyLang(lang){
 
 // Color mode: dark by default, light on request, remembered in
 // localStorage, defaulting to the system preference on a first visit.
-var ACCEL_MODE_KEY = "accel-mode";
+var SILTIDE_MODE_KEY = "siltide-mode";
 function accelApplyMode(mode){
   if (mode === "light") { document.documentElement.setAttribute("data-mode", "light"); }
   else { document.documentElement.removeAttribute("data-mode"); }
   var btn = document.getElementById("mode-toggle");
   if (btn) btn.textContent = mode === "light" ? "dark" : "light";
-  try { localStorage.setItem(ACCEL_MODE_KEY, mode); } catch (e) {}
+  try { localStorage.setItem(SILTIDE_MODE_KEY, mode); } catch (e) {}
 }
 (function(){
   var start = "";
-  try { start = localStorage.getItem(ACCEL_MODE_KEY) || ""; } catch (e) {}
+  try { start = localStorage.getItem(SILTIDE_MODE_KEY) || ""; } catch (e) {}
   if (!start) {
     start = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
   }
