@@ -54,15 +54,21 @@ section+section{border-top:1px solid var(--border)}
 
 nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(11,10,9,.86);
   backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-nav .wrap{display:flex;align-items:center;gap:20px;height:56px;max-width:1040px}
-.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;margin-right:auto}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:56px;max-width:1040px}
+.nav-left,.nav-right{display:flex;align-items:center;gap:20px;min-width:0}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap;flex:none}
 .brand img{width:22px;height:22px}
-nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem}
+nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem;white-space:nowrap}
 nav a.link:hover{color:var(--text)}
+.nav-sections{display:flex;gap:20px}
 .lang-btn{font-family:var(--mono);font-size:.8rem;background:none;border:1px solid var(--border);
-  color:var(--dim);border-radius:999px;padding:4px 10px;cursor:pointer}
+  color:var(--dim);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap;flex:none}
 .lang-btn:hover{color:var(--text);border-color:var(--dimmer)}
 .swatches{display:flex;gap:6px;margin-left:8px}
+@media (max-width:640px){
+  .nav-sections{display:none}
+  .swatches{display:none}
+}
 .swatch{width:16px;height:16px;border-radius:50%;border:1px solid var(--border);cursor:pointer;padding:0}
 .swatch[data-t="default"]{background:#4d7cff}
 .swatch[data-t="amber"]{background:#f5a623}
@@ -156,21 +162,27 @@ footer a:hover{color:var(--text)}
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#top"><img src="assets/logo.svg" alt=""> accel</a>
-    <a class="link" href="#why" data-en="Why" data-zh="为什么">Why</a>
-    <a class="link" href="#views" data-en="Views" data-zh="功能">Views</a>
-    <a class="link" href="#keys" data-en="Keys" data-zh="快捷键">Keys</a>
-    <a class="link" href="#vendors" data-en="Vendors" data-zh="厂商">Vendors</a>
-    <a class="link" href="#install" data-en="Install" data-zh="安装">Install</a>
-    <a class="link" href="https://github.com/mesutoezdil/accel">GitHub ↗</a>
-    <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
-    <div class="swatches" aria-label="preview a theme">
-      <button class="swatch" data-t="default" title="default"></button>
-      <button class="swatch" data-t="amber" title="amber"></button>
-      <button class="swatch" data-t="ice" title="ice"></button>
-      <button class="swatch" data-t="dracula" title="dracula"></button>
-      <button class="swatch" data-t="mono" title="mono"></button>
-      <button class="swatch" data-t="solarized" title="solarized"></button>
+    <div class="nav-left">
+      <a class="brand" href="#top"><img src="assets/logo.svg" alt=""> accel</a>
+      <div class="nav-sections">
+        <a class="link" href="#why" data-en="Why" data-zh="为什么">Why</a>
+        <a class="link" href="#views" data-en="Views" data-zh="功能">Views</a>
+        <a class="link" href="#keys" data-en="Keys" data-zh="快捷键">Keys</a>
+        <a class="link" href="#vendors" data-en="Vendors" data-zh="厂商">Vendors</a>
+        <a class="link" href="#install" data-en="Install" data-zh="安装">Install</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <a class="link" href="https://github.com/mesutoezdil/accel">GitHub ↗</a>
+      <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
+      <div class="swatches" aria-label="preview a theme">
+        <button class="swatch" data-t="default" title="default"></button>
+        <button class="swatch" data-t="amber" title="amber"></button>
+        <button class="swatch" data-t="ice" title="ice"></button>
+        <button class="swatch" data-t="dracula" title="dracula"></button>
+        <button class="swatch" data-t="mono" title="mono"></button>
+        <button class="swatch" data-t="solarized" title="solarized"></button>
+      </div>
     </div>
   </div>
 </nav>
