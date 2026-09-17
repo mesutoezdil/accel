@@ -11,12 +11,14 @@
   --bg:#0b0a09; --panel:#161310; --panel2:#1d1915; --border:#332c24;
   --text:#ece6db; --dim:#9c9186; --dimmer:#5c5349;
   --accent:#ff8a3d; --accent2:#ffb35c; --nav-bg:rgba(11,10,9,.86);
+  --grid-line:rgba(236,230,219,.05); --frame-shadow:0 30px 60px -30px rgba(0,0,0,.7);
   --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 }
 html[data-mode="light"]{
   --bg:#f7f4ef; --panel:#ffffff; --panel2:#efe9df; --border:#ddd3c4;
   --text:#241f19; --dim:#6b6156; --dimmer:#a89c8c;
   --accent2:#d9650f; --nav-bg:rgba(247,244,239,.86);
+  --grid-line:rgba(36,31,25,.06); --frame-shadow:0 20px 40px -24px rgba(36,31,25,.18);
 }
 *{box-sizing:border-box}
 html{background:var(--bg)}
@@ -29,11 +31,9 @@ body{margin:0;color:var(--text);font-family:var(--mono);line-height:1.6;
 .gpu-bg{position:fixed;inset:0;z-index:-1;background:var(--bg);overflow:hidden}
 .gpu-bg .grid-lines{position:absolute;inset:-1px;
   background-image:
-    linear-gradient(rgba(236,230,219,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(236,230,219,.05) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size:44px 44px;
-  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 75%);
-  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 75%);
 }
 @media (prefers-reduced-motion: reduce){.cores i{animation:none!important;transform:scaleY(.32)!important}}
 img{max-width:100%;display:block}
@@ -89,7 +89,7 @@ nav a.link:hover{color:var(--text)}
 .btn.ghost{color:var(--text)}
 .btn.ghost:hover{border-color:var(--dimmer)}
 
-.frame{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+.frame{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--frame-shadow)}
 .frame img{width:100%}
 
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
