@@ -39,7 +39,7 @@ The vendor list follows the device plugins in [HAMi](https://github.com/Project-
 
 | Vendor | Devices | Source | Processes | Status |
 |---|---|---|---|---|
-| NVIDIA | GPUs, MIG slices | NVML loaded with `dlopen` (no cgo), Xid events, NVLink, ECC, row remap, PCIe AER via sysfs | yes, with `/proc` enrichment | tested against a fake NVML library in CI; not yet run on an NVIDIA host |
+| NVIDIA | GPUs, MIG slices | NVML loaded with `dlopen` (no cgo), Xid events, NVLink, ECC, row remap, PCIe AER via sysfs | yes, with `/proc` enrichment | verified on an H100 SXM (driver 570.211.01): every metric checked against `nvidia-smi`, idle and under a 2 GiB CUDA allocation. NVLink and MIG need a multi-GPU or MIG-enabled host, not tested |
 | Apple | Apple silicon GPU | `ioreg`, IOReport (power, energy), SMC (temperature), AGX user clients (per-process GPU time) | yes | verified on an M4 Pro |
 | AMD | Instinct, Radeon | sysfs (`/sys/class/drm`) and DRM `fdinfo` | yes | sysfs layout from kernel documentation; not yet run on hardware |
 | Intel | Data Center GPU, Arc | sysfs and DRM `fdinfo` | yes | same as AMD |
@@ -66,11 +66,12 @@ Every release and every push to `main` (pre-release `vX.Y.Z-main.N`) publishes b
 **Release binary**
 
 ```sh
-curl -fsSL -o accel https://github.com/mesutoezdil/accel/releases/latest/download/accel-linux-amd64
+tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/accel/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
+curl -fsSL -o accel "https://github.com/mesutoezdil/accel/releases/download/$tag/accel-linux-amd64"
 chmod +x accel && sudo mv accel /usr/local/bin/
 ```
 
-Builds exist for `linux-amd64`, `linux-arm64`, `darwin-amd64`, and `darwin-arm64`. `checksums.txt` sits next to them. The macOS binaries are not notarized, so Gatekeeper quarantines a downloaded one; clear that before running it:
+Every release so far is a pre-release, so GitHub's own `.../releases/latest` redirect 404s; the command above reads the newest tag from the API instead. Builds exist for `linux-amd64`, `linux-arm64`, `darwin-amd64`, and `darwin-arm64`. `checksums.txt` sits next to them. The macOS binaries are not notarized, so Gatekeeper quarantines a downloaded one; clear that before running it:
 
 ```sh
 xattr -d com.apple.quarantine accel

@@ -217,11 +217,11 @@ footer a:hover{color:var(--text)}
 <section id="vendors">
   <div class="wrap">
     <h2>15 vendors, honestly labeled</h2>
-    <p class="lede">Two of these are confirmed on real hardware. The rest are parsers built against captured tool output, waiting on someone with the hardware to run them. The full table, with sources, is in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
+    <p class="lede">Two of these are confirmed on real hardware, most recently an H100 checked metric by metric against <code>nvidia-smi</code>. The rest are parsers built against captured tool output, waiting on someone with the hardware to run them. The full table, with sources, is in <a href="https://github.com/mesutoezdil/accel#supported-accelerators">the README</a>.</p>
     <div class="tablewrap">
     <table>
       <tr><th>Vendor</th><th>Source</th><th>Status</th></tr>
-      <tr><td>NVIDIA</td><td>NVML, dlopen, no cgo</td><td><span class="dot warn"></span>tested against a fake NVML library; not yet run on a host</td></tr>
+      <tr><td>NVIDIA</td><td>NVML, dlopen, no cgo</td><td><span class="dot ok"></span>verified on an H100 SXM against <code>nvidia-smi</code></td></tr>
       <tr><td>Apple silicon</td><td>ioreg, IOReport, SMC</td><td><span class="dot ok"></span>verified on an M4 Pro</td></tr>
       <tr><td>AMD</td><td>sysfs, DRM fdinfo</td><td><span class="dot warn"></span>from kernel docs; not yet run on hardware</td></tr>
       <tr><td>Intel</td><td>sysfs, DRM fdinfo</td><td><span class="dot warn"></span>from kernel docs; not yet run on hardware</td></tr>
@@ -252,7 +252,8 @@ footer a:hover{color:var(--text)}
       <button class="tabbtn" data-p="docker">Container</button>
     </div>
     <div class="install-panel active" id="p-bin">
-<pre><button class="copy">copy</button><code>curl -fsSL -o accel https://github.com/mesutoezdil/accel/releases/latest/download/accel-linux-amd64
+<pre><button class="copy">copy</button><code>tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/accel/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
+curl -fsSL -o accel "https://github.com/mesutoezdil/accel/releases/download/$tag/accel-linux-amd64"
 chmod +x accel && sudo mv accel /usr/local/bin/</code></pre>
     </div>
     <div class="install-panel" id="p-brew">
