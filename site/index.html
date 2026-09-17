@@ -25,8 +25,22 @@ html[data-theme="mono"]{ --accent:#c8c2b6; --accent2:#8a8378; --panel2:#151513; 
 html[data-theme="solarized"]{ --accent:#268bd2; --accent2:#2aa198; --panel2:#0c2b33; }
 *{box-sizing:border-box}
 html{background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;
+body{margin:0;color:var(--text);font-family:var(--sans);line-height:1.55;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+/* A fixed backdrop: a faint chip-like grid and a row of cores pulsing like
+   a live utilization wall, standing in for the terminal accel draws once
+   it is running. Static and low-contrast enough to read text over. */
+.gpu-bg{position:fixed;inset:0;z-index:-1;background:var(--bg);overflow:hidden}
+.gpu-bg .grid-lines{position:absolute;inset:-1px;
+  background-image:
+    linear-gradient(rgba(236,230,219,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(236,230,219,.05) 1px, transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 0%, transparent 75%);
+}
+@media (prefers-reduced-motion: reduce){.cores i{animation:none!important;transform:scaleY(.32)!important}}
 img{max-width:100%;display:block}
 a{color:var(--accent2)}
 [hidden]{display:none!important}
@@ -54,7 +68,21 @@ nav a.link:hover{color:var(--text)}
 .swatch[data-t="mono"]{background:#c8c2b6}
 .swatch[data-t="solarized"]{background:#268bd2}
 
-.hero{padding:72px 0 48px}
+.hero{padding:72px 0 48px;position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:1}
+.hero .cores{position:absolute;left:0;right:0;top:0;height:150px;display:flex;
+  align-items:flex-start;gap:clamp(2px,.6vw,9px);padding-inline:4vw;opacity:.4;z-index:0}
+.hero .cores i{flex:1;min-width:2px;height:100%;border-radius:0 0 2px 2px;font-style:normal;
+  background:linear-gradient(to bottom, var(--accent), transparent 85%);
+  transform-origin:top;animation:gpuPulse 4s ease-in-out infinite}
+.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#57c785,transparent 85%)}
+.hero .cores i:nth-child(5n){background:linear-gradient(to bottom,var(--accent2),transparent 85%)}
+.hero .cores i:nth-child(2n){animation-duration:5.5s;animation-delay:-1.3s}
+.hero .cores i:nth-child(3n+1){animation-duration:3.2s;animation-delay:-2.1s}
+.hero .cores i:nth-child(4n+2){animation-duration:6.4s;animation-delay:-.6s}
+.hero .cores i:nth-child(7n){animation-duration:2.6s;animation-delay:-3.4s}
+.hero .cores i:nth-child(11n){animation-duration:7.1s;animation-delay:-4.8s}
+@keyframes gpuPulse{0%,100%{transform:scaleY(.12)}50%{transform:scaleY(1)}}
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
 .badges img{height:20px}
 .hero h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 .4em;color:var(--text)}
@@ -108,6 +136,8 @@ th{color:var(--dim);font-weight:600;font-family:var(--mono);font-size:.78rem;tex
 .install-panel{display:none}
 .install-panel.active{display:block}
 
+.cta-section h2{margin-bottom:.3em}
+.cta-section .btn{margin-top:8px}
 footer{padding:40px 0;color:var(--dim);font-size:.85rem}
 footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
 footer a{color:var(--dim)}
@@ -116,6 +146,10 @@ footer a:hover{color:var(--text)}
 </head>
 <body>
 
+<div class="gpu-bg" aria-hidden="true">
+  <div class="grid-lines"></div>
+</div>
+
 <nav>
   <div class="wrap">
     <a class="brand" href="#top"><img src="assets/logo.svg" alt=""> accel</a>
@@ -123,6 +157,7 @@ footer a:hover{color:var(--text)}
     <a class="link" href="#views">Views</a>
     <a class="link" href="#keys">Keys</a>
     <a class="link" href="#vendors">Vendors</a>
+    <a class="link" href="#status">Status</a>
     <a class="link" href="#install">Install</a>
     <a class="link" href="https://github.com/mesutoezdil/accel">GitHub ↗</a>
     <div class="swatches" aria-label="preview a theme">
@@ -138,6 +173,7 @@ footer a:hover{color:var(--text)}
 
 <div id="top"></div>
 <section class="hero">
+  <div class="cores" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="wrap">
     <div class="badges">
       <img src="https://github.com/mesutoezdil/accel/actions/workflows/ci.yml/badge.svg" alt="ci">
@@ -238,6 +274,32 @@ footer a:hover{color:var(--text)}
       <tr><td>VastAI</td><td>PCI sysfs</td><td><span class="dot warn"></span>device presence only</td></tr>
     </table>
     </div>
+  </div>
+</section>
+
+<section id="status">
+  <div class="wrap">
+    <h2>What is actually verified</h2>
+    <p class="lede">The dot means the same thing it means in the vendor table above: green ran against real hardware or a live system, amber is built and tested but has not.</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Area</th><th>Status</th></tr>
+      <tr><td>Collection, the 16-tab interface, themes, history, host counters</td><td><span class="dot ok"></span>exercised in CI and in daily use</td></tr>
+      <tr><td>NVIDIA and Apple silicon</td><td><span class="dot ok"></span>verified on an H100 and an M4 Pro</td></tr>
+      <tr><td>The other 13 vendors</td><td><span class="dot warn"></span>parsers tested against captured tool output, not their hardware</td></tr>
+      <tr><td>Kubernetes and Slurm process correlation</td><td><span class="dot warn"></span>built against their APIs, not run against a live cluster or scheduler</td></tr>
+      <tr><td>Service mode, remote TUI, the SSH provider</td><td><span class="dot warn"></span>tested against each other locally, not across a real fleet</td></tr>
+      <tr><td>Health score, cost and waste, anomaly detection, placement hints</td><td>computed by accel from what it does measure, not a number any vendor reports; treat them as informed guesses, not facts</td></tr>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="wrap" style="text-align:center">
+    <h2>Open, and still moving</h2>
+    <p class="lede" style="margin-inline:auto">Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it.</p>
+    <a class="btn primary" href="https://github.com/mesutoezdil/accel">Star on GitHub →</a>
   </div>
 </section>
 
