@@ -44,7 +44,7 @@ GOOS=linux CGO_ENABLED=0 go build .
 3. Register the `Spec` in `smi.Vendors()`. Add it to the demo fleet in `internal/provider/sim` when it helps a screenshot.
 4. Add a captured output file under `testdata/` and a line in `testdata/SOURCES`.
 5. Add a parser test in `smi_test.go`.
-6. Add the vendor to the table in `README.md` and tick it in `TODO.md`.
+6. Add the vendor to the table in `README.md`.
 
 ## Reporting a hardware run
 
