@@ -14,10 +14,10 @@ func fakeCluster(t *testing.T, nodes, pods any) *Resolver {
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		switch {
-		case r.URL.Path == "/api/v1/nodes":
+		switch r.URL.Path {
+		case "/api/v1/nodes":
 			_ = json.NewEncoder(w).Encode(nodes)
-		case r.URL.Path == "/api/v1/pods":
+		case "/api/v1/pods":
 			_ = json.NewEncoder(w).Encode(pods)
 		default:
 			http.NotFound(w, r)
