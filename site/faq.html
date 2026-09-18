@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>siltide — questions and answers</title>
+<meta name="description" content="Does it need root, does it phone home, does it work over SSH, what happens with no accelerator, why N/A instead of zero.">
+<link rel="canonical" href="https://mesutoezdil.github.io/siltide/faq.html">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0b0a09">
+<meta name="color-scheme" content="dark light">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="siltide">
+<meta property="og:url" content="https://mesutoezdil.github.io/siltide/faq.html">
+<meta property="og:title" content="siltide — questions and answers">
+<meta property="og:description" content="Does it need root, does it phone home, does it work over SSH, what happens with no accelerator, why N/A instead of zero.">
+<meta property="og:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="siltide showing a fleet of accelerators in a terminal">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="siltide — questions and answers">
+<meta name="twitter:description" content="Does it need root, does it phone home, does it work over SSH, what happens with no accelerator, why N/A instead of zero.">
+<meta name="twitter:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="styles.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does it need root?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, on most vendors. NVIDIA through NVML, Apple silicon, and everything read from /sys work as an ordinary user. A few vendor tools insist on privileges of their own; where one does, siltide says so in the Sources view rather than failing quietly."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it phone home?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. There is no telemetry, no update check and no analytics of any kind. siltide makes an outbound connection only for things you configured: a remote node, an SSH host, a webhook or an Alertmanager. With none of those in the config it opens no socket at all unless you pass --listen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work over SSH?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "That is most of the point. It is one static binary with no daemon, so copying it to a jump host and running it there is the normal way to use it. --record on the host and --replay at home hands off an incident without anyone else logging in."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens on a machine with no accelerator?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It says so and exits with status 3 for --once, so a script can tell the difference between nothing found and something broken. --diagnose lists every vendor it probed, how long each took, and what to install for the ones that answered nothing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it support MIG, and partitions generally?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. A partition appears as its own device with the physical device recorded as its parent, so memory is not counted twice and a slice can be filtered like anything else. Kubernetes resources such as nvidia.com/mig-3g.40gb are read on the scheduler side too."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is a number N/A instead of 0?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Because the vendor reported nothing for it, and zero is a measurement. A card that reports no power draw and a card drawing no power are different situations, and siltide will not turn one into the other."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does it cost to run?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On the machine the published numbers came from: 19 MB resident for the interface, 25 MB for the headless collector, and about half a millisecond of work per collection pass over 64 devices. The measurements and the scripts behind them are on the front page and in the repository."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can an agent use it?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. --mcp-stdio and --mcp-http serve the same snapshot over the Model Context Protocol: the fleet summary, the devices, the processes, the history, the events and the health report, with the same filter language the interface takes. Every tool is a read."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it affiliated with any of the vendors?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. siltide is an independent project under Apache-2.0. The vendor names it reports on belong to their own companies, and none of them has any say in what it shows."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="gpu-bg"><div class="grid-lines"></div></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html#top"><img src="assets/logo.svg" alt=""> siltide</a>
+    <div class="nav-sections">
+      <a class="link" href="tui.html" data-en="Terminal" data-zh="终端">Terminal</a>
+      <a class="link" href="guides.html" data-en="Guides" data-zh="指南">Guides</a>
+      <a class="link" href="compare.html" data-en="Compare" data-zh="对比">Compare</a>
+      <a class="link" href="faq.html" data-en="FAQ" data-zh="常见问题">FAQ</a>
+      <a class="link" href="download.html" data-en="Download" data-zh="下载">Download</a>
+    </div>
+    <div class="nav-right">
+      <a class="link" href="https://github.com/mesutoezdil/siltide">GitHub ↗</a>
+      <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
+      <button class="mode-btn" id="mode-toggle" title="switch color mode" type="button">light</button>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+<section id="faq">
+  <div class="wrap">
+    <h1 data-en="Questions people arrive with." data-zh="大家来时最常问的问题。">Questions people arrive with.</h1>
+    <p class="lede" data-en="Answered directly, including the ones where the answer is no." data-zh="直接回答，包括那些答案是“不行”的问题。">Answered directly, including the ones where the answer is no.</p>
+    <div class="grid">
+      <div class="card">
+        <p class="q" data-en="Does it need root?" data-zh="需要 root 吗？">Does it need root?</p>
+        <p data-en="No, on most vendors. NVIDIA through NVML, Apple silicon, and everything read from /sys work as an ordinary user. A few vendor tools insist on privileges of their own; where one does, siltide says so in the Sources view rather than failing quietly." data-zh="大多数厂商上不需要。通过 NVML 读取的 NVIDIA、Apple 自研芯片，以及所有从 /sys 读取的设备，普通用户就能看。个别厂商的工具自己要求特权；遇到这种情况，siltide 会在 Sources 视图里说明，而不是悄悄失败。">No, on most vendors. NVIDIA through NVML, Apple silicon, and everything read from /sys work as an ordinary user. A few vendor tools insist on privileges of their own; where one does, siltide says so in the Sources view rather than failing quietly.</p>
+      </div>
+      <div class="card">
+        <p class="q" data-en="Does it phone home?" data-zh="它会向外发送数据吗？">Does it phone home?</p>
+        <p data-en="No. There is no telemetry, no update check and no analytics of any kind. siltide makes an outbound connection only for things you configured: a remote node, an SSH host, a webhook or an Alertmanager. With none of those in the config it opens no socket at all unless you pass --listen." data-zh="不会。没有任何遥测、更新检查或统计。siltide 只会为你自己配置的东西发起对外连接：远程节点、SSH 主机、webhook 或 Alertmanager。配置里没有这些时，除非你加上 --listen，否则它根本不会打开任何 socket。">No. There is no telemetry, no update check and no analytics of any kind. siltide makes an outbound connection only for things you configured: a remote node, an SSH host, a webhook or an Alertmanager. With none of those in the config it opens no socket at all unless you pass --listen.</p>
+      </div>
+      <div class="card">
+        <p class="q" data-en="Does it work over SSH?" data-zh="能在 SSH 上用吗？">Does it work over SSH?</p>
+        <p data-en="That is most of the point. It is one static binary with no daemon, so copying it to a jump host and running it there is the normal way to use it. --record on the host and --replay at home hands off an incident without anyone else logging in." data-zh="这正是它的主要用途之一。它是一个静态二进制文件，没有守护进程，所以拷到跳板机上直接运行就是常规用法。在主机上 --record、回家后 --replay，可以把一次故障现场交接出去，别人不用再登录。">That is most of the point. It is one static binary with no daemon, so copying it to a jump host and running it there is the normal way to use it. --record on the host and --replay at home hands off an incident without anyone else logging in.</p>
+      </div>
+      <div class="card">
+        <p class="q" data-en="What happens on a machine with no accelerator?" data-zh="机器上没有加速卡会怎样？">What happens on a machine with no accelerator?</p>
+        <p data-en="It says so and exits with status 3 for --once, so a script can tell the difference between nothing found and something broken. --diagnose lists every vendor it probed, how long each took, and what to install for the ones that answered nothing." data-zh="它会直接说明，并且在 --once 模式下以状态码 3 退出，这样脚本能区分“什么都没找到”和“出错了”。--diagnose 会列出它探测过的每一家厂商、各自耗时，以及对没有响应的厂商该装什么。">It says so and exits with status 3 for --once, so a script can tell the difference between nothing found and something broken. --diagnose lists every vendor it probed, how long each took, and what to install for the ones that answered nothing.</p>
+      </div>
+      <div class="card">
+        <p class="q" data-en="Does it support MIG, and partitions generally?" data-zh="支持 MIG 和分区吗？">Does it support MIG, and partitions generally?</p>
+        <p data-en="Yes. A partition appears as its own device with the physical device recorded as its parent, so memory is not counted twice and a slice can be filtered like anything else. Kubernetes resources such as nvidia.com/mig-3g.40gb are read on the scheduler side too." data-zh="支持。每个分区都会作为独立设备出现，并记录它所属的物理设备，因此显存不会被重复统计，切片也能像其他设备一样被筛选。在调度器一侧，nvidia.com/mig-3g.40gb 这类 Kubernetes 资源同样会被读取。">Yes. A partition appears as its own device with the physical device recorded as its parent, so memory is not counted twice and a slice can be filtered like anything else. Kubernetes resources such as nvidia.com/mig-3g.40gb are read on the scheduler side too.</p>
+      </div>
+      <div class="card">
+        <p class="q" data-en="Why is a number N/A instead of 0?" data-zh="为什么显示 N/A 而不是 0？">Why is a number N/A instead of 0?</p>
+        <p data-en="Because the vendor reported nothing for it, and zero is a measurement. A card that reports no power draw and a card drawing no power are different situations, and siltide will not turn one into the other." data-zh="因为厂商没有上报这个值，而 0 是一个测量结果。一块不上报功耗的卡，和一块功耗为零的卡，是两回事，siltide 不会把前者写成后者。">Because the vendor reported nothing for it, and zero is a measurement. A card that reports no power draw and a card drawing no power are different situations, and siltide will not turn one into the other.</p>
+      </div>
+      <div class="card">
+        <p class="q" data-en="How much does it cost to run?" data-zh="运行它的开销有多大？">How much does it cost to run?</p>
+        <p data-en="On the machine the published numbers came from: 19 MB resident for the interface, 25 MB for the headless collector, and about half a millisecond of work per collection pass over 64 devices. The measurements and the scripts behind them are on the front page and in the repository." data-zh="在产出公开数字的那台机器上：界面常驻 19 MB，无界面采集器 25 MB，对 64 块设备的一次采集大约耗时半毫秒。测量结果和对应脚本在首页以及仓库里都有。">On the machine the published numbers came from: 19 MB resident for the interface, 25 MB for the headless collector, and about half a millisecond of work per collection pass over 64 devices. The measurements and the scripts behind them are on the front page and in the repository.</p>
+      </div>
+      <div class="card">
+        <p class="q" data-en="Can an agent use it?" data-zh="AI 智能体能用它吗？">Can an agent use it?</p>
+        <p data-en="Yes. --mcp-stdio and --mcp-http serve the same snapshot over the Model Context Protocol: the fleet summary, the devices, the processes, the history, the events and the health report, with the same filter language the interface takes. Every tool is a read." data-zh="可以。--mcp-stdio 和 --mcp-http 会通过 Model Context Protocol 提供同一份快照：集群概览、设备、进程、历史、事件和健康报告，并支持界面里那套筛选语法。所有工具都是只读的。">Yes. --mcp-stdio and --mcp-http serve the same snapshot over the Model Context Protocol: the fleet summary, the devices, the processes, the history, the events and the health report, with the same filter language the interface takes. Every tool is a read.</p>
+      </div>
+      <div class="card">
+        <p class="q" data-en="Is it affiliated with any of the vendors?" data-zh="它和厂商有关联吗？">Is it affiliated with any of the vendors?</p>
+        <p data-en="No. siltide is an independent project under Apache-2.0. The vendor names it reports on belong to their own companies, and none of them has any say in what it shows." data-zh="没有。siltide 是一个独立项目，采用 Apache-2.0 协议。它报告的厂商名称归各自公司所有，这些公司对它显示什么没有任何话语权。">No. siltide is an independent project under Apache-2.0. The vendor names it reports on belong to their own companies, and none of them has any say in what it shows.</p>
+      </div>
+    </div>
+    <p style="color:var(--dim);font-size:.88rem;margin-top:1.6rem" data-en="Something missing? Open an issue: an unanswered question here is usually a missing paragraph in the documentation." data-zh="还有没覆盖到的问题？欢迎提 issue：这里答不上来的问题，通常意味着文档里少了一段。">Something missing? Open an issue: an unanswered question here is usually a missing paragraph in the documentation.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span data-en="Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies." data-zh="Apache-2.0 协议。siltide 是一个独立项目，上面提到的厂商名称都属于各自公司。">Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies.</span>
+      <span>
+        <a href="https://github.com/mesutoezdil/siltide">GitHub</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/issues" data-en="Issues" data-zh="问题反馈">Issues</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/blob/main/CONTRIBUTING.md" data-en="Contributing" data-zh="参与贡献">Contributing</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

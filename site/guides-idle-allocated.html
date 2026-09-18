@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>siltide — a device is held but doing nothing</title>
+<meta name="description" content="The most expensive state a fleet can be in: the scheduler counts the device as taken, the bill counts it as running, and nothing is using it.">
+<link rel="canonical" href="https://mesutoezdil.github.io/siltide/guides-idle-allocated.html">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0b0a09">
+<meta name="color-scheme" content="dark light">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="siltide">
+<meta property="og:url" content="https://mesutoezdil.github.io/siltide/guides-idle-allocated.html">
+<meta property="og:title" content="siltide — a device is held but doing nothing">
+<meta property="og:description" content="The most expensive state a fleet can be in: the scheduler counts the device as taken, the bill counts it as running, and nothing is using it.">
+<meta property="og:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="siltide showing a fleet of accelerators in a terminal">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="siltide — a device is held but doing nothing">
+<meta name="twitter:description" content="The most expensive state a fleet can be in: the scheduler counts the device as taken, the bill counts it as running, and nothing is using it.">
+<meta name="twitter:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="styles.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "A device is held but doing nothing",
+  "description": "The most expensive state a fleet can be in: the scheduler counts the device as taken, the bill counts it as running, and nothing is using it.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Find them",
+      "text": "Open the Overview. Devices that are allocated and idle are flagged there, and the fleet line counts them. On the command line: siltide --tab overview --filter \"util&lt;5 procs&gt;0\"."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Confirm it is not a gap in measurement",
+      "text": "Press 8 for History and scrub back with ,. A device that has been flat for the whole window is idle; one that dips between bursts is a training loop between steps."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Find who holds it",
+      "text": "Press enter on the device. The process table names the pid, the user, and the pod or Slurm job behind it."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Check the other half",
+      "text": "On the Nodes tab, the scheduler table says how many devices the cluster handed out on that node. Eight handed out and three idle is the number to take to whoever owns the workload."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 5,
+      "name": "Decide",
+      "text": "A notebook left open, a job that finished but did not exit, or a pod requesting more devices than it uses. siltide will not act on any of them: it tells you which one it is."
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="gpu-bg"><div class="grid-lines"></div></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html#top"><img src="assets/logo.svg" alt=""> siltide</a>
+    <div class="nav-sections">
+      <a class="link" href="tui.html" data-en="Terminal" data-zh="终端">Terminal</a>
+      <a class="link" href="guides.html" data-en="Guides" data-zh="指南">Guides</a>
+      <a class="link" href="compare.html" data-en="Compare" data-zh="对比">Compare</a>
+      <a class="link" href="faq.html" data-en="FAQ" data-zh="常见问题">FAQ</a>
+      <a class="link" href="download.html" data-en="Download" data-zh="下载">Download</a>
+    </div>
+    <div class="nav-right">
+      <a class="link" href="https://github.com/mesutoezdil/siltide">GitHub ↗</a>
+      <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
+      <button class="mode-btn" id="mode-toggle" title="switch color mode" type="button">light</button>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+<section id="guide">
+  <div class="wrap">
+    <p style="color:var(--dim);font-size:.85rem"><a href="guides.html" data-en="Guides" data-zh="排查指南">Guides</a></p>
+    <h1>A device is held but doing nothing</h1>
+    <p class="lede">The most expensive state a fleet can be in: the scheduler counts the device as taken, the bill counts it as running, and nothing is using it.</p>
+    <div class="tabgrid">
+      <div class="tabcell"><b>1. Find them</b><span>Open the Overview. Devices that are allocated and idle are flagged there, and the fleet line counts them. On the command line: <code>siltide --tab overview --filter "util&lt;5 procs&gt;0"</code>.</span></div>
+      <div class="tabcell"><b>2. Confirm it is not a gap in measurement</b><span>Press <kbd>8</kbd> for History and scrub back with <kbd>,</kbd>. A device that has been flat for the whole window is idle; one that dips between bursts is a training loop between steps.</span></div>
+      <div class="tabcell"><b>3. Find who holds it</b><span>Press <kbd>enter</kbd> on the device. The process table names the pid, the user, and the pod or Slurm job behind it.</span></div>
+      <div class="tabcell"><b>4. Check the other half</b><span>On the Nodes tab, the scheduler table says how many devices the cluster handed out on that node. Eight handed out and three idle is the number to take to whoever owns the workload.</span></div>
+      <div class="tabcell"><b>5. Decide</b><span>A notebook left open, a job that finished but did not exit, or a pod requesting more devices than it uses. siltide will not act on any of them: it tells you which one it is.</span></div>
+    </div>
+    <p style="color:var(--dim);font-size:.88rem;margin-top:1.6rem">Every step here is a tab, a key or a flag siltide already has. <a href="index.html#install">Install it</a>, or explore the same views with <code>siltide --demo</code>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span data-en="Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies." data-zh="Apache-2.0 协议。siltide 是一个独立项目，上面提到的厂商名称都属于各自公司。">Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies.</span>
+      <span>
+        <a href="https://github.com/mesutoezdil/siltide">GitHub</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/issues" data-en="Issues" data-zh="问题反馈">Issues</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/blob/main/CONTRIBUTING.md" data-en="Contributing" data-zh="参与贡献">Contributing</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>siltide — downloads</title>
+<meta name="description" content="Binaries and packages for Linux, macOS, Alpine and Arch, a container image and a Nix flake, with the steps to verify what you downloaded.">
+<link rel="canonical" href="https://mesutoezdil.github.io/siltide/download.html">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0b0a09">
+<meta name="color-scheme" content="dark light">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="siltide">
+<meta property="og:url" content="https://mesutoezdil.github.io/siltide/download.html">
+<meta property="og:title" content="siltide — downloads">
+<meta property="og:description" content="Binaries and packages for Linux, macOS, Alpine and Arch, a container image and a Nix flake, with the steps to verify what you downloaded.">
+<meta property="og:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="siltide showing a fleet of accelerators in a terminal">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="siltide — downloads">
+<meta name="twitter:description" content="Binaries and packages for Linux, macOS, Alpine and Arch, a container image and a Nix flake, with the steps to verify what you downloaded.">
+<meta name="twitter:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="gpu-bg"><div class="grid-lines"></div></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html#top"><img src="assets/logo.svg" alt=""> siltide</a>
+    <div class="nav-sections">
+      <a class="link" href="tui.html" data-en="Terminal" data-zh="终端">Terminal</a>
+      <a class="link" href="guides.html" data-en="Guides" data-zh="指南">Guides</a>
+      <a class="link" href="compare.html" data-en="Compare" data-zh="对比">Compare</a>
+      <a class="link" href="faq.html" data-en="FAQ" data-zh="常见问题">FAQ</a>
+      <a class="link" href="download.html" data-en="Download" data-zh="下载">Download</a>
+    </div>
+    <div class="nav-right">
+      <a class="link" href="https://github.com/mesutoezdil/siltide">GitHub ↗</a>
+      <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
+      <button class="mode-btn" id="mode-toggle" title="switch color mode" type="button">light</button>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+<section id="download">
+  <div class="wrap">
+    <h1 data-en="Download siltide." data-zh="下载 siltide。">Download siltide.</h1>
+    <p class="lede" data-en="One static binary per platform, or a package for the manager you already use. Every release also publishes checksums and a build attestation, and the verify steps are below." data-zh="每个平台一个静态二进制文件，或者用你已有的包管理器安装。每次发布都会附带校验和与构建证明，验证步骤见下方。">One static binary per platform, or a package for the manager you already use. Every release also publishes checksums and a build attestation, and the verify steps are below.</p>
+
+    <div class="tablewrap">
+    <table>
+      <tr><th data-en="Platform" data-zh="平台">Platform</th><th data-en="What to take" data-zh="下载什么">What to take</th><th data-en="Updates" data-zh="更新方式">Updates</th></tr>
+      <tr><td>Linux x86-64 / arm64</td><td class="mono">siltide-linux-amd64, siltide-linux-arm64</td><td data-en="the install script, or by hand" data-zh="安装脚本，或手动更新">the install script, or by hand</td></tr>
+      <tr><td>macOS arm64 / x86-64</td><td class="mono">siltide-darwin-arm64, siltide-darwin-amd64</td><td data-en="Homebrew, or the install script" data-zh="Homebrew，或安装脚本">Homebrew, or the install script</td></tr>
+      <tr><td>Debian, Ubuntu</td><td class="mono">siltide_*_amd64.deb</td><td data-en="apt, once installed" data-zh="安装后由 apt 管理">apt, once installed</td></tr>
+      <tr><td>Fedora, RHEL, SUSE</td><td class="mono">siltide-*.x86_64.rpm</td><td data-en="dnf or zypper" data-zh="dnf 或 zypper">dnf or zypper</td></tr>
+      <tr><td>Alpine</td><td class="mono">siltide_*.apk</td><td data-en="apk, with an OpenRC service included" data-zh="apk，并附带 OpenRC 服务">apk, with an OpenRC service included</td></tr>
+      <tr><td>Arch</td><td class="mono">siltide_*.pkg.tar.zst</td><td data-en="pacman" data-zh="pacman">pacman</td></tr>
+      <tr><td data-en="Container" data-zh="容器">Container</td><td class="mono">ghcr.io/mesutoezdil/siltide</td><td data-en="pull the tag again" data-zh="重新 pull 镜像标签">pull the tag again</td></tr>
+      <tr><td>Nix</td><td class="mono">github:mesutoezdil/siltide</td><td data-en="nix run, nothing installed" data-zh="nix run，不安装任何东西">nix run, nothing installed</td></tr>
+    </table>
+    </div>
+
+    <p style="margin-top:1.4rem"><a class="btn primary" href="https://github.com/mesutoezdil/siltide/releases/latest" data-en="All release assets ↗" data-zh="全部发布文件 ↗">All release assets ↗</a></p>
+
+    <h2 data-en="Checking what you downloaded" data-zh="校验你下载的文件">Checking what you downloaded</h2>
+    <p class="lede" data-en="The install script does this for you before it writes anything. By hand:" data-zh="安装脚本会在写入任何文件之前自动完成这一步。手动的话：">The install script does this for you before it writes anything. By hand:</p>
+<pre><button class="copy">copy</button><code>sha256sum -c checksums.txt --ignore-missing      # shasum -a 256 on macOS
+gh attestation verify siltide-linux-amd64 --repo mesutoezdil/siltide</code></pre>
+    <p style="color:var(--dim);font-size:.88rem" data-en="The attestation says which workflow, at which commit, produced that exact file. Each archive also ships an SBOM listing what went into it." data-zh="构建证明会说明是哪个 workflow、在哪个提交上产出了这个文件。每个压缩包还附带一份 SBOM，列出其中包含的内容。">The attestation says which workflow, at which commit, produced that exact file. Each archive also ships an SBOM listing what went into it.</p>
+
+    <h2 data-en="Then" data-zh="然后">Then</h2>
+<pre><button class="copy">copy</button><code>siltide --demo     # explore every view without hardware
+siltide            # probe what is actually in this machine
+siltide --diagnose # what it found, what it did not, and why</code></pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span data-en="Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies." data-zh="Apache-2.0 协议。siltide 是一个独立项目，上面提到的厂商名称都属于各自公司。">Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies.</span>
+      <span>
+        <a href="https://github.com/mesutoezdil/siltide">GitHub</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/issues" data-en="Issues" data-zh="问题反馈">Issues</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/blob/main/CONTRIBUTING.md" data-en="Contributing" data-zh="参与贡献">Contributing</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>siltide — what it reads and what it sends</title>
+<meta name="description" content="siltide is read-only: no telemetry, no update check, no writes to a cluster, and nothing outbound unless you configure it.">
+<link rel="canonical" href="https://mesutoezdil.github.io/siltide/security.html">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0b0a09">
+<meta name="color-scheme" content="dark light">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="siltide">
+<meta property="og:url" content="https://mesutoezdil.github.io/siltide/security.html">
+<meta property="og:title" content="siltide — what it reads and what it sends">
+<meta property="og:description" content="siltide is read-only: no telemetry, no update check, no writes to a cluster, and nothing outbound unless you configure it.">
+<meta property="og:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="siltide showing a fleet of accelerators in a terminal">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="siltide — what it reads and what it sends">
+<meta name="twitter:description" content="siltide is read-only: no telemetry, no update check, no writes to a cluster, and nothing outbound unless you configure it.">
+<meta name="twitter:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="gpu-bg"><div class="grid-lines"></div></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html#top"><img src="assets/logo.svg" alt=""> siltide</a>
+    <div class="nav-sections">
+      <a class="link" href="tui.html" data-en="Terminal" data-zh="终端">Terminal</a>
+      <a class="link" href="guides.html" data-en="Guides" data-zh="指南">Guides</a>
+      <a class="link" href="compare.html" data-en="Compare" data-zh="对比">Compare</a>
+      <a class="link" href="faq.html" data-en="FAQ" data-zh="常见问题">FAQ</a>
+      <a class="link" href="download.html" data-en="Download" data-zh="下载">Download</a>
+    </div>
+    <div class="nav-right">
+      <a class="link" href="https://github.com/mesutoezdil/siltide">GitHub ↗</a>
+      <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
+      <button class="mode-btn" id="mode-toggle" title="switch color mode" type="button">light</button>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+<section id="security">
+  <div class="wrap">
+    <h1 data-en="What it reads, and what never leaves the machine." data-zh="它读什么，以及什么永远不会离开这台机器。">What it reads, and what never leaves the machine.</h1>
+    <p class="lede" data-en="siltide watches devices. It does not change them, and it has nowhere to send what it sees unless you configure one." data-zh="siltide 只是观察设备。它不会改动设备，而且除非你自己配置，否则它没有任何地方可以把看到的东西发出去。">siltide watches devices. It does not change them, and it has nowhere to send what it sees unless you configure one.</p>
+
+    <h2 data-en="What it reads" data-zh="它读取什么">What it reads</h2>
+    <div class="grid">
+      <div class="card"><span class="tab">devices</span><p class="q" data-en="Vendor libraries and tools" data-zh="厂商的库和工具">Vendor libraries and tools</p><p data-en="NVML and the macOS frameworks are loaded at run time; the other vendors are read from their CLI or from /sys. Nothing is executed with a shell, and every argument is a fixed list rather than a string." data-zh="NVML 和 macOS 框架在运行时加载；其余厂商通过各自的 CLI 或 /sys 读取。不经过 shell 执行任何东西，所有参数都是固定列表而不是拼接的字符串。">NVML and the macOS frameworks are loaded at run time; the other vendors are read from their CLI or from /sys. Nothing is executed with a shell, and every argument is a fixed list rather than a string.</p></div>
+      <div class="card"><span class="tab">processes</span><p class="q" data-en="/proc, for names and owners" data-zh="/proc，用来获取进程名和属主">/proc, for names and owners</p><p data-en="A process on a device is resolved through /proc to its command, its user and its cgroup, which is how it reaches a container and a pod. Nothing is written there." data-zh="设备上的进程会通过 /proc 解析出命令、用户和 cgroup，从而对应到容器和 Pod。不会向那里写入任何内容。">A process on a device is resolved through /proc to its command, its user and its cgroup, which is how it reaches a container and a pod. Nothing is written there.</p></div>
+      <div class="card"><span class="tab">kubernetes</span><p class="q" data-en="Pods, read only" data-zh="Pod，只读">Pods, read only</p><p data-en="From /var/log/pods, the kubelet pod-resources socket, or the API server with whatever credentials are already on the machine. siltide never writes to a cluster: there is no code in it that can." data-zh="来自 /var/log/pods、kubelet 的 pod-resources socket，或使用机器上已有凭据访问 API server。siltide 从不向集群写入：它里面根本没有能写入的代码。">From /var/log/pods, the kubelet pod-resources socket, or the API server with whatever credentials are already on the machine. siltide never writes to a cluster: there is no code in it that can.</p></div>
+      <div class="card"><span class="tab">disk</span><p class="q" data-en="Two directories, both yours" data-zh="两个目录，都是你自己的">Two directories, both yours</p><p data-en="Config under ~/.config/siltide, and history, bookmarks and the session under ~/.local/state/siltide. Deleting those two leaves nothing of siltide behind." data-zh="配置在 ~/.config/siltide，历史、书签和会话在 ~/.local/state/siltide。删掉这两个目录，siltide 就什么都不会留下。">Config under ~/.config/siltide, and history, bookmarks and the session under ~/.local/state/siltide. Deleting those two leaves nothing of siltide behind.</p></div>
+    </div>
+
+    <h2 data-en="What leaves the machine" data-zh="什么会离开这台机器">What leaves the machine</h2>
+    <p class="lede" data-en="Only what you asked for, and nothing at all by default. There is no telemetry, no update check and no analytics in siltide, and no code that would report one." data-zh="只有你主动要求的内容，默认情况下什么都不会外发。siltide 里没有遥测、没有更新检查、没有统计，也没有任何会上报的代码。">Only what you asked for, and nothing at all by default. There is no telemetry, no update check and no analytics in siltide, and no code that would report one.</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th data-en="If you configure" data-zh="如果你配置了">If you configure</th><th data-en="Then siltide connects to" data-zh="siltide 才会连接">Then siltide connects to</th></tr>
+      <tr><td class="mono">--listen</td><td data-en="nothing outbound; it accepts connections, and off loopback it requires TLS and a token unless insecure is set" data-zh="不会对外连接；它只接受连接，且在非回环地址上除非设置 insecure，否则必须有 TLS 和令牌">nothing outbound; it accepts connections, and off loopback it requires TLS and a token unless insecure is set</td></tr>
+      <tr><td class="mono">nodes:</td><td data-en="the siltide services or SSH hosts you listed" data-zh="你列出的 siltide 服务或 SSH 主机">the siltide services or SSH hosts you listed</td></tr>
+      <tr><td class="mono">alerts:</td><td data-en="the webhook, Slack URL or Alertmanager you gave it" data-zh="你填写的 webhook、Slack 地址或 Alertmanager">the webhook, Slack URL or Alertmanager you gave it</td></tr>
+      <tr><td class="mono">kubernetes</td><td data-en="the API server your kubeconfig or service account already points at" data-zh="你的 kubeconfig 或 ServiceAccount 本来就指向的 API server">the API server your kubeconfig or service account already points at</td></tr>
+      <tr><td class="mono">--mcp-http</td><td data-en="nothing; it listens on loopback only and refuses any other address" data-zh="不会连接任何地方；它只在回环地址上监听，其他地址一律拒绝">nothing; it listens on loopback only and refuses any other address</td></tr>
+    </table>
+    </div>
+
+    <h2 data-en="Tokens and TLS" data-zh="令牌与 TLS">Tokens and TLS</h2>
+    <p class="lede" data-en="The API token can be stored as a SHA-256 digest, so the plaintext never sits in a config file, and it is compared in constant time. Listening on anything other than loopback without TLS and a token is refused rather than warned about." data-zh="API 令牌可以以 SHA-256 摘要形式保存，明文不会留在配置文件里，比较时使用恒定时间算法。在非回环地址上监听时，如果没有 TLS 和令牌，会被直接拒绝，而不是只给个警告。">The API token can be stored as a SHA-256 digest, so the plaintext never sits in a config file, and it is compared in constant time. Listening on anything other than loopback without TLS and a token is refused rather than warned about.</p>
+
+    <h2 data-en="Reporting something" data-zh="报告安全问题">Reporting something</h2>
+    <p class="lede" data-en="A vulnerability should not be a public issue. SECURITY.md in the repository says how to report one, and what happens next." data-zh="安全漏洞不应该作为公开 issue 提交。仓库里的 SECURITY.md 说明了如何上报，以及之后的处理流程。">A vulnerability should not be a public issue. <a href="https://github.com/mesutoezdil/siltide/blob/main/SECURITY.md">SECURITY.md</a> in the repository says how to report one, and what happens next.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span data-en="Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies." data-zh="Apache-2.0 协议。siltide 是一个独立项目，上面提到的厂商名称都属于各自公司。">Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies.</span>
+      <span>
+        <a href="https://github.com/mesutoezdil/siltide">GitHub</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/issues" data-en="Issues" data-zh="问题反馈">Issues</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/blob/main/CONTRIBUTING.md" data-en="Contributing" data-zh="参与贡献">Contributing</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

@@ -24,8 +24,26 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: |
           mkdir -p _site/assets
-          cp site/index.html site/tui.html site/styles.css site/site.js _site/
-          cp assets/logo.svg assets/demo.gif assets/demo.json _site/assets/
+          cp site/*.html site/styles.css site/site.js site/robots.txt _site/
+          cp assets/logo.svg assets/demo.gif assets/demo.json assets/og-home.png _site/assets/
+          # The sitemap is generated from what was just copied, so a page that
+          # is added or removed cannot leave it stale.
+          python3 - <<'PY'
+          import os, datetime
+          base = "https://mesutoezdil.github.io/siltide/"
+          today = datetime.date.today().isoformat()
+          pages = sorted(f for f in os.listdir("_site") if f.endswith(".html"))
+          urls = []
+          for f in pages:
+              loc = base if f == "index.html" else base + f
+              priority = "1.0" if f == "index.html" else "0.7"
+              urls.append(f"  <url>\n    <loc>{loc}</loc>\n    <lastmod>{today}</lastmod>\n    <priority>{priority}</priority>\n  </url>")
+          open("_site/sitemap.xml", "w").write(
+              '<?xml version="1.0" encoding="UTF-8"?>\n'
+              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+              + "\n".join(urls) + "\n</urlset>\n")
+          print(f"sitemap: {len(pages)} pages")
+          PY
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: _site
