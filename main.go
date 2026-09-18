@@ -70,6 +70,11 @@ func main() {
 	showVersion := fs.Bool("version", false, "print the version and exit")
 	recordPath := fs.String("record", "", "append every snapshot as JSON to this file (replay with --replay)")
 	replayPath := fs.String("replay", "", "drive the interface from a recording instead of hardware")
+	openTab := fs.String("tab", "", "open on this tab (overview, devices, processes, history, ...)")
+	openFilter := fs.String("filter", "", "open with this filter, as / sets it")
+	openNode := fs.String("node", "", "open limited to this node")
+	openNS := fs.String("namespace", "", "open the Kubernetes tab limited to this namespace")
+	openBookmark := fs.String("bookmark", "", "open a view saved with :bookmark save")
 	status := fs.Bool("status", false, "print a one-line summary for tmux, i3bar, or a prompt and exit")
 	exportPath := fs.String("export", "", "write the on-disk history as CSV to this file and exit")
 	completionShell := fs.String("completion", "", "print a completion script for bash, zsh, or fish and exit")
@@ -278,7 +283,12 @@ Flags:
 	uiOptions := func(cfg config.Config) (tui.Options, error) {
 		th, err := tui.LoadTheme(cfg.Theme, filepath.Join(config.ConfigDir(), "themes"), cfg.Colors, cfg.Transparent)
 		mouse := cfg.Mouse == nil || *cfg.Mouse
-		return tui.Options{Theme: th, Keys: tui.NewKeymap(cfg.Keys), TempWarn: cfg.Thresholds.TempWarn, Mouse: mouse, Currency: cfg.Cost.Currency, LogFile: logPath}, err
+		return tui.Options{
+			Theme: th, Keys: tui.NewKeymap(cfg.Keys), TempWarn: cfg.Thresholds.TempWarn,
+			Mouse: mouse, Currency: cfg.Cost.Currency, LogFile: logPath,
+			Open:      tui.OpenView(*openBookmark, *openTab, *openFilter, *openNode, *openNS),
+			NoSession: *demo || *replayPath != "",
+		}, err
 	}
 	opts, terr := uiOptions(cfg)
 	th := opts.Theme
