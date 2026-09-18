@@ -68,42 +68,52 @@ func film(o options, eng *collect.Engine, th tui.Theme, host string) error {
 	defer func() { sim.Now = time.Now }()
 
 	var pressed []tea.KeyMsg
-	n := 0
-	// The fleet steps a second every other frame: fast enough to read as
-	// live at 10 frames a second, and it halves the animation, since a
+	var views []string
+	// The fleet steps a second every third frame: fast enough to read as
+	// live at 10 frames a second, and it keeps the animation small, since a
 	// frame that repeats the one before it costs a delay and nothing else.
-	shoot := func() error {
-		if n%2 == 0 {
+	shoot := func() {
+		if len(views)%3 == 0 {
 			clock = clock.Add(time.Second)
 			eng.Collect(context.Background())
 		}
-		return frame(o, eng, th, host, pressed, clock, &n)
+		views = append(views, frame(o, eng, th, host, pressed, clock))
 	}
 	for _, b := range storyboard {
 		for _, r := range b.typed {
 			pressed = append(pressed, keyMsg(string(r)))
-			if err := shoot(); err != nil {
-				return err
-			}
+			shoot()
 		}
 		if b.key != "" {
 			pressed = append(pressed, keyMsg(b.key))
 		}
 		for range max(b.hold, 1) {
-			if err := shoot(); err != nil {
-				return err
-			}
+			shoot()
 		}
 	}
-	fmt.Printf("%s: %d frames\n", o.film, n)
+
+	// One window for the whole animation, as tall as the tallest view needs
+	// and no taller: a tab that draws less leaves the rest of the terminal
+	// dark, the way it does on a screen.
+	rows := 0
+	for _, v := range views {
+		rows = max(rows, len(strings.Split(v, "\n")))
+	}
+	for i, v := range views {
+		name := filepath.Join(o.film, fmt.Sprintf("frame-%04d.svg", i+1))
+		if err := os.WriteFile(name, []byte(svg(padRows(v, rows), o.w, rows, "siltide")), 0o644); err != nil {
+			return err
+		}
+	}
+	fmt.Printf("%s: %d frames of %d columns by %d rows\n", o.film, len(views), o.w, rows)
 	return nil
 }
 
 // frame replays the keys pressed so far against the latest snapshot and
-// writes the view.
+// returns the view.
 // The model reads its snapshot when it is built, so it is rebuilt per frame:
 // that is what lets the numbers move while the keys stay where they were.
-func frame(o options, eng *collect.Engine, th tui.Theme, host string, pressed []tea.KeyMsg, clock time.Time, n *int) error {
+func frame(o options, eng *collect.Engine, th tui.Theme, host string, pressed []tea.KeyMsg, clock time.Time) string {
 	m := tui.New(eng, tui.Options{Theme: th, Mouse: true, Currency: "$"})
 	m = update(m, tea.WindowSizeMsg{Width: o.w, Height: o.h})
 	for _, k := range pressed {
@@ -114,11 +124,7 @@ func frame(o options, eng *collect.Engine, th tui.Theme, host string, pressed []
 		view = strings.ReplaceAll(view, host, o.host)
 	}
 	view = dropBadge(view)
-	view = clockText.ReplaceAllString(view, clock.Format("2006-01-02 15:04:05"))
-	view = padRows(view, o.h)
-	*n++
-	name := filepath.Join(o.film, fmt.Sprintf("frame-%04d.svg", *n))
-	return os.WriteFile(name, []byte(svg(view, o.w, o.h, "siltide")), 0o644)
+	return clockText.ReplaceAllString(view, clock.Format("2006-01-02 15:04:05"))
 }
 
 // padRows makes every frame exactly rows tall. A tab whose view is shorter
