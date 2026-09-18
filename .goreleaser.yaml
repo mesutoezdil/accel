@@ -28,6 +28,11 @@ archives:
 checksum:
   name_template: checksums.txt
 
+# One SBOM per archive, so what went into a binary is a question with an
+# answer rather than a guess from the module graph.
+sboms:
+  - artifacts: archive
+
 nfpms:
   - id: packages
     package_name: siltide
