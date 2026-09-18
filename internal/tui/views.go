@@ -210,7 +210,12 @@ func (m Model) topProcs(devs []device.Device, n, w int) string {
 		if where == "" {
 			where = r.p.User
 		}
-		line := fmt.Sprintf("%7d %-12s %-5s %9s %5s %s", r.p.PID, trunc(r.p.Name, 12), r.d.Label(), th.opt(r.p.Metrics, device.MemUsed), th.opt(r.p.Metrics, device.Util), th.dim.Render(trunc(where, max(w-45, 0))))
+		// A value that is styled, N/A above all, carries escapes that a width
+		// verb counts as characters, so every padded cell here goes through
+		// rpad, which measures what the terminal will show.
+		line := fmt.Sprintf("%7d %-12s %-5s %s %s %s", r.p.PID, trunc(r.p.Name, 12), r.d.Label(),
+			rpad(th.opt(r.p.Metrics, device.MemUsed), 9), rpad(th.opt(r.p.Metrics, device.Util), 5),
+			th.dim.Render(trunc(where, max(w-45, 0))))
 		b.WriteString(trunc(line, w) + "\n")
 	}
 	return b.String()
@@ -406,7 +411,7 @@ func (m Model) detail(d device.Device) string {
 		for c := 0; c < cols; c++ {
 			j := i + c*rows
 			if j < len(keys) {
-				line += fmt.Sprintf("%-16s %-19s ", th.dim.Render(string(keys[j])), trunc(metricText(keys[j], d.Metrics[keys[j]]), 19))
+				line += pad(th.dim.Render(string(keys[j])), 16) + " " + pad(trunc(metricText(keys[j], d.Metrics[keys[j]]), 19), 19) + " "
 			}
 		}
 		b.WriteString(strings.TrimRight(line, " ") + "\n")
@@ -460,7 +465,9 @@ func (m Model) detail(d device.Device) string {
 				memTrend = m.procSpark(d, p, device.MemUsed, total)
 				utilTrend = m.procSpark(d, p, device.Util, 100)
 			}
-			fmt.Fprintf(&b, "%-8d %-10s %-16s %9s %s%5s %s%5s %8s  %s\n", p.PID, trunc(orQ(p.User), 10), trunc(orQ(p.Name), 16), th.opt(p.Metrics, device.MemUsed), memTrend, share, utilTrend, th.opt(p.Metrics, device.Util), run, trunc(where, max(m.width-72-2*trendW, 10)))
+			fmt.Fprintf(&b, "%-8d %-10s %-16s %s %s%s %s%s %s  %s\n", p.PID, trunc(orQ(p.User), 10), trunc(orQ(p.Name), 16),
+				rpad(th.opt(p.Metrics, device.MemUsed), 9), memTrend, rpad(share, 5), utilTrend,
+				rpad(th.opt(p.Metrics, device.Util), 5), rpad(run, 8), trunc(where, max(m.width-72-2*trendW, 10)))
 			if len(p.App) > 0 {
 				var parts []string
 				for _, k := range sortedStrKeys(p.App) {

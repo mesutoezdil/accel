@@ -367,7 +367,7 @@ func (m *Model) describe() {
 		if !r.devs[d.ID] {
 			continue
 		}
-		fmt.Fprintf(&b, "  #%-6s %-28s util %-5s mem %-14s %s\n", d.Label(), trunc(d.Name, 28), m.th.opt(d.Metrics, device.Util), memText(d.Metrics), m.state(d))
+		fmt.Fprintf(&b, "  #%-6s %-28s util %s mem %-14s %s\n", d.Label(), trunc(d.Name, 28), pad(m.th.opt(d.Metrics, device.Util), 5), memText(d.Metrics), m.state(d))
 		for _, p := range d.Procs {
 			if p.Pod == r.name {
 				fmt.Fprintf(&b, "     pid %-7d %-12s %-8s mem %s\n", p.PID, trunc(p.Name, 12), p.Container, m.th.opt(p.Metrics, device.MemUsed))
@@ -765,7 +765,7 @@ func (m Model) viewCompare() string {
 		list = append(list, k)
 	}
 	sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
-	fmt.Fprintf(&b, "%-18s %14s %14s %10s\n", th.dim.Render("metric"), th.dim.Render("A"), th.dim.Render("B"), th.dim.Render("delta"))
+	b.WriteString(th.dim.Render(fmt.Sprintf("%-18s %14s %14s %10s", "metric", "A", "B", "delta")) + "\n")
 	for _, k := range list {
 		av, aok := a.Metrics.Get(k)
 		bv, bok := bm.Get(k)
