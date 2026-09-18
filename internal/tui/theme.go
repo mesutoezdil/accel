@@ -25,13 +25,13 @@ var palettes = map[string]map[string]string{
 		"accent": "12", "text": "", "dim": "8", "title": "12", "border": "8",
 		"ok": "10", "mid": "11", "warn": "9", "crit": "13", "info": "14",
 		"bar_low": "10", "bar_mid": "11", "bar_high": "9", "bar_track": "8", "spark": "10",
-		"tab_active_bg": "12", "tab_active_fg": "0", "selection_bg": "", "selection_fg": "",
+		"tab_active_bg": "12", "tab_active_fg": "0", "selection_bg": "8", "selection_fg": "15",
 	},
 	"mono": {
 		"accent": "", "text": "", "dim": "8", "title": "", "border": "8",
 		"ok": "", "mid": "", "warn": "", "crit": "", "info": "",
 		"bar_low": "", "bar_mid": "", "bar_high": "", "bar_track": "8", "spark": "",
-		"tab_active_bg": "", "tab_active_fg": "", "selection_bg": "", "selection_fg": "",
+		"tab_active_bg": "", "tab_active_fg": "", "selection_bg": "8", "selection_fg": "15",
 	},
 	"solarized": {
 		"accent": "#268bd2", "text": "#839496", "dim": "#586e75", "title": "#268bd2", "border": "#586e75",

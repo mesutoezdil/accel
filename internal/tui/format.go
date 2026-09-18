@@ -219,7 +219,13 @@ func trunc(s string, w int) string {
 	for len(r) > 0 && lipgloss.Width(string(r))+1 > w {
 		r = r[:len(r)-1]
 	}
-	return string(r) + "…"
+	// Cutting from the end takes the closing escape with it, and a colour
+	// left open runs on into whatever is drawn next, so it goes back on.
+	out := string(r) + "…"
+	if strings.Contains(s, "\x1b[") && !strings.HasSuffix(out, reset) {
+		out += reset
+	}
+	return out
 }
 
 func width(s string) int { return lipgloss.Width(s) }

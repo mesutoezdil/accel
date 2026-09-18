@@ -440,7 +440,7 @@ func (m Model) detail(d device.Device) string {
 		if m.width >= 120 {
 			trendW = procTrendWidth
 		}
-		head := fmt.Sprintf("%-8s %-10s %-16s %9s %s%5s %s%5s %8s  %s", "PID", "USER", "PROCESS", "MEM", pad("", trendW), "MEM%", pad("", trendW), "UTIL", "RUNTIME", "POD / JOB / COMMAND")
+		head := fmt.Sprintf("%-8s %-10s %-16s %9s %5s %s%5s %s%8s  %s", "PID", "USER", "PROCESS", "MEM", "MEM%", pad("", trendW), "UTIL", pad("", trendW), "RUNTIME", "POD / JOB / COMMAND")
 		b.WriteString("\n" + th.dim.Render(head) + "\n")
 		procs := append([]device.Process(nil), d.Procs...)
 		sort.SliceStable(procs, func(i, j int) bool { return procLess(procs[i], procs[j]) })
@@ -465,9 +465,12 @@ func (m Model) detail(d device.Device) string {
 				memTrend = m.procSpark(d, p, device.MemUsed, total)
 				utilTrend = m.procSpark(d, p, device.Util, 100)
 			}
-			fmt.Fprintf(&b, "%-8d %-10s %-16s %s %s%s %s%s %s  %s\n", p.PID, trunc(orQ(p.User), 10), trunc(orQ(p.Name), 16),
-				rpad(th.opt(p.Metrics, device.MemUsed), 9), memTrend, rpad(share, 5), utilTrend,
-				rpad(th.opt(p.Metrics, device.Util), 5), rpad(run, 8), trunc(where, max(m.width-72-2*trendW, 10)))
+			// Each trend follows the numbers it belongs to: memory, its
+			// trend, then utilization and its own.
+			fmt.Fprintf(&b, "%-8d %-10s %-16s %s %s %s%s %s%s  %s\n", p.PID, trunc(orQ(p.User), 10), trunc(orQ(p.Name), 16),
+				rpad(th.opt(p.Metrics, device.MemUsed), 9), rpad(share, 5), memTrend,
+				rpad(th.opt(p.Metrics, device.Util), 5), utilTrend, rpad(run, 8),
+				trunc(where, max(m.width-72-2*trendW, 10)))
 			if len(p.App) > 0 {
 				var parts []string
 				for _, k := range sortedStrKeys(p.App) {
