@@ -249,6 +249,12 @@ func fleetSummary(s collect.Snapshot) string {
 		fmt.Fprintf(&b, "worst health %d on device %s\n", worst, id)
 	}
 	fmt.Fprintf(&b, "alerts firing %d\n", len(s.Alerts))
+	for _, n := range s.KubeNodes {
+		for name, r := range n.Resources {
+			fmt.Fprintf(&b, "scheduler: node %s has %d %s allocatable, %d requested by %d pods\n",
+				n.Name, r.Allocatable, name, r.Requested, r.Pods)
+		}
+	}
 	for _, w := range s.Warnings {
 		fmt.Fprintf(&b, "warning: %s\n", w)
 	}

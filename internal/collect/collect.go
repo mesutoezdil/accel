@@ -78,10 +78,15 @@ type Snapshot struct {
 	Providers []Status          `json:"providers"`
 	Kube      bool              `json:"kubernetes"`        // a pod source exists on this machine
 	KubeFrom  string            `json:"kubernetes_source"` // log-dir, in-cluster, kubeconfig
-	Slurm     bool              `json:"slurm"`
-	Host2     *host.Stats       `json:"host_stats,omitempty"`
-	Self      Self              `json:"self"`
-	Warnings  []string          `json:"warnings,omitempty"`
+	// KubeNodes is what the cluster believes about accelerators per node:
+	// capacity, allocatable and what pods have asked for. It is the
+	// scheduler's view, which is a different thing from what the devices on
+	// those nodes report, and comparing the two is the point of having it.
+	KubeNodes []kube.NodeInfo `json:"kubernetes_nodes,omitempty"`
+	Slurm     bool            `json:"slurm"`
+	Host2     *host.Stats     `json:"host_stats,omitempty"`
+	Self      Self            `json:"self"`
+	Warnings  []string        `json:"warnings,omitempty"`
 }
 
 // Engine drives the providers.
@@ -303,6 +308,7 @@ func (e *Engine) Collect(ctx context.Context) Snapshot {
 		}
 	}
 	e.enrich(ctx, snap.Devices)
+	snap.KubeNodes = e.pods.Nodes(ctx)
 	e.tracker.Apply(now, snap.Devices)
 	e.trackProcs(snap.Devices)
 	e.drainEvents(now, snap.Devices)

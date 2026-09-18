@@ -63,6 +63,8 @@ type Resolver struct {
 	enabled  bool
 	source   string // "log-dir", "in-cluster", "kubeconfig"
 	attempts []Attempt
+	nodes    []NodeInfo
+	nodesAt  time.Time
 }
 
 // Attempt is one place siltide looked for Kubernetes and what came of it.
