@@ -124,7 +124,7 @@ Configuration; see examples/config.yaml. Unknown keys are rejected.
 .TP
 .I ~/.config/siltide/config.d/*.yaml
 Drop-in configuration, read in name order after config.yaml; later files win
-key by key. \\-\\-config may also name a directory of *.yaml files.
+key by key. \-\-config may also name a directory of *.yaml files.
 .TP
 .I ~/.config/siltide/themes/*.yaml
 User themes.
