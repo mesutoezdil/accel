@@ -8,9 +8,22 @@ import (
 	"math"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
+
+// field returns the i-th whitespace separated field of s, or "". A key with
+// no value after it is rare but real: /proc under a hardened runtime, and
+// the macOS tools when a counter is unavailable, both print one, and a
+// monitor may not fall over on it.
+func field(s string, i int) string {
+	fs := strings.Fields(s)
+	if i >= len(fs) {
+		return ""
+	}
+	return fs[i]
+}
 
 // Float is a reading that may be unknown (NaN), written as null in JSON.
 type Float float64

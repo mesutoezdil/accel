@@ -49,3 +49,27 @@ func TestStartTimeAndApp(t *testing.T) {
 		t.Fatalf("app %v", m)
 	}
 }
+
+// TestReadStatusWithoutUID covers a /proc/PID/status whose Uid line carries
+// no value, which a process exiting mid-read can leave behind.
+func TestReadStatusWithoutUID(t *testing.T) {
+	root := t.TempDir()
+	dir := filepath.Join(root, "7")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "status"), []byte("Name:\tsh\nUid:\nGid:\t0\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "cmdline"), []byte("sh\x00-c\x00true\x00"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	info := read(root, 7)
+	if info.User != "" {
+		t.Errorf("user %q, want empty when the status file gives no uid", info.User)
+	}
+	if info.Command != "sh -c true" {
+		t.Errorf("command %q", info.Command)
+	}
+}

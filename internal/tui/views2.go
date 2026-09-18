@@ -416,19 +416,22 @@ func (m Model) viewOverlay() string {
 	b.WriteString(th.bold.Render(m.textTitle) + th.dim.Render(fmt.Sprintf("  line %d", m.scroll+1)) + "\n")
 	lines := strings.Split(m.text, "\n")
 	if m.wrap {
+		// A window this narrow cannot hold a cut and its ellipsis, and a cut
+		// that takes no runes off the line would wrap it forever.
+		w := max(m.width, 8)
 		var wrapped []string
 		for _, l := range lines {
-			for width(l) > m.width {
-				wrapped = append(wrapped, trunc(l, m.width))
-				l = string([]rune(l)[min(m.width-1, len([]rune(l))):])
+			for width(l) > w {
+				wrapped = append(wrapped, trunc(l, w))
+				l = string([]rune(l)[min(w-1, len([]rune(l))):])
 			}
 			wrapped = append(wrapped, l)
 		}
 		lines = wrapped
 	}
 	start := min(m.scroll, max(len(lines)-1, 0))
-	end := min(start+m.height-4, len(lines))
-	for _, l := range lines[start:end] {
+	end := min(start+max(m.height-4, 1), len(lines)) // one line always shows
+	for _, l := range lines[start:max(end, start)] {
 		b.WriteString(l + "\n")
 	}
 	return strings.TrimRight(b.String(), "\n")

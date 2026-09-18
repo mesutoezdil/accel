@@ -69,3 +69,39 @@ func TestLinuxRates(t *testing.T) {
 		t.Fatalf("ib %+v", second.IB)
 	}
 }
+
+// TestLinuxSurvivesValuelessLines feeds the readers the shapes a hardened or
+// half-mounted /proc produces: a key with nothing after it, an empty file,
+// and a counter that reads blank. None of them may take the process down.
+func TestLinuxSurvivesValuelessLines(t *testing.T) {
+	root := t.TempDir()
+	oldProc, oldSys := procRoot, sysRoot
+	procRoot, sysRoot = filepath.Join(root, "proc"), filepath.Join(root, "sys")
+	t.Cleanup(func() { procRoot, sysRoot = oldProc, oldSys })
+
+	write(t, root, "proc/stat", "cpu  100 0 100 800 0 0 0 0\n")
+	write(t, root, "proc/meminfo", "MemTotal:\nMemAvailable:    400 kB\nSwapTotal:\n")
+	write(t, root, "proc/loadavg", "\n")
+	write(t, root, "proc/uptime", "\n")
+	write(t, root, "proc/cpuinfo", "")
+	write(t, root, "proc/mounts", "")
+	write(t, root, "proc/diskstats", "")
+	write(t, root, "proc/net/dev", "")
+	write(t, root, "sys/class/infiniband/mlx5_0/ports/1/state", "")
+	write(t, root, "sys/class/infiniband/mlx5_0/ports/1/rate", "")
+	write(t, root, "sys/class/infiniband/mlx5_0/ports/1/counters/port_rcv_data", "")
+	write(t, root, "sys/class/infiniband/mlx5_0/ports/1/counters/port_xmit_data", " ")
+	write(t, root, "sys/class/infiniband/mlx5_0/ports/1/counters/symbol_error", "")
+
+	s := New()
+	st := s.Sample()
+	if st.Mem.Total.Unknown() || float64(st.Mem.Total) != 0 {
+		t.Errorf("a MemTotal with no value should read as 0, got %v", st.Mem.Total)
+	}
+	if len(st.IB) != 1 || st.IB[0].Errors != 0 {
+		t.Errorf("infiniband ports %+v", st.IB)
+	}
+	if !math.IsNaN(float64(st.CPU.Load1)) && st.CPU.Load1 != 0 {
+		t.Errorf("load average from an empty file: %v", st.CPU.Load1)
+	}
+}

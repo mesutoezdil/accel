@@ -39,7 +39,7 @@ func read(st *Stats) raw {
 			switch {
 			case strings.HasPrefix(l, "Mach Virtual Memory Statistics"):
 				if _, v, ok := strings.Cut(l, "page size of "); ok {
-					page = f(strings.Fields(v)[0])
+					page = f(field(v, 0))
 				}
 			case strings.HasPrefix(l, "Pages free:"), strings.HasPrefix(l, "Pages inactive:"), strings.HasPrefix(l, "Pages speculative:"):
 				_, v, _ := strings.Cut(l, ":")
@@ -54,10 +54,10 @@ func read(st *Stats) raw {
 	if out, err := exec.Command("sysctl", "-n", "vm.swapusage").Output(); err == nil {
 		s := string(out)
 		if _, t, ok := strings.Cut(s, "total = "); ok {
-			st.Mem.SwapTotal = Float(mb(strings.Fields(t)[0]))
+			st.Mem.SwapTotal = Float(mb(field(t, 0)))
 		}
 		if _, u, ok := strings.Cut(s, "used = "); ok {
-			st.Mem.SwapUsed = Float(mb(strings.Fields(u)[0]))
+			st.Mem.SwapUsed = Float(mb(field(u, 0)))
 		}
 	}
 	for _, mount := range []string{"/", "/System/Volumes/Data"} {

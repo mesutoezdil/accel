@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -267,5 +268,27 @@ func TestSetBytes(t *testing.T) {
 	}
 	if _, ok := m[device.MemTotal]; ok {
 		t.Error("N/A must stay absent")
+	}
+}
+
+// TestCnmonBlankProcessName covers a cnmon process row whose command column
+// came back empty, which the table still prints as a row of spaces.
+func TestCnmonBlankProcessName(t *testing.T) {
+	const table = `
+| 0     /   MLU370-X4    v1.1.6 | On          v4.20.11 | 0%          N/A       |
+|  0%   32C         30 W/ 150 W |  1024 MiB/ 23308 MiB | 10240 MiB/1048576 MiB |
+|  0     /   12345                                                    512 MiB |
+`
+	devs := parseCnmon(table)
+	if len(devs) != 1 {
+		t.Fatalf("parsed %d devices, want 1", len(devs))
+	}
+	for _, p := range devs[0].Procs {
+		if p.PID != 12345 {
+			t.Errorf("pid %d", p.PID)
+		}
+		if p.Name != "" && strings.TrimSpace(p.Name) == "" {
+			t.Errorf("process name %q should be empty, not blank", p.Name)
+		}
 	}
 }

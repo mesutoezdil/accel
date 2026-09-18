@@ -64,7 +64,7 @@ func readMem(st *Stats) {
 	for _, l := range lines(procRoot + "/meminfo") {
 		k, v, ok := strings.Cut(l, ":")
 		if ok {
-			kv[k] = f(strings.Fields(v)[0]) * 1024
+			kv[k] = f(field(v, 0)) * 1024
 		}
 	}
 	if t, ok := kv["MemTotal"]; ok {
@@ -84,7 +84,7 @@ func readLoad(st *Stats, r *raw) {
 		}
 	}
 	if l := lines(procRoot + "/uptime"); len(l) == 1 {
-		r.uptime = f(strings.Fields(l[0])[0])
+		r.uptime = f(field(l[0], 0))
 	}
 }
 
@@ -188,7 +188,7 @@ func readIB(st *Stats, r *raw) {
 		port, _ := strconv.Atoi(filepath.Base(p))
 		one := func(name string) float64 {
 			if l := lines(p + "/" + name); len(l) == 1 {
-				return f(strings.Fields(l[0])[0])
+				return f(field(l[0], 0))
 			}
 			return 0
 		}
