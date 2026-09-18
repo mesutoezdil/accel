@@ -3,11 +3,12 @@
 Every release and every push to `main` (pre-release `vX.Y.Z-main.N`) publishes binaries, packages, and images.
 
 ```sh
-# One line: picks the build for this machine, checks it against the published
-# checksums, and installs into /usr/local/bin (or ~/.local/bin)
-( f="$(mktemp)" && trap 'rm -f "$f"' EXIT &&
-  curl -fsSL https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh -o "$f" &&
-  sh "$f" )
+# Download the installer, then run it. Two steps rather than curl | sh, so
+# you can read the script first. It picks the build for this machine, checks
+# it against the published checksums, and installs into /usr/local/bin
+# (or ~/.local/bin if that needs a password).
+curl -fsSLO https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh
+sh install.sh
 
 # By hand, if you would rather see every step. checksums.txt sits beside the
 # binary, and macOS needs its quarantine flag cleared until the builds are

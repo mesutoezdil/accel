@@ -38,15 +38,24 @@ var Suffix = " (simulated)"
 // small group per other vendor. Device 3 of the NVIDIA group is a straggler
 // on a narrow PCIe link; device n-1 is idle but allocated.
 func Provider(n int) provider.Provider {
-	train := proc{"python", "alice", "llama-70b-pretrain-0", "ml", "StatefulSet/llama-70b-pretrain", "python -m torch.distributed.run --nproc_per_node 8 train.py --config configs/llama-70b.yaml"}
-	serve := proc{"vllm", "svc", "chat-api-7d9f8b6c5-x2k9p", "inference", "Deployment/chat-api", "python -m vllm.entrypoints.api_server --model meta-llama/Llama-3.1-70B-Instruct --tensor-parallel-size 8"}
-	nb := proc{"python", "bob", "notebook-bob-0", "notebooks", "StatefulSet/notebook-bob", "python -m ipykernel_launcher -f /root/.local/share/jupyter/runtime/kernel-3f1a.json"}
+	// The users are the service accounts a real cluster runs these under, not
+	// stand-in people: what an operator reads in `siltide --demo` should be
+	// what they would read on a node with work on it.
+	train := proc{"python", "ml-train", "llama-70b-pretrain-0", "ml", "StatefulSet/llama-70b-pretrain", "python -m torch.distributed.run --nproc_per_node 8 train.py --config configs/llama-70b.yaml"}
+	serve := proc{"vllm", "vllm", "chat-api-7d9f8b6c5-x2k9p", "inference", "Deployment/chat-api", "python -m vllm.entrypoints.api_server --model meta-llama/Llama-3.1-70B-Instruct --tensor-parallel-size 8"}
+	nb := proc{"python", "jupyter", "notebook-ds-04-0", "notebooks", "StatefulSet/notebook-ds-04", "python -m ipykernel_launcher -f /root/.local/share/jupyter/runtime/kernel-3f1a.json"}
+	// Each node runs its own work. One pod cannot be on two nodes at once, so
+	// the other vendors get jobs of their own rather than a copy of the H100
+	// node's: a fleet where every node shows the same pod name is a fleet
+	// nobody has.
+	sft := proc{"python", "ml-train", "qwen-32b-sft-0", "ml", "Job/qwen-32b-sft", "python -m torch.distributed.run --nproc_per_node 2 sft.py --base Qwen2.5-32B --lora-rank 64"}
+	embed := proc{"tei", "tei", "embed-api-5c8d94f7b-lq4mt", "inference", "Deployment/embed-api", "text-embeddings-router --model-id BAAI/bge-m3 --max-batch-tokens 65536"}
 	models := []model{
 		{device.NVIDIA, "NVIDIA H100 80GB HBM3", n, 80, 700, true, 18, []proc{train, serve}, ""},
-		{device.Ascend, "Ascend 910B3", 2, 64, 310, true, 7, []proc{train}, "ascend-01"},
+		{device.Ascend, "Ascend 910B3", 2, 64, 310, true, 7, []proc{sft}, "ascend-01"},
 		{device.Kunlunxin, "Kunlunxin P800 OAM", 1, 96, 400, true, 0, nil, "xpu-01"},
 		{device.Cambricon, "Cambricon MLU370-X8", 1, 48, 250, true, 0, nil, "mlu-01"},
-		{device.AMD, "AMD Instinct MI300X", 1, 192, 750, true, 7, []proc{serve}, "mi300-01"},
+		{device.AMD, "AMD Instinct MI300X", 1, 192, 750, true, 7, []proc{embed}, "mi300-01"},
 		{device.Neuron, "AWS Inferentia2", 1, 32, 0, false, 0, nil, "inf2-01"},
 		{device.Apple, "Apple M4 Pro 20-core GPU", 1, 48, 0, false, 0, nil, "mac-01"},
 	}
