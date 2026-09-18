@@ -3,6 +3,7 @@ package tui
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/mesutoezdil/siltide/internal/collect"
 	"github.com/mesutoezdil/siltide/internal/config"
+	"github.com/mesutoezdil/siltide/internal/device"
 	"github.com/mesutoezdil/siltide/internal/history"
 	"github.com/mesutoezdil/siltide/internal/provider"
 	"github.com/mesutoezdil/siltide/internal/provider/sim"
@@ -259,4 +261,48 @@ func TestReloadCommand(t *testing.T) {
 	if !strings.Contains(m.notice, "only available") {
 		t.Errorf("notice %q", m.notice)
 	}
+}
+
+func TestDetailProcessTrend(t *testing.T) {
+	e := demoEngine(t)
+	m := New(e, Options{Theme: NewTheme("mono", nil)})
+	m.snap = e.Snapshot()
+	var dev device.Device
+	for _, d := range m.snap.Devices {
+		if len(d.Procs) > 0 {
+			dev = d
+			break
+		}
+	}
+	if dev.ID == "" {
+		t.Skip("the demo fleet reported no processes")
+	}
+
+	m.width, m.height = 160, 50
+	wide := m.detail(dev)
+	line := procLine(t, wide, dev.Procs[0].PID)
+	if !strings.ContainsAny(line, string(sparks)) {
+		t.Errorf("no trend on a wide process row: %q", line)
+	}
+
+	m.width = 100
+	narrow := procLine(t, m.detail(dev), dev.Procs[0].PID)
+	if strings.ContainsAny(narrow, string(sparks)) {
+		t.Errorf("a narrow terminal should keep the numbers only: %q", narrow)
+	}
+	if len(narrow) >= len(line) {
+		t.Errorf("the narrow row (%d) should be shorter than the wide one (%d)", len(narrow), len(line))
+	}
+}
+
+// procLine finds the process row for pid in a rendered detail view.
+func procLine(t *testing.T, view string, pid int) string {
+	t.Helper()
+	for _, l := range strings.Split(view, "\n") {
+		if strings.HasPrefix(l, fmt.Sprint(pid)+" ") {
+			return l
+		}
+	}
+	t.Fatalf("no row for pid %d in:\n%s", pid, view)
+	return ""
 }

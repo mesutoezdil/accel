@@ -343,6 +343,22 @@ var histMetrics = []struct {
 	{device.ClockCore, "clock", func(d device.Device, h []float64) float64 { return peak(h) }},
 }
 
+// procTrendWidth is how wide one inline process sparkline is, plus its space.
+const procTrendWidth = 9
+
+// procSpark draws the recent trend of one process metric. An unknown scale
+// falls back to the peak of the samples, so a flat line still reads.
+func (m Model) procSpark(d device.Device, p device.Process, k device.Metric, scale float64) string {
+	vals := m.eng.ProcTrend(d.ID, p.PID, k, procTrendWidth-1)
+	if len(vals) == 0 {
+		return pad("", procTrendWidth-1) + " "
+	}
+	if scale <= 0 {
+		scale = peak(vals)
+	}
+	return m.th.role("spark").Render(pad(spark(vals, scale, procTrendWidth-1), procTrendWidth-1)) + " "
+}
+
 func (m Model) detail(d device.Device) string {
 	th := m.th
 	var b strings.Builder
@@ -414,7 +430,13 @@ func (m Model) detail(d device.Device) string {
 	}
 	if len(d.Procs) > 0 {
 		total := d.Metrics.Or(device.MemTotal, 0)
-		b.WriteString("\n" + th.dim.Render(fmt.Sprintf("%-8s %-10s %-16s %9s %5s %5s %8s  %s", "PID", "USER", "PROCESS", "MEM", "MEM%", "UTIL", "RUNTIME", "POD / JOB / COMMAND")) + "\n")
+		// A trend per process needs room; a narrow terminal keeps the numbers.
+		trendW := 0
+		if m.width >= 120 {
+			trendW = procTrendWidth
+		}
+		head := fmt.Sprintf("%-8s %-10s %-16s %9s %s%5s %s%5s %8s  %s", "PID", "USER", "PROCESS", "MEM", pad("", trendW), "MEM%", pad("", trendW), "UTIL", "RUNTIME", "POD / JOB / COMMAND")
+		b.WriteString("\n" + th.dim.Render(head) + "\n")
 		procs := append([]device.Process(nil), d.Procs...)
 		sort.SliceStable(procs, func(i, j int) bool { return procLess(procs[i], procs[j]) })
 		for _, p := range procs {
@@ -433,7 +455,12 @@ func (m Model) detail(d device.Device) string {
 			if !p.Started.IsZero() {
 				run = age(p.Started)
 			}
-			fmt.Fprintf(&b, "%-8d %-10s %-16s %9s %5s %5s %8s  %s\n", p.PID, trunc(orQ(p.User), 10), trunc(orQ(p.Name), 16), th.opt(p.Metrics, device.MemUsed), share, th.opt(p.Metrics, device.Util), run, trunc(where, max(m.width-72, 10)))
+			memTrend, utilTrend := "", ""
+			if trendW > 0 {
+				memTrend = m.procSpark(d, p, device.MemUsed, total)
+				utilTrend = m.procSpark(d, p, device.Util, 100)
+			}
+			fmt.Fprintf(&b, "%-8d %-10s %-16s %9s %s%5s %s%5s %8s  %s\n", p.PID, trunc(orQ(p.User), 10), trunc(orQ(p.Name), 16), th.opt(p.Metrics, device.MemUsed), memTrend, share, utilTrend, th.opt(p.Metrics, device.Util), run, trunc(where, max(m.width-72-2*trendW, 10)))
 			if len(p.App) > 0 {
 				var parts []string
 				for _, k := range sortedStrKeys(p.App) {
