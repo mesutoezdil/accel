@@ -125,7 +125,14 @@ func run(o options) error {
 		if o.live == 0 {
 			view = dropBadge(view)
 		}
-		if err := os.WriteFile(filepath.Join(o.out, o.prefix+name+".svg"), []byte(svg(view, o.w, o.h, "siltide · "+tab.Name)), 0o644); err != nil {
+		bg, fg := th.Colors["bg"], th.Colors["text"]
+		if bg == "" {
+			bg = defaultBG
+		}
+		if fg == "" || !strings.HasPrefix(fg, "#") {
+			fg = defaultFg // an ANSI index means "whatever the terminal uses"
+		}
+		if err := os.WriteFile(filepath.Join(o.out, o.prefix+name+".svg"), []byte(svgOn(view, o.w, o.h, "siltide · "+tab.Name, bg, fg)), 0o644); err != nil {
 			return err
 		}
 		if o.ans != "" {

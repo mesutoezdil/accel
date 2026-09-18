@@ -49,7 +49,7 @@ siltide --bookmark incident
 - **API and Prometheus**: `--listen` serves `GET /api/snapshot`, `/api/summary`, `/api/events`, `/api/history?id=<device id>&n=600`, and Prometheus `/metrics` (`siltide_device_*` and `siltide_host_*` gauges), bearer-token authenticated.
 - **Alerts**: built-in ones for temperature, throttling, outliers, idle-allocated devices, row remaps, and link degradation, plus your own rules under `alerts:`.
 - **History**: plain-text hourly files, `--retention` to override how long, `--export` to CSV, `--record`/`--replay` to hand off an incident.
-- **Themes**: `amber`, `default`, `dracula`, `ice`, `mono`, `solarized`, or your own in `~/.config/siltide/themes/` (see [`examples/themes/corp.yaml`](../examples/themes/corp.yaml)).
+- **Themes**: fifteen built in, including `paper` for a light terminal, or your own in `~/.config/siltide/themes/` (see [`../examples/themes/corp.yaml`](../examples/themes/corp.yaml)). `siltide --list-themes` prints them.
 
 ## Answering an agent
 
