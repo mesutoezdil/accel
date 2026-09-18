@@ -10,12 +10,22 @@ Every release and every push to `main` (pre-release `vX.Y.Z-main.N`) publishes b
 curl -fsSLO https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh
 sh install.sh
 
-# By hand, if you would rather see every step. checksums.txt sits beside the
-# binary, and macOS needs its quarantine flag cleared until the builds are
-# signed: xattr -d com.apple.quarantine siltide
+# By hand, if you would rather see every step. The first two lines work out
+# the build for THIS machine: siltide-linux-amd64 on an Apple laptop gives
+# "exec format error", which is the machine telling you it is not its binary.
+os=$(uname -s | tr '[:upper:]' '[:lower:]')                 # linux or darwin
+arch=$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')  # amd64 or arm64
 tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
-curl -fsSL -o siltide "https://github.com/mesutoezdil/siltide/releases/download/$tag/siltide-linux-amd64"
-chmod +x siltide && sudo mv siltide /usr/local/bin/
+base="https://github.com/mesutoezdil/siltide/releases/download/$tag"
+curl -fsSLO "$base/siltide-$os-$arch"
+curl -fsSLO "$base/checksums.txt"
+shasum -a 256 -c checksums.txt --ignore-missing   # sha256sum -c on Linux
+chmod +x "siltide-$os-$arch"
+sudo install "siltide-$os-$arch" /usr/local/bin/siltide
+
+# A binary downloaded through a browser rather than curl is quarantined by
+# macOS until the builds are signed:
+#   xattr -d com.apple.quarantine /usr/local/bin/siltide
 
 # deb or rpm, with completions and the man page
 sudo dpkg -i siltide_*_amd64.deb   # or: sudo rpm -i siltide-*.x86_64.rpm
@@ -52,7 +62,7 @@ Each artifact also carries a build-provenance attestation, which says which
 workflow at which commit produced it:
 
 ```sh
-gh attestation verify siltide-linux-amd64 --repo mesutoezdil/siltide
+gh attestation verify "siltide-$os-$arch" --repo mesutoezdil/siltide
 ```
 
 ## Keeping it up to date

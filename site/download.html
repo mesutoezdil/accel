@@ -70,8 +70,12 @@
 
     <h2 data-en="Checking what you downloaded" data-zh="校验你下载的文件">Checking what you downloaded</h2>
     <p class="lede" data-en="The install script does this for you before it writes anything. By hand:" data-zh="安装脚本会在写入任何文件之前自动完成这一步。手动的话：">The install script does this for you before it writes anything. By hand:</p>
-<pre><button class="copy">copy</button><code>sha256sum -c checksums.txt --ignore-missing      # shasum -a 256 on macOS
-gh attestation verify siltide-linux-amd64 --repo mesutoezdil/siltide</code></pre>
+<pre><button class="copy">copy</button><code>os=$(uname -s | tr '[:upper:]' '[:lower:]')                 # linux or darwin
+arch=$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')  # amd64 or arm64
+
+sha256sum -c checksums.txt --ignore-missing       # shasum -a 256 -c on macOS
+gh attestation verify "siltide-$os-$arch" --repo mesutoezdil/siltide</code></pre>
+    <p class="note" data-en="checksums.txt has to be downloaded from the same release, next to the binary; both commands read files that are already in the directory you are standing in. Take the build for this machine: siltide-linux-amd64 on an Apple laptop gives &quot;exec format error&quot;." data-zh="checksums.txt 需要从同一个 release 里下载，就放在二进制文件旁边；这两条命令读的都是当前目录下已有的文件。请拿适合这台机器的构建：在苹果笔记本上用 siltide-linux-amd64 会报 &quot;exec format error&quot;。"><code>checksums.txt</code> has to be downloaded from the same release, next to the binary; both commands read files that are already in the directory you are standing in. Take the build for this machine: <code>siltide-linux-amd64</code> on an Apple laptop gives &ldquo;exec format error&rdquo;.</p>
     <p style="color:var(--dim);font-size:.88rem" data-en="The attestation says which workflow, at which commit, produced that exact file. Each archive also ships an SBOM listing what went into it." data-zh="构建证明会说明是哪个 workflow、在哪个提交上产出了这个文件。每个压缩包还附带一份 SBOM，列出其中包含的内容。">The attestation says which workflow, at which commit, produced that exact file. Each archive also ships an SBOM listing what went into it.</p>
 
     <h2 data-en="Then" data-zh="然后">Then</h2>
