@@ -95,3 +95,52 @@ func TestReconfigureAppliesANewConfig(t *testing.T) {
 		t.Error("a reload should keep the event log")
 	}
 }
+
+func TestProcTrend(t *testing.T) {
+	pid, mem := 100, 1.0
+	p := provider.Provider{
+		Name: "p", Detect: func() error { return nil },
+		Read: func(context.Context) ([]device.Device, error) {
+			d := device.New(device.AMD, 0, "x", "k", "")
+			d.Metrics[device.Util] = 10
+			d.Procs = []device.Process{{PID: pid, Name: "python", Metrics: device.Metrics{device.MemUsed: mem, device.Util: 50}}}
+			return []device.Device{d}, nil
+		},
+	}
+	e := New([]provider.Provider{p}, config.Default(), nil, false)
+	e.Detect()
+	for i := 0; i < ProcTrendLen+5; i++ {
+		mem = float64(i)
+		e.Collect(context.Background())
+	}
+	id := e.Snapshot().Devices[0].ID
+
+	got := e.ProcTrend(id, 100, device.MemUsed, ProcTrendLen)
+	if len(got) != ProcTrendLen {
+		t.Fatalf("kept %d samples, want %d", len(got), ProcTrendLen)
+	}
+	if got[len(got)-1] != float64(ProcTrendLen+4) {
+		t.Errorf("newest sample %v, want %v", got[len(got)-1], ProcTrendLen+4)
+	}
+	if got[0] != 5 {
+		t.Errorf("oldest sample %v, want 5 after the buffer rolled", got[0])
+	}
+	if n := len(e.ProcTrend(id, 100, device.MemUsed, 8)); n != 8 {
+		t.Errorf("asked for 8 samples, got %d", n)
+	}
+	if v := e.ProcTrend(id, 100, device.Temp, 8); v != nil {
+		t.Errorf("only util and memory are kept, got %v", v)
+	}
+	if v := e.ProcTrend(id, 999, device.Util, 8); v != nil {
+		t.Errorf("unknown pid returned %v", v)
+	}
+
+	pid = 200 // the old process exits, a new one starts
+	e.Collect(context.Background())
+	if v := e.ProcTrend(id, 100, device.Util, 8); v != nil {
+		t.Errorf("a process that exited should be forgotten, got %v", v)
+	}
+	if n := len(e.ProcTrend(id, 200, device.Util, 8)); n != 1 {
+		t.Errorf("the new process has %d samples, want 1", n)
+	}
+}

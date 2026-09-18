@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"math"
 	"os"
 	"runtime"
 	"strconv"
@@ -115,9 +116,20 @@ type Engine struct {
 	events    chan provider.Event
 	warnings  []string
 	energy    map[string]*energyState
+	trends    map[string]*procTrend
 	anomalies []derive.Anomaly
 	anomalyAt time.Time
 }
+
+// procTrend is the short in-memory history of one process. History on disk is
+// per device, so a process trend lives only as long as the process does.
+type procTrend struct {
+	util []float64
+	mem  []float64
+}
+
+// ProcTrendLen is how many samples a process trend keeps.
+const ProcTrendLen = 60
 
 type energyState struct {
 	first, last float64 // counter joules
@@ -147,6 +159,7 @@ func New(provs []provider.Provider, cfg config.Config, hist *history.Store, demo
 		kick:     make(chan struct{}, 1),
 		events:   make(chan provider.Event, 256),
 		energy:   map[string]*energyState{},
+		trends:   map[string]*procTrend{},
 	}
 	if !demo {
 		e.podRes = kube.NewPodResources()
@@ -291,6 +304,7 @@ func (e *Engine) Collect(ctx context.Context) Snapshot {
 	}
 	e.enrich(ctx, snap.Devices)
 	e.tracker.Apply(now, snap.Devices)
+	e.trackProcs(snap.Devices)
 	e.drainEvents(now, snap.Devices)
 	for i := range snap.Devices {
 		d := &snap.Devices[i]
@@ -325,6 +339,66 @@ func (e *Engine) Collect(ctx context.Context) Snapshot {
 	default:
 	}
 	return snap
+}
+
+// procKey identifies one process of one device.
+func procKey(devID string, pid int) string { return devID + "/" + strconv.Itoa(pid) }
+
+// trackProcs appends this pass to every live process trend and forgets the
+// processes that are gone. The caller holds the lock.
+func (e *Engine) trackProcs(devs []device.Device) {
+	live := make(map[string]bool, len(e.trends))
+	for _, d := range devs {
+		for _, p := range d.Procs {
+			k := procKey(d.ID, p.PID)
+			live[k] = true
+			t := e.trends[k]
+			if t == nil {
+				t = &procTrend{}
+				e.trends[k] = t
+			}
+			t.util = appendSample(t.util, p.Metrics.Or(device.Util, math.NaN()))
+			t.mem = appendSample(t.mem, p.Metrics.Or(device.MemUsed, math.NaN()))
+		}
+	}
+	for k := range e.trends {
+		if !live[k] {
+			delete(e.trends, k)
+		}
+	}
+}
+
+// appendSample adds v and drops the oldest sample past ProcTrendLen.
+func appendSample(s []float64, v float64) []float64 {
+	if len(s) == ProcTrendLen {
+		copy(s, s[1:])
+		return append(s[:ProcTrendLen-1], v)
+	}
+	return append(s, v)
+}
+
+// ProcTrend returns up to n recent samples of one process metric, oldest
+// first. Only Util and MemUsed are kept; anything else comes back empty.
+func (e *Engine) ProcTrend(devID string, pid int, k device.Metric, n int) []float64 {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	t := e.trends[procKey(devID, pid)]
+	if t == nil || n <= 0 {
+		return nil
+	}
+	var src []float64
+	switch k {
+	case device.Util:
+		src = t.util
+	case device.MemUsed:
+		src = t.mem
+	default:
+		return nil
+	}
+	if len(src) > n {
+		src = src[len(src)-n:]
+	}
+	return append([]float64(nil), src...)
 }
 
 // trackEnergy accumulates kWh per device since siltide started.
