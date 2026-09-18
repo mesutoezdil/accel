@@ -1,0 +1,189 @@
+package tui
+
+import (
+	"regexp"
+	"strings"
+	"testing"
+
+	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/termenv"
+
+	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/device"
+)
+
+// inColor makes the styles emit escapes the way a real terminal sees them.
+// Without it lipgloss renders plain text under `go test`, and a table that
+// pads a styled cell with a width verb looks fine when it is not.
+func inColor(t *testing.T) {
+	t.Helper()
+	old := lipgloss.ColorProfile()
+	lipgloss.SetColorProfile(termenv.TrueColor)
+	t.Cleanup(func() { lipgloss.SetColorProfile(old) })
+}
+
+var sgr = regexp.MustCompile("\x1b\\[[0-9;]*m")
+
+// plain is what the terminal actually shows, without the colour escapes.
+func plain(s string) string { return sgr.ReplaceAllString(s, "") }
+
+// alignDevice is one device carrying metrics of several lengths and two
+// processes, one of which reports nothing, so every cell that can be styled
+// is styled on one row and bare on the other.
+func alignDevice() device.Device {
+	d := device.New(device.NVIDIA, 0, "NVIDIA H100 80GB HBM3", "align", "")
+	d.Health, d.State = 100, device.StateBusy
+	d.Metrics = device.Metrics{
+		device.Util: 94, device.Temp: 71, device.Power: 617, device.PowerCap: 700,
+		device.MemUsed: 63 << 30, device.MemTotal: 80 << 30, device.ClockCore: 1823,
+		device.ClockMem: 2619, device.EccCorrected: 19, device.EccUncorrected: 0,
+		device.PCIeGen: 5, device.PCIeWidth: 16, device.NUMANode: 1, device.RemapPending: 0,
+	}
+	d.Procs = []device.Process{
+		{PID: 4000, Name: "python", User: "alice", Namespace: "ml", Pod: "llama-70b-pretrain-0",
+			Metrics: device.Metrics{device.MemUsed: 31 << 30, device.Util: 46}},
+		{PID: 4001, Name: "vllm", User: "svc", Namespace: "inference", Pod: "chat-api-7d9f8b6c5",
+			Metrics: device.Metrics{}}, // reports nothing: every cell reads N/A
+	}
+	return d
+}
+
+// TestDetailColumnsLineUp holds the device detail to its own columns. Width
+// verbs count the escapes in a styled value as characters, so a table that
+// pads with them drifts as soon as one cell is coloured and another is not.
+func TestDetailColumnsLineUp(t *testing.T) {
+	inColor(t)
+	e := demoEngine(t)
+	m := New(e, Options{Theme: NewTheme("default", nil)})
+	m.width, m.height = 200, 60
+	lines := strings.Split(plain(m.detail(alignDevice())), "\n")
+
+	// the process table: the pod each row names must start at one column
+	var starts []int
+	for _, l := range lines {
+		for _, pod := range []string{"ml/llama-70b-pretrain-0", "inference/chat-api-7d9f8b6c5"} {
+			if i := strings.Index(l, pod); i >= 0 {
+				starts = append(starts, i)
+			}
+		}
+	}
+	if len(starts) != 2 {
+		t.Fatalf("found %d process rows, want 2:\n%s", len(starts), strings.Join(lines, "\n"))
+	}
+	if starts[0] != starts[1] {
+		t.Errorf("the pod column starts at %d on one row and %d on the other", starts[0], starts[1])
+	}
+
+	// the metric grid: every cell starts on the grid, not where the last
+	// value happened to end
+	const cell = 37 // 16 for the name, a space, 19 for the value, a space
+	keys := []string{"clock_core", "clock_mem", "ecc_corrected", "ecc_uncorrected", "mem_total",
+		"mem_used", "numa_node", "pcie_gen", "pcie_width", "power_cap", "remap_pending", "temp", "util", "power"}
+	found := 0
+	for _, l := range lines {
+		if !strings.Contains(l, "  ") {
+			continue
+		}
+		for _, k := range keys {
+			for at := 0; ; {
+				i := strings.Index(l[at:], k+" ")
+				if i < 0 {
+					break
+				}
+				i += at
+				at = i + len(k)
+				if i > 0 && l[i-1] != ' ' {
+					continue // part of a longer name
+				}
+				found++
+				if i%cell != 0 {
+					t.Errorf("%s starts at column %d, which is not a multiple of %d:\n%s", k, i, cell, l)
+				}
+			}
+		}
+	}
+	if found < 6 {
+		t.Fatalf("only found %d metric cells to check:\n%s", found, strings.Join(lines, "\n"))
+	}
+}
+
+// TestProcessPanelColumnsLineUp covers the process lines under the overview,
+// where a device with no per-process metrics reads N/A in two cells.
+func TestProcessPanelColumnsLineUp(t *testing.T) {
+	inColor(t)
+	e := demoEngine(t)
+	m := New(e, Options{Theme: NewTheme("default", nil)})
+	m.width, m.height = 200, 60
+	out := plain(m.topProcs([]device.Device{alignDevice()}, 4, 120))
+
+	var ends []int
+	for _, l := range strings.Split(out, "\n") {
+		if i := strings.Index(l, "llama-70b-pretrain-0"); i >= 0 {
+			ends = append(ends, i)
+		}
+		if i := strings.Index(l, "chat-api-7d9f8b6c5"); i >= 0 {
+			ends = append(ends, i)
+		}
+	}
+	if len(ends) != 2 {
+		t.Fatalf("found %d rows, want 2:\n%s", len(ends), out)
+	}
+	if ends[0] != ends[1] {
+		t.Errorf("the pod column starts at %d on one row and %d on the other:\n%s", ends[0], ends[1], out)
+	}
+}
+
+func renderAll(e *collect.Engine) map[string]string {
+	out := map[string]string{}
+	for tab, k := range TabKeys() {
+		m := New(e, Options{Theme: NewTheme("default", nil)})
+		mm, _ := m.Update(tea.WindowSizeMsg{Width: 200, Height: 60})
+		m = mm.(Model)
+		m.setTab(tab)
+		out[k.Name] = plain(m.View())
+		m.setSearch("util>1")
+		out[k.Name+"/filter"] = plain(m.View())
+	}
+	return out
+}
+
+// TestColorDoesNotMoveColumns renders every tab twice, once with the styles
+// on and once with them off, and holds the visible text to being the same.
+// A cell padded with a width verb instead of the width-aware helpers drifts
+// as soon as it is coloured, and this is what says so.
+func TestColorDoesNotMoveColumns(t *testing.T) {
+	e := demoEngine(t)
+	old := lipgloss.ColorProfile()
+	lipgloss.SetColorProfile(termenv.Ascii)
+	bare := renderAll(e)
+	lipgloss.SetColorProfile(termenv.TrueColor)
+	colored := renderAll(e)
+	lipgloss.SetColorProfile(old)
+
+	bare["plain"] = plainSnapshot(e, termenv.Ascii)
+	colored["plain"] = plainSnapshot(e, termenv.TrueColor)
+
+	for name, want := range bare {
+		got := colored[name]
+		if got == want {
+			continue
+		}
+		wl, gl := strings.Split(want, "\n"), strings.Split(got, "\n")
+		for i := range wl {
+			if i < len(gl) && wl[i] != gl[i] {
+				t.Errorf("%s line %d moves when coloured:\n bare |%s|\n col  |%s|", name, i, wl[i], gl[i])
+				break
+			}
+		}
+	}
+}
+
+// plainSnapshot renders the --once view under one colour profile.
+func plainSnapshot(e *collect.Engine, p termenv.Profile) string {
+	old := lipgloss.ColorProfile()
+	lipgloss.SetColorProfile(p)
+	defer lipgloss.SetColorProfile(old)
+	return plain(Plain(e.Snapshot(), NewTheme("default", nil), 160))
+}
