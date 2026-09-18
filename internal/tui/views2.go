@@ -11,6 +11,7 @@ import (
 
 	"github.com/mesutoezdil/siltide/internal/device"
 	"github.com/mesutoezdil/siltide/internal/host"
+	"github.com/mesutoezdil/siltide/internal/kube"
 )
 
 // ---- Nodes and Network ----
@@ -310,12 +311,38 @@ func (m Model) pods() []podRow {
 	return out
 }
 
+// unreachable explains an empty view by listing what was looked for and
+// where. A tab that says only that something is missing leaves the reader to
+// guess which assumption was wrong; this is the same account --diagnose
+// prints, in the tab where the data would have been.
+func (m Model) unreachable(headline string, attempts []kube.Attempt) string {
+	th := m.th
+	var b strings.Builder
+	b.WriteString(th.bold.Render(headline) + "\n")
+	if len(attempts) == 0 {
+		return b.String()
+	}
+	b.WriteString(th.dim.Render("what was tried:") + "\n")
+	w := max(m.width, 40)
+	for _, a := range attempts {
+		b.WriteString("  " + pad(a.What, 28) + trunc(a.Where, max(w-32, 12)) + "\n")
+		// The reason gets its own line: it is the part worth reading, and on a
+		// narrow terminal it is the first thing a third column would cut.
+		if a.Err == "" {
+			b.WriteString("    " + th.ok.Render("ok") + "\n")
+			continue
+		}
+		b.WriteString("    " + th.dim.Render(trunc(a.Err, w-6)) + "\n")
+	}
+	return b.String()
+}
+
 func (m *Model) viewKube() string {
 	th := m.th
 	rows := m.pods()
 	if len(rows) == 0 {
 		if !m.snap.Kube && !m.snap.Demo {
-			return "Kubernetes was not detected: no /var/log/pods, no service account, and no usable kubeconfig."
+			return m.unreachable("Kubernetes was not detected.", m.eng.Kube().Attempts())
 		}
 		if m.ns != "" {
 			return "no pods in namespace " + m.ns + " use accelerators"

@@ -148,3 +148,51 @@ func TestPodResources(t *testing.T) {
 		t.Fatalf("%+v %v", allocs, err)
 	}
 }
+
+// TestAttemptsRecordWhatWasTried covers the account the Kubernetes tab and
+// --diagnose give when no pod source is found: every place that was looked
+// at, and why it did not answer.
+func TestAttemptsRecordWhatWasTried(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("SILTIDE_POD_LOG_DIR", filepath.Join(dir, "no-such-pods"))
+	t.Setenv("KUBERNETES_SERVICE_HOST", "")
+	t.Setenv("KUBERNETES_SERVICE_PORT", "")
+	missing := filepath.Join(dir, "no-such-kubeconfig")
+
+	r := New(Options{Kubeconfig: missing})
+	if r.Enabled() {
+		t.Fatalf("nothing should have been detected, source %q", r.Source())
+	}
+	got := r.Attempts()
+	if len(got) != 3 {
+		t.Fatalf("recorded %d attempts, want the log directory, the service account and the kubeconfig: %+v", len(got), got)
+	}
+	for _, a := range got {
+		if a.What == "" || a.Where == "" {
+			t.Errorf("an attempt says nothing useful: %+v", a)
+		}
+		if a.Err == "" {
+			t.Errorf("attempt %q on %q claims to have worked", a.What, a.Where)
+		}
+	}
+	if !strings.Contains(got[0].Where, "no-such-pods") || !strings.Contains(got[2].Where, "no-such-kubeconfig") {
+		t.Errorf("attempts name the wrong paths: %+v", got)
+	}
+	if !strings.Contains(got[1].Err, "not running in a pod") {
+		t.Errorf("the service account attempt should say why: %q", got[1].Err)
+	}
+
+	// a directory that exists is recorded as the source that answered
+	logs := filepath.Join(dir, "pods")
+	if err := os.MkdirAll(logs, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("SILTIDE_POD_LOG_DIR", logs)
+	r = New(Options{Kubeconfig: missing})
+	if !r.Enabled() || r.Source() != "log-dir" {
+		t.Fatalf("enabled %v source %q", r.Enabled(), r.Source())
+	}
+	if a := r.Attempts()[0]; a.Err != "" {
+		t.Errorf("the attempt that worked carries an error: %+v", a)
+	}
+}
