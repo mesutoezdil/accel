@@ -91,7 +91,9 @@ func TestBookmarkCompletion(t *testing.T) {
 	if got := m.complete("bookmark h"); got != "bookmark hot-nodes" {
 		t.Errorf("complete(%q) = %q", "bookmark h", got)
 	}
-	if got := m.complete("book"); got != "bookmark" {
+	// the command takes an argument, so completing its name leaves the
+	// cursor ready to type one
+	if got := m.complete("book"); got != "bookmark " {
 		t.Errorf("complete(%q) = %q", "book", got)
 	}
 }
