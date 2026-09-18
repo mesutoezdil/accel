@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -106,8 +107,62 @@ func film(o options, eng *collect.Engine, th tui.Theme, host string) error {
 		}
 	}
 	fmt.Printf("%s: %d frames of %d columns by %d rows\n", o.film, len(views), o.w, rows)
+	if o.player == "" {
+		return nil
+	}
+	return writePlayer(o.player, views, o.w, rows)
+}
+
+// reel is the animation a page replays as text: the first frame carries
+// every line, and each one after it only the lines that changed.
+type reel struct {
+	Cols   int         `json:"cols"`
+	Rows   int         `json:"rows"`
+	Frames []reelFrame `json:"frames"`
+}
+
+type reelFrame struct {
+	Hold  int               `json:"hold,omitempty"` // extra frames this one stands for
+	Lines map[string]string `json:"lines"`          // line number to its HTML
+}
+
+// writePlayer saves the views as the reel a page plays. Lines repeat between
+// frames far more than they change, so only the changes are written.
+func writePlayer(path string, views []string, cols, rows int) error {
+	r := reel{Cols: cols, Rows: rows}
+	var prev []string
+	for _, v := range views {
+		cur := htmlLines(padRows(v, rows))
+		f := reelFrame{Lines: map[string]string{}}
+		for i := 0; i < rows; i++ {
+			// The first frame carries every line, blank ones included, so a
+			// player can loop back to it without clearing the screen first.
+			if prev == nil || cur[i] != prev[i] {
+				f.Lines[itoa(i)] = cur[i]
+			}
+		}
+		prev = cur
+		if len(f.Lines) == 0 && len(r.Frames) > 0 {
+			r.Frames[len(r.Frames)-1].Hold++ // nothing moved: hold the last one
+			continue
+		}
+		r.Frames = append(r.Frames, f)
+	}
+	b, err := json.Marshal(r)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
+	}
+	if err := os.WriteFile(path, b, 0o644); err != nil {
+		return err
+	}
+	fmt.Printf("%s: %d frames, %.0f KB\n", path, len(r.Frames), float64(len(b))/1024)
 	return nil
 }
+
+func itoa(i int) string { return fmt.Sprint(i) }
 
 // frame replays the keys pressed so far against the latest snapshot and
 // returns the view.

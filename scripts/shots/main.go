@@ -42,8 +42,9 @@ func main() {
 	tabsOnly := flag.String("tabs", "", "comma-separated tab names to render (default: all)")
 	prefix := flag.String("prefix", "", "file name prefix, for example mac-")
 	filmDir := flag.String("film", "", "write the demo animation frames (one SVG each) to this directory instead of the tab images")
+	player := flag.String("player", "", "with -film, also write the animation as HTML lines a page can replay, to this file")
 	flag.Parse()
-	if err := run(options{out: *out, ans: *ans, w: *width, h: *height, theme: *theme, live: *live, host: *hostLabel, tabs: *tabsOnly, prefix: *prefix, film: *filmDir}); err != nil {
+	if err := run(options{out: *out, ans: *ans, w: *width, h: *height, theme: *theme, live: *live, host: *hostLabel, tabs: *tabsOnly, prefix: *prefix, film: *filmDir, player: *player}); err != nil {
 		fmt.Fprintln(os.Stderr, "shots:", err)
 		os.Exit(1)
 	}
@@ -51,7 +52,7 @@ func main() {
 
 type options struct {
 	out, ans, theme, host, tabs, prefix string
-	film                                string
+	film, player                        string
 	w, h                                int
 	live                                time.Duration
 }

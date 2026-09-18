@@ -98,6 +98,19 @@ nav a.link:hover{color:var(--text)}
 
 .frame{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--frame-shadow)}
 .frame img{width:100%}
+.term{background:#0d1117}
+.termbar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#161b22;border-bottom:1px solid var(--border)}
+.termbar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}
+.termbar i:nth-child(2){background:#febc2e}
+.termbar i:nth-child(3){background:#28c840}
+.termbar span{flex:1;text-align:center;font-size:.78rem;color:#8b949e}
+.termbtn{font-family:var(--mono);font-size:.72rem;background:none;border:1px solid #30363d;color:#8b949e;
+  border-radius:6px;padding:3px 9px;cursor:pointer}
+.termbtn:hover{color:#c9d1d9;border-color:#8b949e}
+.termbody{overflow-x:auto;padding:14px 16px}
+/* 150 columns of a monospace face are 90em wide, so this is the size that fits the capture in the frame, with a floor for narrow screens where the body scrolls sideways instead. */
+.termbody pre{margin:0;color:#c9d1d9;line-height:1.32;white-space:pre;font-size:max(7.5px,calc((min(100vw,1040px) - 72px) / 90))}
+.termbody pre div{min-height:1.32em}
 
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;
@@ -180,7 +193,14 @@ footer a:hover{color:var(--text)}
       <a class="btn primary" href="#install" data-en="Install →" data-zh="安装 →">Install →</a>
       <a class="btn ghost" href="https://github.com/mesutoezdil/siltide" data-en="View source ↗" data-zh="查看源码 ↗">View source ↗</a>
     </div>
-    <div class="frame"><img src="assets/demo.gif" alt="siltide moving through the Overview, Devices, Processes, History, Links, Health, and Dashboard tabs on a simulated fleet, with a filter typed into the bar and history scrubbed back" loading="lazy"></div>
+    <div class="frame term" id="demo">
+      <div class="termbar"><i></i><i></i><i></i>
+        <span class="mono">siltide</span>
+        <button type="button" id="demo-toggle" class="termbtn" data-en="pause" data-zh="暂停">pause</button>
+      </div>
+      <div class="termbody"><pre id="demo-screen" class="mono" aria-label="a recorded siltide session, replayed as text"></pre></div>
+      <noscript><img src="assets/demo.gif" alt="siltide moving through the Overview, Devices, Processes, History, Links, Health, and Dashboard tabs on a simulated fleet, with a filter typed into the bar and history scrubbed back"></noscript>
+    </div>
   </div>
 </section>
 
@@ -359,6 +379,64 @@ chmod +x siltide && sudo mv siltide /usr/local/bin/</code></pre>
 </footer>
 
 <script>
+// The hero is a session recorded with the interface itself: every line is
+// the terminal's own output, replayed here as text rather than as a picture.
+(function(){
+  var screen = document.getElementById("demo-screen");
+  var toggle = document.getElementById("demo-toggle");
+  if (!screen || !toggle) { return; }
+  var rows = [], frames = [], at = 0, timer = null, running = false;
+
+  function label() {
+    var zh = (document.documentElement.lang || "").indexOf("zh") === 0;
+    toggle.textContent = toggle.getAttribute(zh ? "data-zh" : "data-en");
+  }
+  function draw(i) {
+    var lines = frames[i].lines;
+    for (var k in lines) { if (rows[k]) { rows[k].innerHTML = lines[k]; } }
+  }
+  function step() {
+    draw(at);
+    var hold = 1 + (frames[at].hold || 0);
+    at = (at + 1) % frames.length;
+    timer = setTimeout(step, hold * 100);
+  }
+  function play() {
+    if (running) { return; }
+    running = true;
+    toggle.setAttribute("data-en", "pause");
+    toggle.setAttribute("data-zh", "暂停");
+    label();
+    step();
+  }
+  function pause() {
+    running = false;
+    clearTimeout(timer);
+    toggle.setAttribute("data-en", "play");
+    toggle.setAttribute("data-zh", "播放");
+    label();
+  }
+  toggle.addEventListener("click", function(){ if (running) { pause(); } else { play(); } });
+
+  fetch("assets/demo.json").then(function(r){ return r.json(); }).then(function(reel){
+    for (var i = 0; i < reel.rows; i++) {
+      rows.push(screen.appendChild(document.createElement("div")));
+    }
+    frames = reel.frames;
+    draw(0);
+    var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (still) { pause(); } else { play(); }
+  }).catch(function(){
+    // No animation without the recording: the picture of it still works.
+    var img = document.createElement("img");
+    img.src = "assets/demo.gif";
+    img.alt = "siltide moving through its tabs on a simulated fleet";
+    img.style.width = "100%";
+    screen.parentNode.replaceChild(img, screen);
+    toggle.remove();
+  });
+})();
+
 document.querySelectorAll(".install .tabbtn").forEach(function(b){
   b.addEventListener("click", function(){
     document.querySelectorAll(".install .tabbtn").forEach(function(x){ x.classList.remove("active"); });
