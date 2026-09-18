@@ -1,0 +1,39 @@
+# Maintainer: Mesut Oezdil <versusfinem@gmail.com>
+#
+# siltide-bin: the published binary rather than a source build. The release
+# already ships a static binary for x86-64 and aarch64, so building from
+# source on a user's machine would only reproduce what is already there.
+#
+# The workflow that publishes this fills in pkgver and the checksums from the
+# release it is publishing; the values here are what it last pushed.
+pkgname=siltide-bin
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="Terminal monitor for GPUs, NPUs and other AI accelerators"
+arch=('x86_64' 'aarch64')
+url="https://github.com/mesutoezdil/siltide"
+license=('Apache-2.0')
+provides=('siltide')
+conflicts=('siltide')
+options=(!strip !debug)
+
+source_x86_64=("siltide-${pkgver}-x86_64::${url}/releases/download/v${pkgver}/siltide-linux-amd64")
+source_aarch64=("siltide-${pkgver}-aarch64::${url}/releases/download/v${pkgver}/siltide-linux-arm64")
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
+
+package() {
+	local bin="siltide-${pkgver}-${CARCH}"
+	install -Dm755 "${srcdir}/${bin}" "${pkgdir}/usr/bin/siltide"
+
+	# Completions and the manual page come out of the binary itself, so they
+	# can never describe a different version from the one being installed.
+	"${pkgdir}/usr/bin/siltide" --completion bash |
+		install -Dm644 /dev/stdin "${pkgdir}/usr/share/bash-completion/completions/siltide"
+	"${pkgdir}/usr/bin/siltide" --completion zsh |
+		install -Dm644 /dev/stdin "${pkgdir}/usr/share/zsh/site-functions/_siltide"
+	"${pkgdir}/usr/bin/siltide" --completion fish |
+		install -Dm644 /dev/stdin "${pkgdir}/usr/share/fish/vendor_completions.d/siltide.fish"
+	"${pkgdir}/usr/bin/siltide" --man |
+		install -Dm644 /dev/stdin "${pkgdir}/usr/share/man/man1/siltide.1"
+}

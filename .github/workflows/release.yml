@@ -45,3 +45,15 @@ jobs:
             dist/*.apk
             dist/*.pkg.tar.zst
             dist/*.sbom.json
+
+  # After the release is public, so the AUR package points at assets that
+  # exist. Split out so a failed publish can be retried by hand without
+  # cutting another release.
+  aur:
+    needs: goreleaser
+    if: ${{ !contains(github.ref_name, '-') }}
+    uses: ./.github/workflows/aur-publish.yml
+    secrets: inherit
+    with:
+      # github.ref_name is the tag (v1.2.3); the package wants 1.2.3
+      version: ${{ github.ref_name }}
