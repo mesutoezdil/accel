@@ -137,32 +137,38 @@ Flags:
 	if *cfgPath != "" {
 		path, explicit = *cfgPath, true
 	}
-	cfg, err := config.Load(path, explicit)
+	// loadConfig reads the file and lays the flags over it. `:reload` in the
+	// interface calls it again, so a flag keeps winning over the file.
+	loadConfig := func() (config.Config, error) {
+		cfg, err := config.Load(path, explicit)
+		if err != nil {
+			return cfg, err
+		}
+		if *interval > 0 {
+			cfg.Refresh = *interval
+		}
+		if *retention > 0 {
+			cfg.History.Keep = *retention
+		}
+		if *listen != "" {
+			cfg.Listen = *listen
+		}
+		if *token != "" {
+			cfg.Token = *token
+		}
+		if *only != "" {
+			cfg.Vendors = strings.Split(*only, ",")
+		}
+		if *theme != "" {
+			cfg.Theme = *theme
+		}
+		if *logFile != "" {
+			cfg.Log = *logFile
+		}
+		return cfg, cfg.Validate()
+	}
+	cfg, err := loadConfig()
 	if err != nil {
-		fail(err)
-	}
-	if *interval > 0 {
-		cfg.Refresh = *interval
-	}
-	if *retention > 0 {
-		cfg.History.Keep = *retention
-	}
-	if *listen != "" {
-		cfg.Listen = *listen
-	}
-	if *token != "" {
-		cfg.Token = *token
-	}
-	if *only != "" {
-		cfg.Vendors = strings.Split(*only, ",")
-	}
-	if *theme != "" {
-		cfg.Theme = *theme
-	}
-	if *logFile != "" {
-		cfg.Log = *logFile
-	}
-	if err := cfg.Validate(); err != nil {
 		fail(err)
 	}
 	if *printConfig {
@@ -265,7 +271,16 @@ Flags:
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	th, terr := tui.LoadTheme(cfg.Theme, filepath.Join(config.ConfigDir(), "themes"), cfg.Colors, cfg.Transparent)
+	// uiOptions maps a config onto the interface. A theme that does not
+	// resolve falls back to the default and says so, at startup on stderr and
+	// on a reload by the interface changing colour.
+	uiOptions := func(cfg config.Config) (tui.Options, error) {
+		th, err := tui.LoadTheme(cfg.Theme, filepath.Join(config.ConfigDir(), "themes"), cfg.Colors, cfg.Transparent)
+		mouse := cfg.Mouse == nil || *cfg.Mouse
+		return tui.Options{Theme: th, Keys: tui.NewKeymap(cfg.Keys), TempWarn: cfg.Thresholds.TempWarn, Mouse: mouse, Currency: cfg.Cost.Currency}, err
+	}
+	opts, terr := uiOptions(cfg)
+	th := opts.Theme
 	if terr != nil {
 		fmt.Fprintln(os.Stderr, "siltide:", terr, "(using default)")
 	}
@@ -327,9 +342,19 @@ Flags:
 			}
 		}
 	default:
-		mouse := cfg.Mouse == nil || *cfg.Mouse
-		err := tui.Run(ctx, eng, tui.Options{Theme: th, Keys: tui.NewKeymap(cfg.Keys), TempWarn: cfg.Thresholds.TempWarn, Mouse: mouse, Currency: cfg.Cost.Currency})
-		if err != nil && ctx.Err() == nil {
+		var reload func() (tui.Options, error)
+		reload = func() (tui.Options, error) {
+			cfg, err := loadConfig()
+			if err != nil {
+				return tui.Options{}, err // nothing changed
+			}
+			eng.Reconfigure(cfg)
+			o, _ := uiOptions(cfg)
+			o.Reload = reload
+			return o, nil
+		}
+		opts.Reload = reload
+		if err := tui.Run(ctx, eng, opts); err != nil && ctx.Err() == nil {
 			fail(err)
 		}
 	}

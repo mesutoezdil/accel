@@ -2,6 +2,7 @@ package tui
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -215,5 +216,47 @@ func TestNodeCycleAndExport(t *testing.T) {
 	m.setTab(tabLinks)
 	if out := m.View(); !strings.Contains(out, "Topology") || !strings.Contains(out, "NV18") {
 		t.Fatalf("links tab lacks the topology matrix")
+	}
+}
+
+func TestReloadCommand(t *testing.T) {
+	e := demoEngine(t)
+	calls := 0
+	var reload func() (Options, error)
+	reload = func() (Options, error) {
+		calls++
+		if calls == 2 {
+			return Options{}, errors.New("config.yaml: line 3: unknown key")
+		}
+		return Options{Theme: NewTheme("nord", nil), Keys: NewKeymap(map[string]string{"quit": "x"}), TempWarn: 70, Currency: "€", Reload: reload}, nil
+	}
+	m := New(e, Options{Theme: NewTheme("default", nil), Reload: reload})
+
+	m.command("reload")
+	if calls != 1 {
+		t.Fatalf("reload ran %d times, want 1", calls)
+	}
+	if m.th.Name != "nord" || m.tempWarn != 70 || m.currency != "€" {
+		t.Fatalf("reload did not apply: theme %s tempWarn %v currency %s", m.th.Name, m.tempWarn, m.currency)
+	}
+	if m.keys["x"] != ActQuit {
+		t.Error("reload did not apply the new key bindings")
+	}
+	if !strings.Contains(m.notice, "reloaded") {
+		t.Errorf("notice %q", m.notice)
+	}
+
+	m.command("reload") // the file no longer parses
+	if m.th.Name != "nord" || m.tempWarn != 70 {
+		t.Error("a failed reload must leave the running settings alone")
+	}
+	if !strings.Contains(m.notice, "unknown key") {
+		t.Errorf("notice %q", m.notice)
+	}
+
+	m.reload = nil
+	m.command("reload")
+	if !strings.Contains(m.notice, "only available") {
+		t.Errorf("notice %q", m.notice)
 	}
 }

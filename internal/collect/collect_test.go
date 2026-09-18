@@ -49,3 +49,49 @@ func TestEngine(t *testing.T) {
 		t.Fatalf("history %v", h)
 	}
 }
+
+func TestReconfigureAppliesANewConfig(t *testing.T) {
+	hot := provider.Provider{
+		Name: "hot", Detect: func() error { return nil },
+		Read: func(context.Context) ([]device.Device, error) {
+			d := device.New(device.AMD, 0, "x", "", "")
+			d.Metrics[device.Util] = 42
+			d.Metrics[device.Temp] = 70
+			return []device.Device{d}, nil
+		},
+	}
+	cfg := config.Default()
+	cfg.Thresholds.TempWarn = 90
+	e := New([]provider.Provider{hot}, cfg, nil, false)
+	e.Detect()
+	e.Collect(context.Background())
+	snap := e.Collect(context.Background())
+	if len(snap.Alerts) != 0 {
+		t.Fatalf("70C should be quiet under a 90C threshold: %+v", snap.Alerts)
+	}
+
+	next := config.Default()
+	next.Refresh = 5 * time.Second
+	next.Thresholds.TempWarn = 60
+	next.Carbon.GramsPerKWh = 250
+	next.Cost.Currency = "€"
+	e.Reconfigure(next)
+
+	if e.Interval() != 5*time.Second {
+		t.Errorf("interval %s, want 5s", e.Interval())
+	}
+	if e.Carbon() != 250 {
+		t.Errorf("carbon %v, want 250", e.Carbon())
+	}
+	if e.Prices().Currency != "€" {
+		t.Errorf("currency %q, want €", e.Prices().Currency)
+	}
+	e.Collect(context.Background())
+	snap = e.Collect(context.Background()) // an alert needs two consecutive samples
+	if len(snap.Alerts) != 1 || snap.Alerts[0].Kind != "thermal" {
+		t.Fatalf("the reloaded 60C threshold did not fire: %+v", snap.Alerts)
+	}
+	if len(e.Events()) == 0 {
+		t.Error("a reload should keep the event log")
+	}
+}

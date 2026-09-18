@@ -173,6 +173,14 @@ func New(t Thresholds, keep int) *Detector {
 		since: map[string]time.Time{}, errors: map[string]string{}, xids: map[string][]xidAt{}}
 }
 
+// SetThresholds applies reloaded thresholds and rules, keeping the event log
+// and the alerts already firing.
+func (d *Detector) SetThresholds(t Thresholds) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.t = t
+}
+
 // Observe records what changed since the previous snapshot.
 func (d *Detector) Observe(now time.Time, devs []device.Device, providerErrors map[string]string) {
 	d.mu.Lock()

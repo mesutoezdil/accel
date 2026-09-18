@@ -130,12 +130,7 @@ type energyState struct {
 func New(provs []provider.Provider, cfg config.Config, hist *history.Store, demo bool) *Engine {
 	hostname, _ := os.Hostname()
 	t := cfg.Thresholds
-	var rules []events.Rule
-	for _, r := range cfg.Alerts.Rules {
-		if rule, err := events.ParseRule(r.Name, r.When, r.For, r.On, r.Severity); err == nil {
-			rules = append(rules, rule)
-		}
-	}
+	rules := alertRules(cfg)
 	e := &Engine{
 		provs: provs, cfg: cfg, demo: demo, host: hostname, hist: hist,
 		hostS:    host.New(),
@@ -164,6 +159,39 @@ func New(provs []provider.Provider, cfg config.Config, hist *history.Store, demo
 		e.status[i] = Status{Name: p.Name, Label: p.Label, Hint: p.Hint}
 	}
 	return e
+}
+
+// alertRules parses the config's alert rules, dropping the ones that do not
+// parse; Validate has already reported those.
+func alertRules(cfg config.Config) []events.Rule {
+	var rules []events.Rule
+	for _, r := range cfg.Alerts.Rules {
+		if rule, err := events.ParseRule(r.Name, r.When, r.For, r.On, r.Severity); err == nil {
+			rules = append(rules, rule)
+		}
+	}
+	return rules
+}
+
+// Reconfigure applies a config re-read from disk to a running engine: refresh
+// interval, thresholds, alert rules, delivery targets, prices, and carbon
+// intensity. Providers, history, and the event log stay as they are, so a
+// reload never restarts collection or loses what already happened.
+func (e *Engine) Reconfigure(cfg config.Config) {
+	rules := alertRules(cfg)
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	t := cfg.Thresholds
+	e.cfg = cfg
+	e.tracker.SetThresholds(derive.Thresholds{IdleUtil: t.IdleUtil, BusyUtil: t.BusyUtil, IdleAfter: t.IdleAfter, OutlierDelta: t.OutlierDelta})
+	e.detector.SetThresholds(events.Thresholds{TempWarn: t.TempWarn, Rules: rules})
+	opts := notify.Options{Webhook: cfg.Alerts.Webhook, Slack: cfg.Alerts.Slack, Alertmanager: cfg.Alerts.Alertmanager, MinSeverity: cfg.Alerts.MinSeverity, Resend: cfg.Alerts.Resend, Host: e.host}
+	if n := notify.New(opts); n == nil || e.notifier == nil {
+		e.notifier = n // a target was added or removed: start fresh
+	} else {
+		e.notifier.SetOptions(opts) // keep what was already sent
+	}
+	e.prices = cost.Table{Currency: cfg.Cost.Currency, PerHour: cfg.Cost.PerHour}
 }
 
 // Record writes every snapshot as one JSON line to w (see `--record`).
@@ -490,7 +518,8 @@ func (e *Engine) Run(ctx context.Context) {
 	e.Detect()
 	e.watch(ctx)
 	e.Collect(ctx)
-	t := time.NewTicker(e.cfg.Refresh)
+	every := e.Interval()
+	t := time.NewTicker(every)
 	defer t.Stop()
 	for {
 		select {
@@ -500,7 +529,19 @@ func (e *Engine) Run(ctx context.Context) {
 		case <-e.kick:
 		}
 		e.Collect(ctx)
+		if d := e.Interval(); d != every {
+			every = d
+			t.Reset(every)
+		}
 	}
+}
+
+// Interval is the configured time between passes, which a config reload
+// can change while Run is going.
+func (e *Engine) Interval() time.Duration {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.cfg.Refresh
 }
 
 // Refresh asks Run for an immediate pass.
@@ -531,10 +572,18 @@ func (e *Engine) Events() []events.Event { return e.detector.Log() }
 func (e *Engine) Kube() *kube.Resolver { return e.pods }
 
 // Prices returns the cost table.
-func (e *Engine) Prices() cost.Table { return e.prices }
+func (e *Engine) Prices() cost.Table {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.prices
+}
 
 // Carbon returns the configured grid intensity.
-func (e *Engine) Carbon() float64 { return e.cfg.Carbon.GramsPerKWh }
+func (e *Engine) Carbon() float64 {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.cfg.Carbon.GramsPerKWh
+}
 
 // Close stops the providers and flushes history.
 func (e *Engine) Close() {

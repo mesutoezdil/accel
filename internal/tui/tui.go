@@ -58,6 +58,9 @@ type Options struct {
 	TempWarn float64 // for the thermals view; 0 means 85
 	Mouse    bool
 	Currency string
+	// Reload re-reads the config file and returns the options it now asks
+	// for, after applying it to the engine. nil disables `:reload`.
+	Reload func() (Options, error)
 }
 
 // Model is the Bubble Tea model.
@@ -68,6 +71,7 @@ type Model struct {
 	keys     Keymap
 	tempWarn float64
 	currency string
+	reload   func() (Options, error)
 	tab      int
 	prev     int // tab to return to from help
 	sel      int // selected row on the current tab
@@ -131,19 +135,25 @@ func Run(ctx context.Context, eng *collect.Engine, o Options) error {
 
 // New builds a model.
 func New(eng *collect.Engine, o Options) Model {
-	m := Model{eng: eng, snap: eng.Snapshot(), th: o.Theme, keys: o.Keys, width: 100, height: 30, sels: map[int]int{},
-		sortDesc: true, window: 30 * time.Minute, pick: -1, currency: o.Currency}
+	m := Model{eng: eng, snap: eng.Snapshot(), width: 100, height: 30, sels: map[int]int{},
+		sortDesc: true, window: 30 * time.Minute, pick: -1}
+	m.apply(o)
+	return m
+}
+
+// apply takes the settings of o, filling in the defaults for the ones it
+// leaves empty. It runs at startup and again on every `:reload`.
+func (m *Model) apply(o Options) {
+	m.th, m.keys, m.tempWarn, m.currency, m.reload = o.Theme, o.Keys, o.TempWarn, o.Currency, o.Reload
 	if m.keys == nil {
 		m.keys = NewKeymap(nil)
 	}
-	m.tempWarn = o.TempWarn
 	if m.tempWarn == 0 {
 		m.tempWarn = 85
 	}
 	if m.currency == "" {
 		m.currency = "$"
 	}
-	return m
 }
 
 func (m Model) wait() tea.Cmd {
@@ -556,7 +566,7 @@ func (m Model) complete(input string) string {
 	for _, t := range tabs {
 		cands = append(cands, strings.ToLower(t.name))
 	}
-	cands = append(cands, "sort", "filter", "node", "ns", "metric", "theme", "compare", "live", "pause", "refresh", "window", "describe", "logs")
+	cands = append(cands, "sort", "filter", "node", "ns", "metric", "theme", "compare", "live", "pause", "refresh", "reload", "window", "describe", "logs")
 	for _, p := range m.pods() {
 		cands = append(cands, p.name, "ns "+p.ns)
 	}
@@ -624,6 +634,8 @@ func (m *Model) command(line string) {
 		m.th = t
 	case "compare":
 		m.startCompare(f[1:])
+	case "reload":
+		m.reloadConfig()
 	case "pause":
 		m.paused = !m.paused
 	case "refresh":
@@ -645,6 +657,23 @@ func (m *Model) command(line string) {
 		}
 		m.say("unknown command: " + cmd)
 	}
+}
+
+// reloadConfig re-reads the config file and applies it to the engine and to
+// this model, so a theme, threshold, or key binding takes effect without a
+// restart. A file that no longer parses leaves everything as it was.
+func (m *Model) reloadConfig() {
+	if m.reload == nil {
+		m.say("reload is only available when a config file is in use")
+		return
+	}
+	o, err := m.reload()
+	if err != nil {
+		m.say("reload: " + err.Error())
+		return
+	}
+	m.apply(o)
+	m.say("config reloaded")
 }
 
 // jumpPod selects a pod by name on the Kubernetes tab.
