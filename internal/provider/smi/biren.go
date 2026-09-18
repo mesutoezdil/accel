@@ -2,7 +2,6 @@ package smi
 
 import (
 	"encoding/csv"
-	"strconv"
 	"strings"
 
 	"github.com/mesutoezdil/siltide/internal/device"
@@ -33,8 +32,8 @@ func parseQueryCSV(v device.Vendor, text string) []device.Device {
 		if len(f) < 8 {
 			continue
 		}
-		idx, err := strconv.Atoi(strings.TrimSpace(f[0]))
-		if err != nil {
+		idx, ok := deviceIndex(f[0])
+		if !ok {
 			continue
 		}
 		d := device.New(v, idx, f[1], f[2], f[3])

@@ -41,8 +41,8 @@ func parseCnmon(text string) []device.Device {
 		if len(f) < 3 {
 			continue
 		}
-		idx, err := strconv.Atoi(f[0])
-		if err != nil {
+		idx, ok := deviceIndex(f[0])
+		if !ok {
 			continue
 		}
 		d := device.New(device.Cambricon, idx, "Cambricon "+f[2], "", "")

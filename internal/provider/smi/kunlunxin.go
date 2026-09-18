@@ -5,7 +5,6 @@ import (
 	"errors"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/mesutoezdil/siltide/internal/device"
@@ -49,8 +48,8 @@ func parseXpuSmi(text string) []device.Device {
 		if len(t) < 22 || !busID.MatchString(t[0]) {
 			continue
 		}
-		idx, err := strconv.Atoi(t[2])
-		if err != nil {
+		idx, ok := deviceIndex(t[2])
+		if !ok {
 			continue
 		}
 		d := device.New(device.Kunlunxin, idx, "Kunlunxin "+strings.Trim(t[21], `"`), t[3], t[0])

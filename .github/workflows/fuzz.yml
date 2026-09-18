@@ -1,0 +1,49 @@
+name: fuzz
+
+# The vendor parsers turn text from outside the host into devices, which makes
+# them the one place where someone else's output decides what the collector
+# reports. `go test` holds them against captured fixtures and a fixed set of
+# mangled variants on every change; this keeps looking, with coverage guiding
+# it, for the input nobody wrote down.
+#
+# Not a required check on purpose: it is path-filtered, and a required check
+# that reports nothing on the pull requests it skips blocks the merge.
+on:
+  pull_request:
+    paths:
+      - internal/provider/smi/**
+      - .github/workflows/fuzz.yml
+  schedule:
+    - cron: "40 3 * * *"
+  workflow_dispatch:
+    inputs:
+      seconds:
+        description: How long to fuzz
+        default: "600"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fuzz-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version-file: go.mod
+      - name: Fuzz the parsers
+        run: |
+          secs="${{ github.event.inputs.seconds || (github.event_name == 'pull_request' && '120' || '600') }}"
+          go test ./internal/provider/smi/ -run xxx -fuzz FuzzParsers -fuzztime "${secs}s"
+      # A crash is only useful with the input that caused it.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: fuzz-corpus
+          path: internal/provider/smi/testdata/fuzz/
+          retention-days: 7
