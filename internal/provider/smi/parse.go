@@ -22,6 +22,21 @@ func num(s string) (float64, bool) {
 	return v, err == nil
 }
 
+// deviceIndex reads the index column of a table row. A vendor tool prints a
+// small non-negative number there, so anything else, a negative number above
+// all, is a line that only looks like a device row.
+func deviceIndex(s string) (int, bool) {
+	n, err := strconv.Atoi(strings.TrimSpace(s))
+	if err != nil || n < 0 || n > maxDeviceIndex {
+		return 0, false
+	}
+	return n, true
+}
+
+// maxDeviceIndex is past any real machine and short of a bus address read as
+// an index by mistake.
+const maxDeviceIndex = 4096
+
 // firstWord is the command name at the front of a process line, or "" when
 // the tool printed the column empty.
 func firstWord(s string) string {

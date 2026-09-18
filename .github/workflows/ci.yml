@@ -21,7 +21,26 @@ jobs:
       - run: test -z "$(gofmt -l .)"
       - run: go vet ./...
       - run: GOOS=linux go vet ./...
-      - run: go test -race ./...
+      - name: Tests, with coverage on Linux
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            go test -race -covermode=atomic -coverprofile=cover.out ./...
+          else
+            go test -race ./...
+          fi
+      # A floor, not a target. It is what the tree measures today, and it goes
+      # up on purpose or not at all: a change that drops coverage should have
+      # to say so rather than slip through.
+      - name: Coverage floor
+        if: runner.os == 'Linux'
+        run: |
+          set -eu
+          go tool cover -func=cover.out | tail -40
+          total=$(go tool cover -func=cover.out | awk '/^total:/ {print substr($3, 1, length($3)-1)}')
+          floor=64.0
+          echo "coverage ${total}%, floor ${floor}%"
+          awk -v t="$total" -v f="$floor" 'BEGIN { exit (t >= f) ? 0 : 1 }' ||
+            { echo "coverage fell below the floor"; exit 1; }
       - run: go test -run TestFakeNVML -v ./internal/provider/nvidia/
         if: runner.os == 'Linux'
       - uses: golangci/golangci-lint-action@4afd733a84b1f43292c63897423277bb7f4313a9 # v8

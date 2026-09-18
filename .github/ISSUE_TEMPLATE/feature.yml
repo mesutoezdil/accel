@@ -1,0 +1,47 @@
+name: Feature request
+description: Something siltide should do that it does not
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Say what you are trying to find out and what it costs you today. A
+        request that starts from the problem usually ends up somewhere better
+        than one that starts from the solution.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to see, and what happens instead?
+      placeholder: I want to know which device is idle while a pod still holds it. Today I read the Overview and cross-check kubectl by hand.
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: How do you do it now?
+      description: The command, the other tool, the spreadsheet. If the answer is "I do not", say that.
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where would it belong?
+      options:
+        - A tab in the interface
+        - The filter or the command bar
+        - A flag or the JSON output
+        - The API or the Prometheus metrics
+        - A provider, for a vendor or a metric that is missing
+        - Somewhere else, or not sure
+    validations:
+      required: true
+  - type: input
+    id: vendor
+    attributes:
+      label: Which accelerators is this about?
+      placeholder: NVIDIA H100, Ascend 910B, Apple M-series, all of them
+  - type: textarea
+    id: anything
+    attributes:
+      label: Anything else
+      description: A screenshot of the view you mean, a link to the vendor documentation, the output of `siltide --diagnose`.

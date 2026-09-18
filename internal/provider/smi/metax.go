@@ -2,7 +2,6 @@ package smi
 
 import (
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/mesutoezdil/siltide/internal/device"
@@ -48,8 +47,8 @@ func parseMxSmi(text string) []device.Device {
 		if bus == "" || len(f) == 0 {
 			continue
 		}
-		idx, err := strconv.Atoi(f[0])
-		if err != nil {
+		idx, ok := deviceIndex(f[0])
+		if !ok {
 			continue
 		}
 		var name []string
