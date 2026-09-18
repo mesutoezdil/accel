@@ -41,8 +41,9 @@ func main() {
 	hostLabel := flag.String("host", "", "hostname to show (default: h100-node-07 for the demo, the real one live)")
 	tabsOnly := flag.String("tabs", "", "comma-separated tab names to render (default: all)")
 	prefix := flag.String("prefix", "", "file name prefix, for example mac-")
+	filmDir := flag.String("film", "", "write the demo animation frames (one SVG each) to this directory instead of the tab images")
 	flag.Parse()
-	if err := run(options{out: *out, ans: *ans, w: *width, h: *height, theme: *theme, live: *live, host: *hostLabel, tabs: *tabsOnly, prefix: *prefix}); err != nil {
+	if err := run(options{out: *out, ans: *ans, w: *width, h: *height, theme: *theme, live: *live, host: *hostLabel, tabs: *tabsOnly, prefix: *prefix, film: *filmDir}); err != nil {
 		fmt.Fprintln(os.Stderr, "shots:", err)
 		os.Exit(1)
 	}
@@ -50,6 +51,7 @@ func main() {
 
 type options struct {
 	out, ans, theme, host, tabs, prefix string
+	film                                string
 	w, h                                int
 	live                                time.Duration
 }
@@ -103,9 +105,12 @@ func run(o options) error {
 		}
 	}
 	th, _ := tui.LoadTheme(o.theme, "", nil, false)
+	host, _ := os.Hostname()
+	if o.film != "" {
+		return film(o, eng, th, host)
+	}
 	m := tui.New(eng, tui.Options{Theme: th, Mouse: true, Currency: "$"})
 	m = update(m, tea.WindowSizeMsg{Width: o.w, Height: o.h})
-	host, _ := os.Hostname()
 	for _, tab := range tui.TabKeys() {
 		name := strings.ToLower(tab.Name)
 		if o.tabs != "" && !slices.Contains(strings.Split(o.tabs, ","), name) {
