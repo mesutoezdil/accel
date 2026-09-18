@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>siltide — next to nvidia-smi, nvtop, gpustat and DCGM</title>
+<meta name="description" content="Where each tool is the better choice and what siltide adds: fifteen vendors, pod correlation, rewindable history, an API and an agent interface.">
+<link rel="canonical" href="https://mesutoezdil.github.io/siltide/compare.html">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0b0a09">
+<meta name="color-scheme" content="dark light">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="siltide">
+<meta property="og:url" content="https://mesutoezdil.github.io/siltide/compare.html">
+<meta property="og:title" content="siltide — next to nvidia-smi, nvtop, gpustat and DCGM">
+<meta property="og:description" content="Where each tool is the better choice and what siltide adds: fifteen vendors, pod correlation, rewindable history, an API and an agent interface.">
+<meta property="og:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="siltide showing a fleet of accelerators in a terminal">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="siltide — next to nvidia-smi, nvtop, gpustat and DCGM">
+<meta name="twitter:description" content="Where each tool is the better choice and what siltide adds: fifteen vendors, pod correlation, rewindable history, an API and an agent interface.">
+<meta name="twitter:image" content="https://mesutoezdil.github.io/siltide/assets/og-home.png">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="gpu-bg"><div class="grid-lines"></div></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html#top"><img src="assets/logo.svg" alt=""> siltide</a>
+    <div class="nav-sections">
+      <a class="link" href="tui.html" data-en="Terminal" data-zh="终端">Terminal</a>
+      <a class="link" href="guides.html" data-en="Guides" data-zh="指南">Guides</a>
+      <a class="link" href="compare.html" data-en="Compare" data-zh="对比">Compare</a>
+      <a class="link" href="faq.html" data-en="FAQ" data-zh="常见问题">FAQ</a>
+      <a class="link" href="download.html" data-en="Download" data-zh="下载">Download</a>
+    </div>
+    <div class="nav-right">
+      <a class="link" href="https://github.com/mesutoezdil/siltide">GitHub ↗</a>
+      <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
+      <button class="mode-btn" id="mode-toggle" title="switch color mode" type="button">light</button>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+<section id="compare">
+  <div class="wrap">
+    <h1 data-en="Next to the tools you already run." data-zh="和你已经在用的工具放在一起看。">Next to the tools you already run.</h1>
+    <p class="lede" data-en="Everyone looking at siltide already has something. This says where each of them is the better choice, and what siltide adds, with no benchmark numbers because no benchmark has been run." data-zh="来看 siltide 的人手里都已经有别的工具。这里说明在什么情况下它们更合适，以及 siltide 多做了什么；这里没有跑分数字，因为我们没有做过对比测试。">Everyone looking at siltide already has something. This says where each of them is the better choice, and what siltide adds, with no benchmark numbers because no benchmark has been run.</p>
+    <div class="grid">
+      <div class="card"><span class="tab">nvidia-smi</span>
+        <p class="q">the driver's own tool</p>
+        <p><b>Choose nvidia-smi when:</b> It is on every NVIDIA host already, needs nothing installed, and is the authority on what the driver thinks.</p>
+        <p style="margin-top:.6rem"><b>siltide adds:</b> It reports one vendor, one host, and one moment. siltide reads fifteen vendors, correlates processes to pods and Slurm jobs, keeps a rewindable history, and serves the same data as JSON and Prometheus metrics.</p>
+        <p style="margin-top:.6rem;color:var(--dim)">Use nvidia-smi when you want the driver's own words about one machine. siltide does not replace it and reads from the same library it does.</p>
+      </div>
+      <div class="card"><span class="tab">nvtop</span>
+        <p class="q">a terminal graph for GPUs</p>
+        <p><b>Choose nvtop when:</b> A live graph per device, multi-vendor, and comfortable to leave open.</p>
+        <p style="margin-top:.6rem"><b>siltide adds:</b> siltide adds where the work came from: the pod, the namespace, the workload, the Slurm job, and a history you can scrub back through after the fact rather than only watching forward.</p>
+        <p style="margin-top:.6rem;color:var(--dim)">If you want a live chart and nothing else, nvtop is smaller and does exactly that.</p>
+      </div>
+      <div class="card"><span class="tab">gpustat</span>
+        <p class="q">a one-line summary</p>
+        <p><b>Choose gpustat when:</b> Short, scriptable, and unmistakable at a glance.</p>
+        <p style="margin-top:.6rem"><b>siltide adds:</b> siltide --status prints one line too, and --once --json prints the whole snapshot for a script. What it adds is everything behind that line when the line looks wrong.</p>
+        <p style="margin-top:.6rem;color:var(--dim)">For a prompt or a cron line, either works; gpustat is a smaller dependency.</p>
+      </div>
+      <div class="card"><span class="tab">nvitop</span>
+        <p class="q">an interactive NVIDIA monitor</p>
+        <p><b>Choose nvitop when:</b> Rich per-process detail on NVIDIA, with actions such as killing a process.</p>
+        <p style="margin-top:.6rem"><b>siltide adds:</b> siltide is read-only by design and covers fifteen vendors rather than one, with an API, metrics and an agent interface on the same data.</p>
+        <p style="margin-top:.6rem;color:var(--dim)">If you want to act on processes from the monitor, nvitop does that and siltide deliberately does not.</p>
+      </div>
+      <div class="card"><span class="tab">DCGM exporter</span>
+        <p class="q">GPU metrics for Prometheus</p>
+        <p><b>Choose DCGM exporter when:</b> The reference way to get NVIDIA metrics into Prometheus at scale, maintained by the vendor.</p>
+        <p style="margin-top:.6rem"><b>siltide adds:</b> siltide exports Prometheus metrics too, across every vendor it supports, and is a terminal interface first: the same binary is what you open during an incident.</p>
+        <p style="margin-top:.6rem;color:var(--dim)">In a cluster already standardised on DCGM, keep it. siltide can read the devices beside it without conflicting.</p>
+      </div>
+    </div>
+    <p style="color:var(--dim);font-size:.88rem;margin-top:1.6rem" data-en="Nothing here is a claim about speed or memory against another tool. Comparing those properly means the same fleet, the same window and the same definition of started, and that has not been done." data-zh="这里没有任何关于速度或内存优于其他工具的说法。要做这种比较，需要同样的集群、同样的时间窗口和同样的“启动完成”定义，而我们还没有做过。">Nothing here is a claim about speed or memory against another tool. Comparing those properly means the same fleet, the same window and the same definition of started, and that has not been done.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span data-en="Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies." data-zh="Apache-2.0 协议。siltide 是一个独立项目，上面提到的厂商名称都属于各自公司。">Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies.</span>
+      <span>
+        <a href="https://github.com/mesutoezdil/siltide">GitHub</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/issues" data-en="Issues" data-zh="问题反馈">Issues</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/blob/main/CONTRIBUTING.md" data-en="Contributing" data-zh="参与贡献">Contributing</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

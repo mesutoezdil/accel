@@ -53,6 +53,9 @@ jobs:
       - name: The install script, against a fake release
         if: runner.os == 'Linux'
         run: sh packaging/install/test.sh
+      - name: The site pages are consistent
+        if: runner.os == 'Linux'
+        run: sh scripts/site_test.sh
       - name: The dashboard, against the metrics we export
         if: runner.os == 'Linux'
         run: |
