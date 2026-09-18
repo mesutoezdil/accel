@@ -43,85 +43,47 @@ Fixture sources: [`testdata/SOURCES`](internal/provider/smi/testdata/SOURCES). A
 
 ## Install
 
-Every release and every push to `main` (pre-release `vX.Y.Z-main.N`) publishes binaries, packages, and images.
+The short version, with every platform and the verification steps in
+[docs/INSTALL.md](docs/INSTALL.md):
 
 ```sh
-# Linux and macOS binary. checksums.txt sits next to it, and macOS
-# needs its quarantine flag cleared: xattr -d com.apple.quarantine siltide
-tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
-curl -fsSL -o siltide "https://github.com/mesutoezdil/siltide/releases/download/$tag/siltide-linux-amd64"
-chmod +x siltide && sudo mv siltide /usr/local/bin/
-
-# deb or rpm, with completions and the man page
-sudo dpkg -i siltide_*_amd64.deb   # or: sudo rpm -i siltide-*.x86_64.rpm
-
 # One line: picks the build for this machine, checks it against the published
 # checksums, and installs into /usr/local/bin (or ~/.local/bin)
 ( f="$(mktemp)" && trap 'rm -f "$f"' EXIT &&
   curl -fsSL https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh -o "$f" &&
   sh "$f" )
 
-# Homebrew (macOS and Linux)
-brew install mesutoezdil/tap/siltide
-
-# Go
-go install github.com/mesutoezdil/siltide@latest
-
-# Nix, without installing anything
-nix run github:mesutoezdil/siltide -- --demo
-
-# Container: headless collector with the API and /metrics on port 9800.
-# --pid=host lets it see host processes, not just its own container.
-docker run --rm -p 9800:9800 --gpus all --pid=host \
-  -e NVIDIA_DRIVER_CAPABILITIES=utility ghcr.io/mesutoezdil/siltide:latest
+brew install mesutoezdil/tap/siltide              # macOS and Linux
+go install github.com/mesutoezdil/siltide@latest  # from source
+nix run github:mesutoezdil/siltide -- --demo      # without installing anything
 ```
 
-A [systemd unit](deploy/systemd/siltide.service), a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) and a
-[compose stack with Prometheus and Grafana](deploy/compose/) are in `deploy/`.
-What siltide costs to run, and the scripts that measure it, are in [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
-
-## Quick start
+## Using it
 
 ```sh
 siltide                      # interactive terminal UI, vendors auto-detected
 siltide --demo               # explore every view with a simulated fleet
-siltide --once               # one snapshot on stdout (exit code 3 when nothing was found)
-siltide --once --json        # the same snapshot as JSON
-siltide --json               # a stream of JSON snapshots, one per refresh
-siltide --listen :9800       # the UI plus /api and /metrics
-siltide --service            # headless collector for fleets and Prometheus
-siltide --remote https://node:9800 --token ...   # the UI attached to a remote siltide
-siltide --record run.jsonl   # record while running, siltide --replay run.jsonl plays it back later
-siltide --status             # one line for tmux, i3bar, or a shell prompt
+siltide --once --json        # one snapshot on stdout
+siltide --service --listen :9800   # headless, with the API and /metrics
+siltide --mcp-stdio          # answer an agent over the Model Context Protocol
 ```
 
-`siltide --status` prints, for the demo fleet: `17 dev · 59% util · 61% mem · 5035W · 74°C · health 98`.
+`?` in the interface lists every tab, key and filter. The rest is in
+[docs/USAGE.md](docs/USAGE.md).
 
-## Configuration and more
+## Documentation
 
-`~/.config/siltide/config.yaml` or `--config path`, every key documented in [`examples/config.yaml`](examples/config.yaml). `siltide --print-config` shows what is active. `?` in the terminal lists every tab, key, and filter.
+| | |
+| --- | --- |
+| [docs/INSTALL.md](docs/INSTALL.md) | every platform, verifying a download, updating, uninstalling |
+| [docs/USAGE.md](docs/USAGE.md) | the interface, the filter language, configuration, fleets, alerts, the API |
+| [docs/MCP.md](docs/MCP.md) | serving the snapshot to an agent |
+| [docs/PERFORMANCE.md](docs/PERFORMANCE.md) | what it costs to run, and the scripts that measure it |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | building, testing, adding a vendor |
+| [examples/config.yaml](examples/config.yaml) | every configuration key, with its default |
 
-- **Fleets**: `siltide --service --listen 0.0.0.0:9800 --gen-token` on each node, then list them under `nodes:` on the machine you watch from, or reach a vendor CLI over `ssh` without installing siltide there. Off loopback, `--listen` needs TLS and a token unless `insecure: true`.
-- **Kubernetes and Slurm**: pods and Slurm jobs show up next to processes on their own, from `/var/log/pods`, the kubelet pod-resources socket, or `scontrol`. The DaemonSet mounts what it needs.
-- **API and Prometheus**: `--listen` serves `GET /api/snapshot`, `/api/summary`, `/api/events`, `/api/history?id=<device id>&n=600`, and Prometheus `/metrics` (`siltide_device_*` and `siltide_host_*` gauges), bearer-token authenticated.
-- **Alerts**: built-in ones for temperature, throttling, outliers, idle-allocated devices, row remaps, and link degradation, plus your own rules under `alerts:`.
-- **History**: plain-text hourly files, `--retention` to override how long, `--export` to CSV, `--record`/`--replay` to hand off an incident.
-- **Themes**: `amber`, `default`, `dracula`, `ice`, `mono`, `solarized`, or your own in `~/.config/siltide/themes/` (see [`examples/themes/corp.yaml`](examples/themes/corp.yaml)).
-
-## Building and testing
-
-Go 1.26 or newer, no cgo: NVML and the macOS frameworks load at run time through [purego](https://github.com/ebitengine/purego).
-
-```sh
-make build          # bin/siltide
-make check          # lint, race tests, and cross builds
-make demo           # the simulated fleet
-make test-fake-nvml  # the NVML ABI test against a fake driver (Linux, or Docker elsewhere)
-make shots           # fleet screenshots under assets/, from the simulated fleet
-make shots-mac       # Apple silicon screenshots, captured on the Mac that runs it
-```
-
-CI runs gofmt, vet for Linux and macOS, race tests, golangci-lint, and cross builds.
+A [systemd unit](deploy/systemd/siltide.service), a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) and a
+[compose stack with Prometheus and Grafana](deploy/compose/) are in `deploy/`.
 
 ## Contributing
 

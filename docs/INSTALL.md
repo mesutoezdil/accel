@@ -1,0 +1,76 @@
+# Installing siltide
+
+Every release and every push to `main` (pre-release `vX.Y.Z-main.N`) publishes binaries, packages, and images.
+
+```sh
+# One line: picks the build for this machine, checks it against the published
+# checksums, and installs into /usr/local/bin (or ~/.local/bin)
+( f="$(mktemp)" && trap 'rm -f "$f"' EXIT &&
+  curl -fsSL https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh -o "$f" &&
+  sh "$f" )
+
+# By hand, if you would rather see every step. checksums.txt sits beside the
+# binary, and macOS needs its quarantine flag cleared until the builds are
+# signed: xattr -d com.apple.quarantine siltide
+tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
+curl -fsSL -o siltide "https://github.com/mesutoezdil/siltide/releases/download/$tag/siltide-linux-amd64"
+chmod +x siltide && sudo mv siltide /usr/local/bin/
+
+# deb or rpm, with completions and the man page
+sudo dpkg -i siltide_*_amd64.deb   # or: sudo rpm -i siltide-*.x86_64.rpm
+
+# Homebrew (macOS and Linux)
+brew install mesutoezdil/tap/siltide
+
+# Go
+go install github.com/mesutoezdil/siltide@latest
+
+# Nix, without installing anything
+nix run github:mesutoezdil/siltide -- --demo
+
+# Container: headless collector with the API and /metrics on port 9800.
+# --pid=host lets it see host processes, not just its own container.
+docker run --rm -p 9800:9800 --gpus all --pid=host \
+  -e NVIDIA_DRIVER_CAPABILITIES=utility ghcr.io/mesutoezdil/siltide:latest
+```
+
+A [systemd unit](../deploy/systemd/siltide.service), a [Kubernetes DaemonSet](../deploy/kubernetes/daemonset.yaml) and a
+[compose stack with Prometheus and Grafana](../deploy/compose/) are in `deploy/`.
+What siltide costs to run, and the scripts that measure it, are in [docs/PERFORMANCE.md](PERFORMANCE.md).
+
+## Verifying a download
+
+Every release publishes `checksums.txt` beside the binaries. The install
+script checks the download against it before writing anything; by hand it is:
+
+```sh
+sha256sum -c checksums.txt --ignore-missing   # shasum -a 256 on macOS
+```
+
+Each artifact also carries a build-provenance attestation, which says which
+workflow at which commit produced it:
+
+```sh
+gh attestation verify siltide-linux-amd64 --repo mesutoezdil/siltide
+```
+
+## Keeping it up to date
+
+- **deb, rpm, apk, Arch, Homebrew, Nix**: the package manager does it.
+- **The install script**: run it again; it replaces the binary in place.
+- **`go install`**: run it again with `@latest`.
+- **The container**: pull the tag again.
+
+## Uninstalling
+
+```sh
+sudo rm /usr/local/bin/siltide          # or ~/.local/bin/siltide
+sudo apt remove siltide                  # or dnf/apk/pacman, if a package was used
+brew uninstall siltide                   # Homebrew
+
+rm -rf ~/.config/siltide                 # config, themes
+rm -rf ~/.local/state/siltide            # history, bookmarks, the session, the log
+```
+
+Nothing else is left behind: siltide installs no service, writes nothing
+outside those two directories, and starts no daemon.

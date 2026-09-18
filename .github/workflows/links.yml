@@ -1,0 +1,42 @@
+name: links
+
+# Documentation moves between files and the links in it stop resolving
+# quietly. This checks every relative link in the Markdown, which is the kind
+# of breakage nobody notices until a stranger follows one.
+on:
+  pull_request:
+    paths: ["**/*.md"]
+  push:
+    branches: [main]
+    paths: ["**/*.md"]
+
+permissions:
+  contents: read
+
+jobs:
+  relative-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Every relative link resolves
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+          bad = []
+          for root, dirs, files in os.walk('.'):
+              dirs[:] = [d for d in dirs if d not in {'.git', 'node_modules', 'build', 'dist'}]
+              for f in files:
+                  if not f.endswith('.md'):
+                      continue
+                  p = os.path.join(root, f)
+                  for m in re.finditer(r'\[[^\]]+\]\(([^)#]+)(#[^)]*)?\)', open(p, encoding='utf-8').read()):
+                      t = m.group(1)
+                      if t.startswith(('http://', 'https://', 'mailto:')):
+                          continue
+                      if not os.path.exists(os.path.normpath(os.path.join(os.path.dirname(p), t))):
+                          bad.append(f'{p} -> {t}')
+          if bad:
+              print('\n'.join(bad))
+              sys.exit(1)
+          print('every relative link resolves')
+          PY
