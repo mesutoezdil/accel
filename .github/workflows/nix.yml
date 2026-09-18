@@ -1,0 +1,23 @@
+name: nix
+on:
+  push:
+    branches: [main]
+    paths: ["flake.nix", "flake.lock", "go.mod", "go.sum", "**/*.go", ".github/workflows/nix.yml"]
+  pull_request:
+    paths: ["flake.nix", "flake.lock", "go.mod", "go.sum", "**/*.go", ".github/workflows/nix.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v27
+        with:
+          extra_nix_config: "experimental-features = nix-command flakes"
+      - run: nix build .#siltide --print-build-logs
+      - run: ./result/bin/siltide --version
+      - run: ./result/bin/siltide --demo --once
+      - run: test -f ./result/share/man/man1/siltide.1.gz || test -f ./result/share/man/man1/siltide.1
