@@ -56,6 +56,12 @@ jobs:
       - name: The site pages are consistent
         if: runner.os == 'Linux'
         run: sh scripts/site_test.sh
+      # Every command the site and the guide offer to copy, actually run. The
+      # download page once handed people a block that read a file it never
+      # told them to download, and named one platform's binary; both were
+      # obvious the moment anybody ran them, and nobody had.
+      - name: The commands the site offers to copy
+        run: sh scripts/snippets_test.sh
       - name: The dashboard, against the metrics we export
         if: runner.os == 'Linux'
         run: |

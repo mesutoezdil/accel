@@ -9,6 +9,12 @@ on:
 permissions:
   contents: write
   packages: write
+  # The same signed statement per artifact that a tagged release gets. The
+  # download page tells everyone to run `gh attestation verify`, and until
+  # this was here that command answered 404 for every build on main -- which
+  # is every build there is before the first stable tag.
+  id-token: write
+  attestations: write
 
 jobs:
   prerelease:
@@ -43,3 +49,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GORELEASER_CURRENT_TAG: ${{ steps.tag.outputs.tag }}
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
+        with:
+          subject-path: |
+            dist/siltide-*
+            dist/*.deb
+            dist/*.rpm
+            dist/*.apk
+            dist/*.pkg.tar.zst
+            dist/*.sbom.json

@@ -51,17 +51,27 @@ What siltide costs to run, and the scripts that measure it, are in [docs/PERFORM
 
 ## Verifying a download
 
-Every release publishes `checksums.txt` beside the binaries. The install
-script checks the download against it before writing anything; by hand it is:
+Every release publishes `checksums.txt` beside the binaries, and the install
+script checks the download against it before writing anything.
+
+By hand, whole, into an empty directory. Each block here stands on its own:
+one that reads a file an earlier block downloaded is a block that fails for
+whoever copies only that one.
 
 ```sh
-sha256sum -c checksums.txt --ignore-missing   # shasum -a 256 on macOS
-```
+os=$(uname -s | tr '[:upper:]' '[:lower:]')
+arch=$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')
+tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
+base=https://github.com/mesutoezdil/siltide/releases/download/$tag
 
-Each artifact also carries a build-provenance attestation, which says which
-workflow at which commit produced it:
+curl -fsSLO "$base/siltide-$os-$arch"
+curl -fsSLO "$base/checksums.txt"
 
-```sh
+# sha256sum is GNU coreutils, shasum is what macOS ships: take whichever is here
+command -v sha256sum >/dev/null && sha=sha256sum || sha="shasum -a 256"
+$sha -c checksums.txt --ignore-missing
+
+# and where it was built, which needs a signed-in gh
 gh attestation verify "siltide-$os-$arch" --repo mesutoezdil/siltide
 ```
 
