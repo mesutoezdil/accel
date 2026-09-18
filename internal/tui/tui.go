@@ -72,6 +72,7 @@ type Model struct {
 	tempWarn float64
 	currency string
 	reload   func() (Options, error)
+	marks    []Bookmark
 	tab      int
 	prev     int // tab to return to from help
 	sel      int // selected row on the current tab
@@ -138,6 +139,7 @@ func New(eng *collect.Engine, o Options) Model {
 	m := Model{eng: eng, snap: eng.Snapshot(), width: 100, height: 30, sels: map[int]int{},
 		sortDesc: true, window: 30 * time.Minute, pick: -1}
 	m.apply(o)
+	m.marks = loadBookmarks()
 	return m
 }
 
@@ -566,7 +568,10 @@ func (m Model) complete(input string) string {
 	for _, t := range tabs {
 		cands = append(cands, strings.ToLower(t.name))
 	}
-	cands = append(cands, "sort", "filter", "node", "ns", "metric", "theme", "compare", "live", "pause", "refresh", "reload", "window", "describe", "logs")
+	cands = append(cands, "sort", "filter", "node", "ns", "metric", "theme", "compare", "live", "pause", "refresh", "reload", "window", "describe", "logs", "bookmark")
+	for _, n := range m.bookmarkNames() {
+		cands = append(cands, "bookmark "+n)
+	}
 	for _, p := range m.pods() {
 		cands = append(cands, p.name, "ns "+p.ns)
 	}
@@ -636,6 +641,8 @@ func (m *Model) command(line string) {
 		m.startCompare(f[1:])
 	case "reload":
 		m.reloadConfig()
+	case "bookmark", "bm":
+		m.bookmark(arg)
 	case "pause":
 		m.paused = !m.paused
 	case "refresh":
