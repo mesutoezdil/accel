@@ -1,39 +1,39 @@
 /* siltide.  One stylesheet for every page on the site.
 
-   The colours are the interface's own. Dark mode is the default theme's
-   background and its blue; light mode is the paper theme, down to the hex.
-   The page and the terminal in it are then the same surface, and a change to
-   one has an obvious answer in the other.
+   The backgrounds are the interface's own: the default theme's for dark mode
+   and the paper theme's for light, down to the hex, so the page and the
+   terminal in it are the same surface. Green carries the page and blue backs
+   it up, which are the two colours the interface draws a healthy device in.
 
    Headings, tables and code are monospaced. Running prose is not: paragraphs
    set in a terminal face are slower to read. */
 :root{
   --bg:#0d1117; --bg2:#12171f; --panel:#161b22; --panel2:#1b212a; --border:#2a313b;
   --text:#e6edf3; --dim:#8b949e; --dimmer:#586069;
-  --accent:#58a6ff; --accent2:#79c0ff; --cool:#3fb950; --on-accent:#08131f;
-  --accent-soft:rgba(88,166,255,.1); --accent-line:rgba(88,166,255,.32);
-  --accent-wash:rgba(88,166,255,.05); --cool-line:rgba(63,185,80,.45);
+  --accent:#3fb950; --accent2:#56d364; --cool:#58a6ff; --on-accent:#06170b;
+  --accent-soft:rgba(63,185,80,.1); --accent-line:rgba(63,185,80,.34);
+  --accent-wash:rgba(63,185,80,.05); --cool-line:rgba(88,166,255,.45);
   --nav-bg:rgba(13,17,23,.72);
   --grid-line:rgba(230,237,243,.045); --frame-shadow:0 40px 90px -40px rgba(0,0,0,.85);
   --divider:rgba(230,237,243,.1);
   --card:linear-gradient(160deg, rgba(230,237,243,.045), rgba(230,237,243,.012));
-  --card-hover:linear-gradient(160deg, rgba(88,166,255,.09), rgba(230,237,243,.02));
-  --glow:radial-gradient(60% 60% at 50% 0%, rgba(88,166,255,.14), transparent 70%);
+  --card-hover:linear-gradient(160deg, rgba(63,185,80,.09), rgba(230,237,243,.02));
+  --glow:radial-gradient(60% 60% at 50% 0%, rgba(63,185,80,.13), transparent 70%);
   --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 html[data-mode="light"]{
   --bg:#f7f5ef; --bg2:#edeae0; --panel:#ffffff; --panel2:#e9e5db; --border:#c9c6bc;
   --text:#2b2b2b; --dim:#6b6b62; --dimmer:#9a978c;
-  --accent:#0b5cad; --accent2:#0b5cad; --cool:#2a7d2a; --on-accent:#ffffff;
-  --accent-soft:rgba(11,92,173,.08); --accent-line:rgba(11,92,173,.3);
-  --accent-wash:rgba(11,92,173,.045); --cool-line:rgba(42,125,42,.45);
+  --accent:#1a7f37; --accent2:#1a7f37; --cool:#0b5cad; --on-accent:#ffffff;
+  --accent-soft:rgba(26,127,55,.08); --accent-line:rgba(26,127,55,.32);
+  --accent-wash:rgba(26,127,55,.045); --cool-line:rgba(11,92,173,.45);
   --nav-bg:rgba(247,245,239,.8);
   --grid-line:rgba(43,43,43,.06); --frame-shadow:0 26px 60px -30px rgba(43,43,43,.28);
   --divider:rgba(43,43,43,.12);
   --card:linear-gradient(160deg, rgba(43,43,43,.04), rgba(43,43,43,.01));
-  --card-hover:linear-gradient(160deg, rgba(11,92,173,.07), rgba(43,43,43,.02));
-  --glow:radial-gradient(60% 60% at 50% 0%, rgba(11,92,173,.09), transparent 70%);
+  --card-hover:linear-gradient(160deg, rgba(26,127,55,.07), rgba(43,43,43,.02));
+  --glow:radial-gradient(60% 60% at 50% 0%, rgba(26,127,55,.08), transparent 70%);
 }
 *{box-sizing:border-box}
 html{background:var(--bg);scroll-behavior:smooth}
@@ -124,7 +124,7 @@ nav a.link:hover{color:var(--text)}
 .hero .cores i{flex:1;min-width:2px;height:100%;border-radius:0 0 3px 3px;font-style:normal;
   background:linear-gradient(to bottom, var(--accent), transparent 82%);
   transform-origin:top;animation:gpuPulse 4s ease-in-out infinite}
-.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#1f6feb,transparent 82%)}
+.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#1a7f37,transparent 82%)}
 .hero .cores i:nth-child(5n){background:linear-gradient(to bottom,var(--accent2),transparent 82%)}
 .hero .cores i:nth-child(8n){background:linear-gradient(to bottom,var(--cool),transparent 82%)}
 .hero .cores i:nth-child(2n){animation-duration:5.5s;animation-delay:-1.3s}
@@ -186,6 +186,11 @@ nav a.link:hover{color:var(--text)}
 
 /* Cards */
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+/* A fixed count, for a set that reads as one row or not at all. */
+.grid.five{grid-template-columns:repeat(5,1fr)}
+@media (max-width:1040px){.grid.five{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){.grid.five{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.grid.five{grid-template-columns:1fr}}
 /* A bento: the first card takes the width of two, so the eye has somewhere to
    land before it starts scanning a uniform grid. */
 .bento{display:grid;gap:16px;grid-template-columns:repeat(6,1fr)}
