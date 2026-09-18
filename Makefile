@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X main.version=$(VERSION)
 
-.PHONY: build test race lint check cross bench demo film schema test-nvidia test-fake-nvml completions clean
+.PHONY: build test race lint check cross bench demo film schema shots-light test-nvidia test-fake-nvml completions clean
 
 build:
 	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/siltide .
@@ -63,6 +63,12 @@ schema:
 # the simulated fleet, rasterized frame by frame and assembled into a GIF.
 film:
 	scripts/shots/film.sh
+
+# The same captures on paper, for readers whose GitHub or browser is in light
+# mode. The README picks between them with <picture>.
+shots-light:
+	go run ./scripts/shots -out assets -theme paper -prefix light-
+	scripts/shots/png.sh light-overview light-devices light-history light-links light-health
 
 shots-mac:
 	go run ./scripts/shots -live 90s -host m4-pro -tabs overview,devices -prefix mac- -out assets

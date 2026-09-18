@@ -10,13 +10,21 @@ import (
 // window frame. Only the escapes lipgloss emits are handled: reset, bold,
 // faint, italic, underline, reverse, and 16-, 256-, and 24-bit colors.
 //
+// defaultBG is the window a capture is drawn on when the theme names none.
+const defaultBG = "#0d1117"
+
 // ponytail: every cell is one column wide; the views use no wide runes.
 func svg(view string, cols, rows int, title string) string {
+	return svgOn(view, cols, rows, title, defaultBG, defaultFg)
+}
+
+// svgOn draws the view on a given background, so a light theme is captured on
+// paper rather than on the dark window every other capture uses.
+func svgOn(view string, cols, rows int, title, bg, fg string) string {
 	const (
 		cw, lh, fs = 8.4, 18.0, 14.0 // cell width, line height, and font size in px
 		pad        = 20.0
 		barH       = 36.0
-		bg, fg     = "#0d1117", "#c9d1d9"
 	)
 	lines := strings.Split(strings.TrimRight(view, "\n "), "\n")
 	rows = min(rows, len(lines))

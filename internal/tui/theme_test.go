@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"testing"
@@ -63,4 +64,53 @@ func TestThemeNamesListsEveryPreset(t *testing.T) {
 			t.Fatalf("ThemeNames is not sorted: %v", names)
 		}
 	}
+}
+
+// TestEveryPaletteNamesItsBackground covers the role the capture renderer and
+// the site player draw on. The terminal supplies its own background, so this
+// is the one role that exists for everything else.
+func TestEveryPaletteNamesItsBackground(t *testing.T) {
+	for name, p := range palettes {
+		bg, ok := p["bg"]
+		if !ok || bg == "" {
+			t.Errorf("theme %s names no background", name)
+			continue
+		}
+		if !hexColor.MatchString(bg) {
+			t.Errorf("theme %s has background %q, which a renderer cannot use", name, bg)
+		}
+	}
+}
+
+// TestPaperIsLight keeps the one light theme light: a reader on paper should
+// not get a dark background with dark text on it.
+func TestPaperIsLight(t *testing.T) {
+	p, ok := palettes["paper"]
+	if !ok {
+		t.Fatal("there is no light theme")
+	}
+	if l := luminance(t, p["bg"]); l < 0.7 {
+		t.Errorf("the paper background has luminance %.2f, which is not paper", l)
+	}
+	if l := luminance(t, p["text"]); l > 0.4 {
+		t.Errorf("the paper text has luminance %.2f, which will not read on it", l)
+	}
+	for _, role := range []string{"ok", "warn", "crit", "mid", "info", "accent"} {
+		if l := luminance(t, p[role]); l > 0.65 {
+			t.Errorf("paper %s has luminance %.2f, too light for a light background", role, l)
+		}
+	}
+}
+
+// luminance is the rough brightness of a #rrggbb colour, 0 black to 1 white.
+func luminance(t *testing.T, hex string) float64 {
+	t.Helper()
+	if !hexColor.MatchString(hex) {
+		t.Fatalf("%q is not a hex colour", hex)
+	}
+	var r, g, b int
+	if _, err := fmt.Sscanf(hex, "#%02x%02x%02x", &r, &g, &b); err != nil {
+		t.Fatal(err)
+	}
+	return (0.2126*float64(r) + 0.7152*float64(g) + 0.0722*float64(b)) / 255
 }
