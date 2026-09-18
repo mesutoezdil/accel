@@ -187,3 +187,39 @@ func plainSnapshot(e *collect.Engine, p termenv.Profile) string {
 	defer lipgloss.SetColorProfile(old)
 	return plain(Plain(e.Snapshot(), NewTheme("default", nil), 160))
 }
+
+// TestSelectedRowKeepsItsHighlight checks the row under the cursor stays
+// highlighted the whole way across. Its cells carry their own colours, and
+// the reset at the end of each one ends the highlight unless it is put back.
+func TestSelectedRowKeepsItsHighlight(t *testing.T) {
+	inColor(t)
+	th := NewTheme("solarized", nil) // a theme with a real selection colour
+	cols := []column{{"NAME", 10, false}, {"BAR", 12, false}, {"STATE", 8, false}}
+	rows := [][]string{
+		{"first", th.ok.Render("████") + " " + th.dim.Render("░░"), th.warn.Render("busy")},
+		{"second", th.ok.Render("██") + " " + th.dim.Render("░░░░"), th.ok.Render("idle")},
+	}
+	out := th.table(cols, rows, 0, 0, 40, -1, false)
+
+	line := ""
+	for _, l := range strings.Split(out, "\n") {
+		if strings.Contains(plain(l), "first") {
+			line = l
+		}
+	}
+	if line == "" {
+		t.Fatalf("no selected row in:\n%s", out)
+	}
+
+	open, _, _ := strings.Cut(th.sel.Render("\x00"), "\x00")
+	if open == "" {
+		t.Fatal("the selection style writes no escape to check")
+	}
+	resets := strings.Count(line, reset)
+	if got := strings.Count(line, open); got <= 1 {
+		t.Errorf("the highlight opens %d time(s) for %d resets, so it stops partway:\n%q", got, resets, line)
+	}
+	if !strings.HasSuffix(plain(line), " ") {
+		t.Errorf("the highlight should run to the end of the row: %q", plain(line))
+	}
+}
