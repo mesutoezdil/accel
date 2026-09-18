@@ -66,6 +66,7 @@ siltide --demo               # explore every view with a simulated fleet
 siltide --once --json        # one snapshot on stdout
 siltide --service --listen :9800   # headless, with the API and /metrics
 siltide --mcp-stdio          # answer an agent over the Model Context Protocol
+siltide --update             # move to the newest release, checksum verified
 ```
 
 `?` in the interface lists every tab, key and filter. The rest is in

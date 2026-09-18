@@ -77,7 +77,9 @@ gh attestation verify siltide-linux-amd64 --repo mesutoezdil/siltide</code></pre
     <h2 data-en="Then" data-zh="然后">Then</h2>
 <pre><button class="copy">copy</button><code>siltide --demo     # explore every view without hardware
 siltide            # probe what is actually in this machine
-siltide --diagnose # what it found, what it did not, and why</code></pre>
+siltide --diagnose # what it found, what it did not, and why
+siltide --update   # move to the newest release, checksum verified</code></pre>
+    <p style="color:var(--dim);font-size:.88rem" data-en="--update checks the download against the published checksums before anything is written, and replaces the binary with a rename rather than a copy, so an interrupted update cannot leave half a file on your PATH. If a package manager installed it, --update says so and stops." data-zh="--update 会在写入任何文件之前，先用发布的校验和核对下载内容，并用重命名而不是复制来替换二进制文件，因此中断的更新不会在 PATH 上留下半个文件。如果它是由包管理器安装的，--update 会直接说明并停止。">--update checks the download against the published checksums before anything is written, and replaces the binary with a rename rather than a copy, so an interrupted update cannot leave half a file on your PATH. If a package manager installed it, --update says so and stops.</p>
   </div>
 </section>
 
