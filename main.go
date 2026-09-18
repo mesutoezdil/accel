@@ -359,6 +359,14 @@ Flags:
 		// Nothing but protocol may reach stdout while this runs.
 		log.SetOutput(os.Stderr)
 		firstSnapshot(ctx, eng)
+		// A server on stdin says nothing until it is spoken to, which from a
+		// terminal looks like a program that did not start. stderr is not the
+		// protocol stream, so a line here costs the agent nothing.
+		fmt.Fprintf(os.Stderr,
+			"siltide %s: Model Context Protocol on stdin and stdout, %d tools, read only.\n"+
+				"Waiting for a client. This is meant to be spawned by an agent, not run by hand;\n"+
+				"try --mcp-http 127.0.0.1:8765 to poke at it, or ctrl-c to stop.\n",
+			version, len(mcp.Tools()))
 		if err := mcp.New(eng, version).ServeStdio(ctx, os.Stdin, os.Stdout); err != nil && ctx.Err() == nil {
 			fail(err)
 		}

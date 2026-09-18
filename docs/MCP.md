@@ -26,6 +26,15 @@ Over stdio, for a client that spawns siltide itself:
 There is no token here, and none is needed: the client already holds whatever
 privileges it started siltide with.
 
+Run by hand, `--mcp-stdio` looks like a program that did not start. It is a
+server: it reads a request on stdin and answers on stdout, and says nothing
+until something asks it a question. It prints a line to stderr saying so,
+because stderr is not the protocol stream. To see it answer, hand it one:
+
+```sh
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | siltide --mcp-stdio
+```
+
 Over HTTP, for a client that connects to something already running:
 
 ```sh
