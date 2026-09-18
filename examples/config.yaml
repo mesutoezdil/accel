@@ -71,7 +71,8 @@ alerts:
 carbon:
   g_per_kwh: 0         # grid intensity of your region in gCO2/kWh; 0 hides carbon
 
-theme: default         # amber, default, dracula, ice, mono, solarized, or a file in ~/.config/siltide/themes
+theme: default         # amber, catppuccin, default, dracula, flexoki, gruvbox, ice, mono, monokai,
+                       # nord, one-dark, rose-pine, solarized, tokyo-night, or a file in ~/.config/siltide/themes
 colors: {}             # role overrides; roles: accent text dim title border ok mid warn crit info
                        #   bar_low bar_mid bar_high bar_track spark tab_active_bg tab_active_fg selection_bg selection_fg
 transparent: false     # keep the terminal background
