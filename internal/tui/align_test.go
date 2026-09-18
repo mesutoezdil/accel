@@ -12,6 +12,7 @@ import (
 
 	"github.com/mesutoezdil/siltide/internal/collect"
 	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/events"
 	"github.com/mesutoezdil/siltide/internal/kube"
 )
 
@@ -275,5 +276,40 @@ func TestKubeEmptyStateNamesWhatWasTried(t *testing.T) {
 	}
 	if m.unreachable("nothing here.", nil) == "" {
 		t.Error("an empty attempt list should still carry the headline")
+	}
+}
+
+// TestEventKindTally covers the summary above the event log: what the log is
+// made of, most frequent first, coloured by the worst event in each kind.
+func TestEventKindTally(t *testing.T) {
+	m := Model{th: NewTheme("mono", nil), width: 120}
+	evs := []events.Event{
+		{Kind: "thermal", Severity: events.Warning},
+		{Kind: "thermal", Severity: events.Critical},
+		{Kind: "thermal", Severity: events.Info},
+		{Kind: "ecc", Severity: events.Info},
+		{Kind: "ecc", Severity: events.Info},
+		{Kind: "xid", Severity: events.Critical},
+	}
+	got := plain(m.kindTally(evs))
+	if !strings.Contains(got, "3 thermal") || !strings.Contains(got, "2 ecc") || !strings.Contains(got, "1 xid") {
+		t.Fatalf("tally %q", got)
+	}
+	if i, j, k := strings.Index(got, "thermal"), strings.Index(got, "ecc"), strings.Index(got, "xid"); !(i < j && j < k) {
+		t.Errorf("kinds are not ordered by frequency: %q", got)
+	}
+	if m.kindTally(evs[:1]) != "" {
+		t.Error("a single event needs no summary")
+	}
+	if m.kindTally(nil) != "" {
+		t.Error("an empty log needs no summary")
+	}
+
+	// the colour of a kind follows its worst event
+	inColor(t)
+	coloured := m.kindTally(evs)
+	crit, _, _ := strings.Cut(NewTheme("mono", nil).crit.Render("x"), "x")
+	if crit != "" && !strings.Contains(coloured, crit) {
+		t.Errorf("no critical colour in the tally: %q", coloured)
 	}
 }

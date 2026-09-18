@@ -937,6 +937,9 @@ func (m *Model) viewEvents() string {
 	}
 	evs := m.eventRows()
 	b.WriteString("\n" + th.bold.Render("Events") + th.dim.Render(fmt.Sprintf(" %d, newest first · filter with sev:critical kind:xid dev:3 !sev:info", len(evs))) + "\n")
+	if tally := m.kindTally(evs); tally != "" {
+		b.WriteString(tally + "\n")
+	}
 	var rows [][]string
 	for _, e := range evs {
 		sev := string(e.Severity)
@@ -952,6 +955,62 @@ func (m *Model) viewEvents() string {
 	m.headSpans = nil
 	b.WriteString(th.table(cols, rows, m.sel, m.height-9-len(m.snap.Alerts), m.width, -1, false))
 	return b.String()
+}
+
+// kindTally summarises what the log is made of: each kind with how many
+// events carry it, most frequent first. On a fleet having a bad morning the
+// same three kinds are most of the list, and reading two hundred rows to
+// learn that is the slowest way to find out.
+func (m Model) kindTally(evs []events.Event) string {
+	if len(evs) < 2 {
+		return ""
+	}
+	counts, worst := map[string]int{}, map[string]events.Severity{}
+	for _, e := range evs {
+		counts[e.Kind]++
+		if rank(e.Severity) > rank(worst[e.Kind]) {
+			worst[e.Kind] = e.Severity
+		}
+	}
+	kinds := make([]string, 0, len(counts))
+	for k := range counts {
+		kinds = append(kinds, k)
+	}
+	sort.Slice(kinds, func(i, j int) bool {
+		if counts[kinds[i]] != counts[kinds[j]] {
+			return counts[kinds[i]] > counts[kinds[j]]
+		}
+		return kinds[i] < kinds[j]
+	})
+
+	th := m.th
+	var parts []string
+	for _, k := range kinds {
+		part := fmt.Sprintf("%d %s", counts[k], k)
+		switch worst[k] {
+		case events.Critical:
+			part = th.crit.Render(part)
+		case events.Warning:
+			part = th.warn.Render(part)
+		default:
+			part = th.dim.Render(part)
+		}
+		parts = append(parts, part)
+	}
+	return trunc(th.dim.Render("by kind ")+strings.Join(parts, th.dim.Render(" · ")), m.width)
+}
+
+// rank orders severities so a kind is coloured by the worst event in it.
+func rank(s events.Severity) int {
+	switch s {
+	case events.Critical:
+		return 3
+	case events.Warning:
+		return 2
+	case events.Info:
+		return 1
+	}
+	return 0
 }
 
 func (m Model) viewHelp() string {
