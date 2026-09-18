@@ -21,6 +21,7 @@ import (
 	"github.com/mesutoezdil/siltide/internal/collect"
 	"github.com/mesutoezdil/siltide/internal/config"
 	"github.com/mesutoezdil/siltide/internal/history"
+	"github.com/mesutoezdil/siltide/internal/mcp"
 	"github.com/mesutoezdil/siltide/internal/provider"
 	"github.com/mesutoezdil/siltide/internal/provider/apple"
 	"github.com/mesutoezdil/siltide/internal/provider/dcgm"
@@ -78,6 +79,8 @@ func main() {
 	status := fs.Bool("status", false, "print a one-line summary for tmux, i3bar, or a prompt and exit")
 	exportPath := fs.String("export", "", "write the on-disk history as CSV to this file and exit")
 	completionShell := fs.String("completion", "", "print a completion script for bash, zsh, or fish and exit")
+	mcpStdio := fs.Bool("mcp-stdio", false, "serve the Model Context Protocol on stdin and stdout, for an agent that spawns siltide")
+	mcpHTTP := fs.String("mcp-http", "", "serve the Model Context Protocol on this loopback address, e.g. 127.0.0.1:8765")
 	man := fs.Bool("man", false, "print the manual page (roff) and exit")
 	fs.Usage = func() {
 		_, _ = fmt.Fprintf(fs.Output(), `siltide %s: GPU, NPU, and AI accelerator monitor for the terminal
@@ -92,6 +95,7 @@ Usage:
   siltide --remote URL         TUI attached to another siltide's --listen
   siltide --record f.jsonl     record while running; siltide --replay f.jsonl plays it back
   siltide --status             one line for tmux, i3bar, or a prompt
+  siltide --mcp-stdio          answer an agent over the Model Context Protocol
   siltide --diagnose           build, config, state, and vendor detection report
 
 Vendors: %s
@@ -339,6 +343,19 @@ Flags:
 
 	go eng.Run(ctx)
 	switch {
+	case *mcpStdio:
+		// Nothing but protocol may reach stdout while this runs.
+		log.SetOutput(os.Stderr)
+		firstSnapshot(ctx, eng)
+		if err := mcp.New(eng, version).ServeStdio(ctx, os.Stdin, os.Stdout); err != nil && ctx.Err() == nil {
+			fail(err)
+		}
+	case *mcpHTTP != "":
+		fmt.Fprintf(os.Stderr, "siltide %s: Model Context Protocol on http://%s\n", version, *mcpHTTP)
+		firstSnapshot(ctx, eng)
+		if err := mcp.New(eng, version).Serve(ctx, *mcpHTTP, cfg.Token); err != nil && ctx.Err() == nil {
+			fail(err)
+		}
 	case *service:
 		fmt.Fprintf(os.Stderr, "siltide %s serving on %s\n", version, cfg.Listen)
 		<-ctx.Done()
@@ -368,6 +385,17 @@ Flags:
 		if err := tui.Run(ctx, eng, opts); err != nil && ctx.Err() == nil {
 			fail(err)
 		}
+	}
+}
+
+// firstSnapshot waits for the collector to have something to answer with, so
+// the first call an agent makes is not told the fleet is empty. Detection on
+// a machine with many vendors is most of that wait.
+func firstSnapshot(ctx context.Context, eng *collect.Engine) {
+	select {
+	case <-eng.Changed():
+	case <-ctx.Done():
+	case <-time.After(15 * time.Second):
 	}
 }
 

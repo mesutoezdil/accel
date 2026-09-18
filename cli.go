@@ -22,7 +22,7 @@ import (
 var flagNames = []string{
 	"config", "interval", "demo", "demo-devices", "once", "json", "vendors", "listen", "service", "remote", "token",
 	"gen-token", "no-history", "retention", "theme", "list-themes", "print-config", "diagnose", "diagnose-offline",
-	"tab", "filter", "node", "namespace", "bookmark",
+	"tab", "filter", "node", "namespace", "bookmark", "mcp-stdio", "mcp-http",
 	"debug", "log-file", "version", "record", "replay", "status", "export", "completion", "man",
 }
 
@@ -95,6 +95,10 @@ func manPage() string {
 			flags.WriteString("Write the on-disk history as CSV to this file and exit.\n")
 		case "completion":
 			flags.WriteString("Print a completion script for bash, zsh, or fish.\n")
+		case "mcp-stdio":
+			flags.WriteString("Answer Model Context Protocol calls on stdin and stdout. Read only.\n")
+		case "mcp-http":
+			flags.WriteString("Answer Model Context Protocol calls on a loopback address, with the configured token.\n")
 		case "diagnose":
 			flags.WriteString("Print build, config, state, and vendor detection details and exit.\n")
 		case "diagnose-offline":
