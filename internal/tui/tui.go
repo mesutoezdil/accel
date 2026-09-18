@@ -92,6 +92,7 @@ type Model struct {
 	// command bar
 	cmdOpen    bool
 	searchOpen bool
+	cmdSel     int // suggestion under the cursor while the command bar is open
 	input      string
 	notice     string
 	noticeAt   time.Time
@@ -541,13 +542,22 @@ func (m Model) typing(msg tea.KeyMsg) Model {
 			r := []rune(m.input)
 			m.input = string(r[:len(r)-1])
 		}
+		m.cmdSel = 0
 	case "tab":
 		if m.cmdOpen {
-			m.input = m.complete(m.input)
+			m.input, m.cmdSel = m.complete(m.input), 0
+		}
+	case "up", "ctrl+p":
+		if m.cmdOpen {
+			m.cmdSel = max(m.cmdSel-1, 0)
+		}
+	case "down", "ctrl+n":
+		if m.cmdOpen {
+			m.cmdSel = min(m.cmdSel+1, max(len(m.suggestions(m.input))-1, 0))
 		}
 	default:
 		if msg.Type == tea.KeyRunes || msg.String() == " " {
-			m.input += msg.String()
+			m.input, m.cmdSel = m.input+msg.String(), 0
 		}
 	}
 	if m.searchOpen {
@@ -560,27 +570,6 @@ func (m *Model) setSearch(s string) {
 	m.search = s
 	m.filter = ParseFilter(s)
 	m.sel = 0
-}
-
-// complete finishes a command from tab names, commands, and pod names.
-func (m Model) complete(input string) string {
-	var cands []string
-	for _, t := range tabs {
-		cands = append(cands, strings.ToLower(t.name))
-	}
-	cands = append(cands, "sort", "filter", "node", "ns", "metric", "theme", "compare", "live", "pause", "refresh", "reload", "window", "describe", "logs", "bookmark")
-	for _, n := range m.bookmarkNames() {
-		cands = append(cands, "bookmark "+n)
-	}
-	for _, p := range m.pods() {
-		cands = append(cands, p.name, "ns "+p.ns)
-	}
-	for _, c := range cands {
-		if strings.HasPrefix(c, strings.ToLower(input)) && c != strings.ToLower(input) {
-			return c
-		}
-	}
-	return input
 }
 
 // command runs a ":" command.
@@ -851,7 +840,9 @@ func (m Model) View() string {
 		body = m.viewOverlay()
 	}
 	lines := strings.Split(body, "\n")
-	if keep := m.height - 3; keep > 0 && len(lines) > keep {
+	// The suggestion list sits between the body and the bar, so the body
+	// gives up exactly the rows it takes and the interface keeps its height.
+	if keep := m.height - 3 - m.suggestionRows(); keep > 0 && len(lines) > keep {
 		lines = lines[:keep]
 	}
 	for i := range lines {
@@ -968,7 +959,7 @@ func (m Model) footer() string {
 	th := m.th
 	switch {
 	case m.cmdOpen:
-		return th.accent.Render(":") + m.input + "█"
+		return m.suggestionList() + th.accent.Render(":") + m.input + "█"
 	case m.searchOpen:
 		return th.accent.Render("/") + m.input + "█"
 	}
