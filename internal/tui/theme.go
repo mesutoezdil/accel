@@ -100,7 +100,7 @@ var palettes = map[string]map[string]string{
 		"tab_active_bg": "#4385be", "tab_active_fg": "#100f0f", "selection_bg": "#343331", "selection_fg": "#cecdc3",
 	},
 	"paper": {
-		"accent": "#0b5cad", "text": "#2b2b2b", "dim": "#6b6b62", "title": "#0b5cad", "border": "#c9c6bc", "bg": "#f7f5ef",
+		"accent": "#0b5cad", "text": "#2b2b2b", "dim": "#55554d", "title": "#0b5cad", "border": "#c9c6bc", "bg": "#f7f5ef",
 		"ok": "#2a7d2a", "mid": "#a86800", "warn": "#c02626", "crit": "#9b2fae", "info": "#0b7a83",
 		"bar_low": "#2a7d2a", "bar_mid": "#a86800", "bar_high": "#c02626", "bar_track": "#dfdbd0", "spark": "#0b7a83",
 		"tab_active_bg": "#0b5cad", "tab_active_fg": "#f7f5ef", "selection_bg": "#dfdbd0", "selection_fg": "#2b2b2b",

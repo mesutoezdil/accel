@@ -71,6 +71,9 @@ func svgOn(view string, cols, rows int, title, bg, fg string) string {
 				fill := st.bg
 				if st.reverse {
 					fill = st.fg
+					if fill == "" {
+						fill = fg
+					}
 				}
 				fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`+"\n", pad+float64(col)*cw, y, float64(n)*cw, lh, fill)
 			}
@@ -109,7 +112,7 @@ func (s style) attrs(defFg, defBg string) string {
 		a = append(a, ` font-weight="bold"`)
 	}
 	if s.faint {
-		a = append(a, ` opacity="0.6"`)
+		a = append(a, ` opacity="`+faintOn(defBg)+`"`)
 	}
 	if s.italic {
 		a = append(a, ` font-style="italic"`)
@@ -185,9 +188,6 @@ func (s style) apply(params string) style {
 				s.bg = c
 			}
 		}
-	}
-	if s.fg == "" {
-		s.fg = "#c9d1d9"
 	}
 	return s
 }

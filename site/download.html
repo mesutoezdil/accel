@@ -7,7 +7,7 @@
 <meta name="description" content="Binaries and packages for Linux, macOS, Alpine and Arch, a container image and a Nix flake, with the steps to verify what you downloaded.">
 <link rel="canonical" href="https://mesutoezdil.github.io/siltide/download.html">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="theme-color" content="#0b0a09">
+<meta name="theme-color" content="#0d1117">
 <meta name="color-scheme" content="dark light">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="siltide">
@@ -53,7 +53,7 @@
     <p class="lede" data-en="One static binary per platform, or a package for the manager you already use. The quickest way is the install script: it works out which build this machine needs, checks it against the published checksums, and puts it on your PATH." data-zh="每个平台一个静态二进制文件，或者用你已有的包管理器安装。最快的方式是安装脚本：它会判断这台机器需要哪个构建，用发布的校验和核对，然后把它放到你的 PATH 上。">One static binary per platform, or a package for the manager you already use. The quickest way is the install script: it works out which build this machine needs, checks it against the published checksums, and puts it on your PATH.</p>
 <pre><button class="copy">copy</button><code>curl -fsSLO https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh
 sh install.sh</code></pre>
-    <p class="note" data-en="Everything below is for doing the same thing by hand. You do not need it." data-zh="下面的内容都是手动完成同样的事情，你并不需要它。">Everything below is for doing the same thing by hand. You do not need it.</p>
+    <p class="note" data-en="The rest of this page is the manual alternative." data-zh="本页其余部分是手动安装的替代方案。">The rest of this page is the manual alternative.</p>
 
     <div class="tablewrap">
     <table>
@@ -72,7 +72,7 @@ sh install.sh</code></pre>
     <p style="margin-top:1.4rem"><a class="btn primary" href="https://github.com/mesutoezdil/siltide/releases/latest" data-en="All release assets ↗" data-zh="全部发布文件 ↗">All release assets ↗</a></p>
 
     <h2 data-en="By hand, every step" data-zh="手动完成，每一步">By hand, every step</h2>
-    <p class="lede" data-en="The install script does all of this for you. This is the same thing written out: download the build for this machine, check it against the published checksums, check where it was built, and install it. Paste it whole into an empty directory." data-zh="安装脚本已经帮你做完了这些。下面是同样的步骤写开的版本：下载适合这台机器的构建，用发布的校验和核对，确认它是在哪里构建的，然后安装。请在一个空目录里整段粘贴运行。">The install script does all of this for you. This is the same thing written out: download the build for this machine, check it against the published checksums, check where it was built, and install it. Paste it whole into an empty directory.</p>
+    <p class="lede" data-en="The install script does all of this. To do it manually, paste the whole block into an empty directory: it downloads the build for this machine, checks it against the published checksums, checks where it was built, and installs it." data-zh="安装脚本会完成所有这些。若要手动操作，请在一个空目录里整段粘贴：它会下载适合这台机器的构建，用发布的校验和核对，确认构建来源，然后安装。">The install script does all of this. To do it manually, paste the whole block into an empty directory: it downloads the build for this machine, checks it against the published checksums, checks where it was built, and installs it.</p>
 <pre><button class="copy">copy</button><code>os=$(uname -s | tr '[:upper:]' '[:lower:]')                 # linux or darwin
 arch=$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')  # amd64 or arm64
 tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
