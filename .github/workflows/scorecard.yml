@@ -26,7 +26,11 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false # it only reads; leaving a token here would be a right it has no use for
-      - uses: ossf/scorecard-action@62b2cac7ed8198b15735ed49ab1e5cf35480ba46 # v2.4.0
+      # v2.4.0 ran from gcr.io, which now refuses the pull outright ("this API
+      # method requires billing to be enabled" on OpenSSF's own project), so
+      # every run failed on the image and never reached a check. v2.4.4 ships
+      # the same action from ghcr.io.
+      - uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
         with:
           results_file: results.sarif
           results_format: sarif
