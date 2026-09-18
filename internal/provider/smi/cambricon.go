@@ -71,7 +71,7 @@ func parseCnmon(text string) []device.Device {
 		pid, _ := strconv.Atoi(m[3])
 		for i := range out {
 			if out[i].Index == card {
-				pr := device.Process{PID: pid, Name: strings.Fields(m[4])[0], Command: m[4], Metrics: device.Metrics{}}
+				pr := device.Process{PID: pid, Name: firstWord(m[4]), Command: m[4], Metrics: device.Metrics{}}
 				set(pr.Metrics, device.MemUsed, m[5], 1<<20)
 				out[i].Procs = append(out[i].Procs, pr)
 			}

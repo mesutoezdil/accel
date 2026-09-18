@@ -81,7 +81,11 @@ func read(root string, pid int) Info {
 	if b, err := os.ReadFile(dir + "/status"); err == nil {
 		for _, l := range strings.Split(string(b), "\n") {
 			if uid, ok := strings.CutPrefix(l, "Uid:"); ok {
-				id := strings.Fields(uid)[0]
+				ids := strings.Fields(uid)
+				if len(ids) == 0 {
+					break
+				}
+				id := ids[0]
 				info.User = id
 				if u, err := user.LookupId(id); err == nil {
 					info.User = u.Username

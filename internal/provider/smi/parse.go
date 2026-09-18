@@ -22,6 +22,16 @@ func num(s string) (float64, bool) {
 	return v, err == nil
 }
 
+// firstWord is the command name at the front of a process line, or "" when
+// the tool printed the column empty.
+func firstWord(s string) string {
+	fs := strings.Fields(s)
+	if len(fs) == 0 {
+		return ""
+	}
+	return fs[0]
+}
+
 // set stores s as metric k scaled to the metric's unit, when s is numeric.
 // A scale of 1<<20 turns MiB into bytes.
 func set(m device.Metrics, k device.Metric, s string, scale float64) {
