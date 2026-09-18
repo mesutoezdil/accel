@@ -76,7 +76,8 @@ docker run --rm -p 9800:9800 --gpus all --pid=host \
   -e NVIDIA_DRIVER_CAPABILITIES=utility ghcr.io/mesutoezdil/siltide:latest
 ```
 
-A [systemd unit](deploy/systemd/siltide.service) and a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) are in `deploy/`.
+A [systemd unit](deploy/systemd/siltide.service), a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) and a
+[compose stack with Prometheus and Grafana](deploy/compose/) are in `deploy/`.
 What siltide costs to run, and the scripts that measure it, are in [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 
 ## Quick start
