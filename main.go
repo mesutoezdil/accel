@@ -63,6 +63,8 @@ func main() {
 	theme := fs.String("theme", "", "theme name (overrides the config)")
 	listThemes := fs.Bool("list-themes", false, "list built-in and user themes and exit")
 	printConfig := fs.Bool("print-config", false, "print the effective configuration and exit")
+	diag := fs.Bool("diagnose", false, "print build, config, state, and vendor detection details and exit")
+	diagOffline := fs.Bool("diagnose-offline", false, "like --diagnose, but probe no hardware")
 	debug := fs.Bool("debug", false, "log collector activity to --log-file (default state dir/siltide.log)")
 	logFile := fs.String("log-file", "", "debug log file")
 	showVersion := fs.Bool("version", false, "print the version and exit")
@@ -85,6 +87,7 @@ Usage:
   siltide --remote URL         TUI attached to another siltide's --listen
   siltide --record f.jsonl     record while running; siltide --replay f.jsonl plays it back
   siltide --status             one line for tmux, i3bar, or a prompt
+  siltide --diagnose           build, config, state, and vendor detection report
 
 Vendors: %s
 
@@ -164,6 +167,14 @@ Flags:
 	}
 	if *printConfig {
 		fmt.Print(cfg.Print())
+		return
+	}
+	if *diag || *diagOffline {
+		provs, err := providers(cfg.Vendors)
+		if err != nil {
+			fail(err)
+		}
+		fmt.Print(diagnose(cfg, path, provs, *diag))
 		return
 	}
 	if *service && cfg.Listen == "" {

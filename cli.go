@@ -4,19 +4,24 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"path/filepath"
+	"runtime"
+	"runtime/debug"
 	"strings"
 	"time"
 
 	"github.com/mesutoezdil/siltide/internal/collect"
+	"github.com/mesutoezdil/siltide/internal/config"
 	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/provider"
 	"github.com/mesutoezdil/siltide/internal/tui"
 )
 
 // flagNames are every long flag, for completions.
 var flagNames = []string{
 	"config", "interval", "demo", "demo-devices", "once", "json", "vendors", "listen", "service", "remote", "token",
-	"gen-token", "no-history", "retention", "theme", "list-themes", "print-config", "debug", "log-file", "version",
-	"record", "replay", "status", "export", "completion", "man",
+	"gen-token", "no-history", "retention", "theme", "list-themes", "print-config", "diagnose", "diagnose-offline",
+	"debug", "log-file", "version", "record", "replay", "status", "export", "completion", "man",
 }
 
 // completion prints a shell completion script.
@@ -88,6 +93,10 @@ func manPage() string {
 			flags.WriteString("Write the on-disk history as CSV to this file and exit.\n")
 		case "completion":
 			flags.WriteString("Print a completion script for bash, zsh, or fish.\n")
+		case "diagnose":
+			flags.WriteString("Print build, config, state, and vendor detection details and exit.\n")
+		case "diagnose-offline":
+			flags.WriteString("Like \\-\\-diagnose, but probe no hardware.\n")
 		default:
 			flags.WriteString("See siltide --help.\n")
 		}
@@ -179,4 +188,167 @@ func exportHistory(path string, eng *collect.Engine) error {
 	}
 	fmt.Fprintf(os.Stderr, "siltide: wrote %d rows to %s\n", n, path)
 	return nil
+}
+
+// diagnose reports what siltide sees about its own environment: the build, the
+// files it reads and writes, the settings in force, and which vendors answer
+// here. detect is false for --diagnose-offline, which probes no hardware.
+func diagnose(cfg config.Config, cfgPath string, provs []provider.Provider, detect bool) string {
+	var b strings.Builder
+	row := func(k, format string, args ...any) {
+		fmt.Fprintf(&b, "  %-10s %s\n", k, fmt.Sprintf(format, args...))
+	}
+
+	b.WriteString("build\n")
+	row("version", "%s", version)
+	row("go", "%s %s/%s", runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	row("revision", "%s", revision())
+
+	b.WriteString("files\n")
+	row("config", "%s (%s)", cfgPath, fileState(cfgPath))
+	themes := filepath.Join(config.ConfigDir(), "themes")
+	if files, _ := filepath.Glob(filepath.Join(themes, "*.yaml")); len(files) > 0 {
+		row("themes", "%s (%d user themes)", themes, len(files))
+	} else {
+		row("themes", "%s (none)", themes)
+	}
+	row("state", "%s (%s)", config.StateDir(), dirState(config.StateDir()))
+	switch {
+	case !cfg.History.Persist:
+		row("history", "off (history.persist is false)")
+	default:
+		dir := cfg.History.Dir
+		if dir == "" {
+			dir = filepath.Join(config.StateDir(), "history")
+		}
+		row("history", "%s (%s)", dir, dirUsage(dir))
+	}
+	if cfg.Log != "" {
+		row("log", "%s", cfg.Log)
+	} else {
+		row("log", "off (--debug writes %s)", filepath.Join(config.StateDir(), "siltide.log"))
+	}
+
+	b.WriteString("settings\n")
+	row("refresh", "%s", cfg.Refresh)
+	if len(cfg.Vendors) > 0 {
+		row("vendors", "%s", strings.Join(cfg.Vendors, ", "))
+	} else {
+		row("vendors", "all")
+	}
+	if cfg.Listen != "" {
+		row("listen", "%s", cfg.Listen)
+	} else {
+		row("listen", "off")
+	}
+	row("nodes", "%d", len(cfg.Nodes))
+	row("theme", "%s", cfg.Theme)
+
+	b.WriteString("providers\n")
+	if !detect {
+		row("detection", "skipped (--diagnose-offline)")
+		return b.String()
+	}
+	active, total := 0, time.Duration(0)
+	for _, p := range provs {
+		start := time.Now()
+		err := p.Detect()
+		took := time.Since(start)
+		total += took
+		state, detail := "ok", p.Label
+		if err != nil {
+			state, detail = "absent", err.Error()
+		} else {
+			active++
+		}
+		fmt.Fprintf(&b, "  %-10s %8s  %-7s %s\n", p.Name, ms(took), state, detail)
+		if err != nil && p.Hint != "" {
+			fmt.Fprintf(&b, "  %-10s %8s  %-7s %s\n", "", "", "", p.Hint)
+		}
+	}
+	row("detection", "%d probed, %d available, %s total", len(provs), active, ms(total))
+	return b.String()
+}
+
+// ms renders a detection time the way a person reads it.
+func ms(d time.Duration) string { return fmt.Sprintf("%.1fms", float64(d)/float64(time.Millisecond)) }
+
+// revision reads the commit the binary was built from, "unknown" outside a
+// module build.
+func revision() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "unknown"
+	}
+	var rev, when string
+	dirty := ""
+	for _, s := range info.Settings {
+		switch s.Key {
+		case "vcs.revision":
+			rev = s.Value
+		case "vcs.time":
+			when = s.Value
+		case "vcs.modified":
+			if s.Value == "true" {
+				dirty = " (dirty)"
+			}
+		}
+	}
+	if rev == "" {
+		return "unknown"
+	}
+	if len(rev) > 12 {
+		rev = rev[:12]
+	}
+	return strings.TrimSpace(rev+" "+when) + dirty
+}
+
+// fileState says whether a config file is there to read.
+func fileState(path string) string {
+	switch fi, err := os.Stat(path); {
+	case err == nil && fi.IsDir():
+		return "is a directory"
+	case err == nil:
+		return "loaded"
+	case os.IsNotExist(err):
+		return "missing, defaults in use"
+	default:
+		return err.Error()
+	}
+}
+
+// dirState says whether a directory exists and takes writes.
+func dirState(dir string) string {
+	if _, err := os.Stat(dir); err != nil {
+		if os.IsNotExist(err) {
+			return "missing, created on first run"
+		}
+		return err.Error()
+	}
+	f, err := os.CreateTemp(dir, ".siltide-diagnose-*")
+	if err != nil {
+		return "not writable: " + err.Error()
+	}
+	name := f.Name()
+	_ = f.Close()
+	_ = os.Remove(name)
+	return "writable"
+}
+
+// dirUsage counts what history has on disk.
+func dirUsage(dir string) string {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return "empty, created on first run"
+		}
+		return err.Error()
+	}
+	var size int64
+	for _, e := range entries {
+		if fi, err := e.Info(); err == nil {
+			size += fi.Size()
+		}
+	}
+	return fmt.Sprintf("%d files, %.1f MB", len(entries), float64(size)/(1<<20))
 }
