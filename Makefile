@@ -61,8 +61,13 @@ schema:
 
 # The animated demo README.md and the site hero embed: a scripted run over
 # the simulated fleet, rasterized frame by frame and assembled into a GIF.
+# The second run records the same storyboard on paper, which is what the site
+# plays in light mode; a capture made for a dark terminal is hard to read on
+# a white page.
 film:
 	scripts/shots/film.sh
+	go run ./scripts/shots -film build/film-light -player assets/demo-light.json -theme paper -width 150 -height 40
+	rm -rf build/film-light
 
 # The same captures on paper, for readers whose GitHub or browser is in light
 # mode. The README picks between them with <picture>.
