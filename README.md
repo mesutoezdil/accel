@@ -80,6 +80,7 @@ siltide --mcp-stdio          # answer an agent over the Model Context Protocol
 | [docs/MCP.md](docs/MCP.md) | serving the snapshot to an agent |
 | [docs/PERFORMANCE.md](docs/PERFORMANCE.md) | what it costs to run, and the scripts that measure it |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | building, testing, adding a vendor |
+| [docs/PLUGINS.md](docs/PLUGINS.md) | the plugin surface: a signed manifest that runs no code |
 | [examples/config.yaml](examples/config.yaml) | every configuration key, with its default |
 
 A [systemd unit](deploy/systemd/siltide.service), a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) and a
