@@ -16,7 +16,7 @@
           src = self;
 
           # Update with the hash `nix build` prints when the dependencies change.
-          vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+          vendorHash = "sha256-9eL08wpFHO7ilvK0CSSutprPaNvoABsdagaRD2P2SIo=";
 
           env.CGO_ENABLED = 0;
           ldflags = [ "-s" "-w" "-X" "main.version=${self.shortRev or "dev"}" ];
