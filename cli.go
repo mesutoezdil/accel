@@ -23,7 +23,7 @@ var flagNames = []string{
 	"config", "interval", "demo", "demo-devices", "once", "json", "vendors", "listen", "service", "remote", "token",
 	"gen-token", "no-history", "retention", "theme", "list-themes", "print-config", "diagnose", "diagnose-offline",
 	"tab", "filter", "node", "namespace", "bookmark", "mcp-stdio", "mcp-http",
-	"debug", "log-file", "version", "record", "replay", "status", "export", "completion", "man",
+	"debug", "log-file", "version", "update", "record", "replay", "status", "export", "completion", "man",
 }
 
 // completion prints a shell completion script.
@@ -99,6 +99,8 @@ func manPage() string {
 			flags.WriteString("Answer Model Context Protocol calls on stdin and stdout. Read only.\n")
 		case "mcp-http":
 			flags.WriteString("Answer Model Context Protocol calls on a loopback address, with the configured token.\n")
+		case "update":
+			flags.WriteString("Replace this binary with the newest release, after checking its published SHA\\-256. Refused for an install a package manager owns.\n")
 		case "diagnose":
 			flags.WriteString("Print build, config, state, and vendor detection details and exit.\n")
 		case "diagnose-offline":

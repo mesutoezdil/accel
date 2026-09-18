@@ -56,8 +56,23 @@ gh attestation verify siltide-linux-amd64 --repo mesutoezdil/siltide
 
 ## Keeping it up to date
 
+```sh
+siltide --update
+```
+
+It resolves the newest release, downloads the build for this machine, and
+checks its SHA-256 against the `checksums.txt` published with the release
+*before* anything is written. The last step is a rename, not a copy, so an
+interrupted update cannot leave half a binary on your PATH. A build whose
+version carries a pre-release suffix stays on pre-releases; everything else
+follows stable.
+
+If the binary came from a package manager, `--update` refuses and says which
+one to use instead: replacing a packaged file leaves the package database
+describing a version that is no longer there, and the next upgrade reverts it.
+
 - **deb, rpm, apk, Arch, Homebrew, Nix**: the package manager does it.
-- **The install script**: run it again; it replaces the binary in place.
+- **The install script**: `siltide --update`, or run the script again.
 - **`go install`**: run it again with `@latest`.
 - **The container**: pull the tag again.
 

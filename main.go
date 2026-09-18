@@ -33,6 +33,7 @@ import (
 	"github.com/mesutoezdil/siltide/internal/provider/sshp"
 	"github.com/mesutoezdil/siltide/internal/server"
 	"github.com/mesutoezdil/siltide/internal/tui"
+	"github.com/mesutoezdil/siltide/internal/update"
 )
 
 // version is set by the release build.
@@ -69,6 +70,7 @@ func main() {
 	debug := fs.Bool("debug", false, "log collector activity to --log-file (default state dir/siltide.log)")
 	logFile := fs.String("log-file", "", "debug log file")
 	showVersion := fs.Bool("version", false, "print the version and exit")
+	doUpdate := fs.Bool("update", false, "replace this binary with the newest release, after verifying its checksum")
 	recordPath := fs.String("record", "", "append every snapshot as JSON to this file (replay with --replay)")
 	replayPath := fs.String("replay", "", "drive the interface from a recording instead of hardware")
 	openTab := fs.String("tab", "", "open on this tab (overview, devices, processes, history, ...)")
@@ -96,6 +98,7 @@ Usage:
   siltide --record f.jsonl     record while running; siltide --replay f.jsonl plays it back
   siltide --status             one line for tmux, i3bar, or a prompt
   siltide --mcp-stdio          answer an agent over the Model Context Protocol
+  siltide --update             move to the newest release, checksum verified
   siltide --diagnose           build, config, state, and vendor detection report
 
 Vendors: %s
@@ -123,6 +126,15 @@ Flags:
 		return
 	case *man:
 		fmt.Print(manPage())
+		return
+	case *doUpdate:
+		self, err := update.Self()
+		if err != nil {
+			fail(err)
+		}
+		if err := update.Run(update.HTTP(), self, version, update.ChannelOf(version), os.Stdout); err != nil {
+			fail(err)
+		}
 		return
 	case *genToken:
 		b := make([]byte, 24)
