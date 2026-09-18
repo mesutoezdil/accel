@@ -303,7 +303,7 @@ func (m Model) pods() []podRow {
 		if m.ns != "" && r.ns != m.ns {
 			continue
 		}
-		if !m.filter.Empty() && !m.filter.words0(r.name, r.ns, r.workload) {
+		if !m.filter.Empty() && !m.filter.Words(r.name, r.ns, r.workload) {
 			continue
 		}
 		out = append(out, r)
