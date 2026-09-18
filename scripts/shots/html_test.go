@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/mesutoezdil/siltide/internal/tui"
 )
 
 func TestHTMLLines(t *testing.T) {
@@ -20,14 +22,14 @@ func TestHTMLLines(t *testing.T) {
 		{"\x1b[0m", ""},
 		{"\x1b[7mrev\x1b[0m", `<span style="color:#0d1117;background:#c9d1d9">rev</span>`},
 	} {
-		got := htmlLines(c.in)
+		got := htmlLines(c.in, defaultFg, defaultBG)
 		if len(got) != 1 || got[0] != c.want {
 			t.Errorf("htmlLines(%q) = %q, want %q", c.in, got, c.want)
 		}
 	}
 
 	// one line per line of the view, blank ones included
-	if got := htmlLines("a\n\nb\n"); len(got) != 3 || got[1] != "" {
+	if got := htmlLines("a\n\nb\n", defaultFg, defaultBG); len(got) != 3 || got[1] != "" {
 		t.Errorf("htmlLines over three lines gave %q", got)
 	}
 }
@@ -39,7 +41,7 @@ func TestWritePlayer(t *testing.T) {
 		"one\ntwo\nthree", // nothing moved
 		"one\nTWO\nthree", // one line changed
 	}
-	if err := writePlayer(path, views, 40, 3); err != nil {
+	if err := writePlayer(path, views, 40, 3, tui.NewTheme("default", nil)); err != nil {
 		t.Fatal(err)
 	}
 	b, err := os.ReadFile(path)
@@ -70,7 +72,7 @@ func TestWritePlayer(t *testing.T) {
 
 func TestWritePlayerPadsShortViews(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "demo.json")
-	if err := writePlayer(path, []string{"just one line"}, 20, 5); err != nil {
+	if err := writePlayer(path, []string{"just one line"}, 20, 5, tui.NewTheme("default", nil)); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(path)
@@ -83,5 +85,18 @@ func TestWritePlayerPadsShortViews(t *testing.T) {
 	}
 	if strings.Contains(string(b), "\x1b") {
 		t.Error("an escape sequence reached the page")
+	}
+}
+
+// A light capture reverses to its own paper. Reading a reversed cell as dark
+// text is what made the recording on the light page hard to read.
+func TestHTMLLinesReverseTakesTheTerminalsOwnBackground(t *testing.T) {
+	const paperBG, paperFG = "#f7f5ef", "#2b2b2b"
+	got := htmlLines("\x1b[7;38;2;11;92;173mDevices\x1b[0m", paperFG, paperBG)
+	if len(got) != 1 || !strings.Contains(got[0], "color:"+paperBG) {
+		t.Fatalf("reversed cell rendered as %q, want its text in %s", got, paperBG)
+	}
+	if strings.Contains(got[0], defaultBG) {
+		t.Fatalf("reversed cell fell back to the dark page background: %q", got[0])
 	}
 }

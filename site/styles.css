@@ -63,7 +63,7 @@ h1{font-size:clamp(1.85rem,6.2vw,4.4rem)}
 h2{font-size:clamp(1.5rem,4vw,2.9rem);margin:0 0 .35em}
 h3{font-size:1.06rem;letter-spacing:-.01em}
 p{margin:0 0 1rem}
-.lede{color:var(--dim);margin:0 0 2.4rem;font-size:1.06rem;max-width:64ch}
+.lede{color:var(--dim);margin:0 0 1.7rem;font-size:1.06rem;max-width:64ch}
 .note{color:var(--dim);font-size:.9rem;max-width:74ch}
 
 /* An eyebrow numbers the sections, which gives a long page a spine to
@@ -73,8 +73,8 @@ p{margin:0 0 1rem}
 .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);flex:none}
 .eyebrow b{color:var(--accent);font-weight:700}
 
-section{padding:clamp(72px,9vw,124px) 0;position:relative}
-section:last-of-type{padding-bottom:clamp(48px,6vw,80px)}
+section{padding:clamp(52px,5.4vw,82px) 0;position:relative}
+section:last-of-type{padding-bottom:clamp(44px,5vw,68px)}
 /* Alternating bands carry the rhythm where a page has them; a page that runs
    straight through still gets a rule between sections, and never both. */
 .band{background:var(--bg2);border-block:1px solid var(--divider)}
@@ -87,7 +87,7 @@ section+section:not(.band){border-top:1px solid var(--divider)}
 .skip-link:focus{top:calc(8px + env(safe-area-inset-top,0px))}
 
 nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--nav-bg);
-  backdrop-filter:saturate(140%) blur(14px);border-bottom:1px solid var(--border)}
+  backdrop-filter:blur(11px);border-bottom:1px solid var(--border)}
 nav .wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;height:58px}
 .brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);
   text-decoration:none;white-space:nowrap;justify-self:start;grid-column:1;letter-spacing:-.02em}
@@ -107,7 +107,7 @@ nav a.link:hover{color:var(--text)}
 @media (max-width:700px){.nav-sections{display:none}}
 
 /* Hero */
-.hero{padding:clamp(56px,8vw,104px) 0 clamp(48px,6vw,72px);overflow:hidden}
+.hero{padding:clamp(44px,5.5vw,76px) 0 clamp(40px,4.5vw,60px);overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;background:var(--glow);pointer-events:none}
 .hero .wrap{position:relative;z-index:1}
 .hero .cores{position:absolute;left:0;right:0;top:0;height:230px;display:flex;
@@ -146,7 +146,7 @@ nav a.link:hover{color:var(--text)}
 .btn.ghost:hover{border-color:var(--dimmer)}
 /* The one-line claim strip under the buttons: three facts, no adjectives. */
 .facts{display:flex;flex-wrap:wrap;gap:0 26px;font-family:var(--mono);font-size:.82rem;color:var(--dim);
-  margin:0 0 40px;padding:0;list-style:none}
+  margin:0 0 26px;padding:0;list-style:none}
 .facts li{display:flex;align-items:center;gap:7px}
 .facts b{color:var(--text);font-weight:700}
 .facts li+li::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--dimmer);
@@ -210,7 +210,7 @@ nav a.link:hover{color:var(--text)}
 
 /* Vendors, as a marquee: fifteen names read faster moving than stacked. */
 .marquee{--speed:46s;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
-  margin-bottom:28px;padding:4px 0}
+  margin-bottom:20px;padding:4px 0}
 .marquee-track{display:flex;width:max-content;gap:10px;animation:slide var(--speed) linear infinite}
 .marquee:hover .marquee-track{animation-play-state:paused}
 @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -221,7 +221,7 @@ nav a.link:hover{color:var(--text)}
 .chip.real::before{content:"●";color:var(--cool);margin-right:7px;font-size:.7em;vertical-align:middle}
 
 /* The measured numbers, as a wall rather than a table. */
-.statwall{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:26px}
+.statwall{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:18px}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px}
 .stat .v{font-family:var(--mono);font-size:clamp(1.8rem,3.4vw,2.5rem);font-weight:700;letter-spacing:-.04em;
   color:var(--text);line-height:1;display:block;margin-bottom:8px}
@@ -278,3 +278,15 @@ footer a:hover{color:var(--text)}
 .reveal{opacity:0;transform:translateY(18px)}
 .revealed{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
 @media (prefers-reduced-motion: reduce){.reveal{opacity:1;transform:none}}
+
+/* The terminal frame follows the page's colour mode. The recording inside it
+   carries its own background, captured with the matching theme. */
+html[data-mode="light"] .term{background:#f7f5ef}
+html[data-mode="light"] .termbar{background:#e9e5db;border-bottom-color:#d6d2c6}
+html[data-mode="light"] .termbar span{color:#6b6b62}
+html[data-mode="light"] .termbtn{color:#6b6b62;border-color:#c9c6bc}
+html[data-mode="light"] .termbtn:hover{color:#2b2b2b;border-color:#8c887d}
+html[data-mode="light"] .termbody pre{color:#2b2b2b}
+html[data-mode="light"] .termbar i{background:#e0685f}
+html[data-mode="light"] .termbar i:nth-child(2){background:#dba32a}
+html[data-mode="light"] .termbar i:nth-child(3){background:#39a852}

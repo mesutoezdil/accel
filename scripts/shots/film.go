@@ -110,14 +110,18 @@ func film(o options, eng *collect.Engine, th tui.Theme, host string) error {
 	if o.player == "" {
 		return nil
 	}
-	return writePlayer(o.player, views, o.w, rows)
+	return writePlayer(o.player, views, o.w, rows, th)
 }
 
 // reel is the animation a page replays as text: the first frame carries
 // every line, and each one after it only the lines that changed.
 type reel struct {
-	Cols   int         `json:"cols"`
-	Rows   int         `json:"rows"`
+	Cols int `json:"cols"`
+	Rows int `json:"rows"`
+	// The terminal's own two colours, so the frame on the page is painted
+	// like the capture rather than assumed to be dark.
+	Bg     string      `json:"bg"`
+	Fg     string      `json:"fg"`
 	Frames []reelFrame `json:"frames"`
 }
 
@@ -128,11 +132,18 @@ type reelFrame struct {
 
 // writePlayer saves the views as the reel a page plays. Lines repeat between
 // frames far more than they change, so only the changes are written.
-func writePlayer(path string, views []string, cols, rows int) error {
-	r := reel{Cols: cols, Rows: rows}
+func writePlayer(path string, views []string, cols, rows int, th tui.Theme) error {
+	bg, fg := th.Colors["bg"], th.Colors["text"]
+	if bg == "" {
+		bg = defaultBG
+	}
+	if fg == "" {
+		fg = defaultFg
+	}
+	r := reel{Cols: cols, Rows: rows, Bg: bg, Fg: fg}
 	var prev []string
 	for _, v := range views {
-		cur := htmlLines(padRows(v, rows))
+		cur := htmlLines(padRows(v, rows), fg, bg)
 		f := reelFrame{Lines: map[string]string{}}
 		for i := 0; i < rows; i++ {
 			// The first frame carries every line, blank ones included, so a

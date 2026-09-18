@@ -53,25 +53,25 @@
     <p class="lede" data-en="Everyone looking at siltide already has something. This says where each of them is the better choice, and what siltide adds, with no benchmark numbers because no benchmark has been run." data-zh="来看 siltide 的人手里都已经有别的工具。这里说明在什么情况下它们更合适，以及 siltide 多做了什么；这里没有跑分数字，因为我们没有做过对比测试。">Everyone looking at siltide already has something. This says where each of them is the better choice, and what siltide adds, with no benchmark numbers because no benchmark has been run.</p>
     <div class="grid">
       <div class="card"><span class="tab">nvidia-smi</span>
-        <p class="q">the driver's own tool</p>
+        <p class="q">The driver's own tool</p>
         <p><b>Choose nvidia-smi when:</b> It is on every NVIDIA host already, needs nothing installed, and is the authority on what the driver thinks.</p>
         <p style="margin-top:.6rem"><b>siltide adds:</b> It reports one vendor, one host, and one moment. siltide reads fifteen vendors, correlates processes to pods and Slurm jobs, keeps a rewindable history, and serves the same data as JSON and Prometheus metrics.</p>
         <p style="margin-top:.6rem;color:var(--dim)">Use nvidia-smi when you want the driver's own words about one machine. siltide does not replace it and reads from the same library it does.</p>
       </div>
       <div class="card"><span class="tab">nvtop</span>
-        <p class="q">a terminal graph for GPUs</p>
+        <p class="q">A terminal graph for GPUs</p>
         <p><b>Choose nvtop when:</b> A live graph per device, multi-vendor, and comfortable to leave open.</p>
         <p style="margin-top:.6rem"><b>siltide adds:</b> siltide adds where the work came from: the pod, the namespace, the workload, the Slurm job, and a history you can scrub back through after the fact rather than only watching forward.</p>
         <p style="margin-top:.6rem;color:var(--dim)">If you want a live chart and nothing else, nvtop is smaller and does exactly that.</p>
       </div>
       <div class="card"><span class="tab">gpustat</span>
-        <p class="q">a one-line summary</p>
+        <p class="q">A one-line summary</p>
         <p><b>Choose gpustat when:</b> Short, scriptable, and unmistakable at a glance.</p>
         <p style="margin-top:.6rem"><b>siltide adds:</b> siltide --status prints one line too, and --once --json prints the whole snapshot for a script. What it adds is everything behind that line when the line looks wrong.</p>
         <p style="margin-top:.6rem;color:var(--dim)">For a prompt or a cron line, either works; gpustat is a smaller dependency.</p>
       </div>
       <div class="card"><span class="tab">nvitop</span>
-        <p class="q">an interactive NVIDIA monitor</p>
+        <p class="q">An interactive NVIDIA monitor</p>
         <p><b>Choose nvitop when:</b> Rich per-process detail on NVIDIA, with actions such as killing a process.</p>
         <p style="margin-top:.6rem"><b>siltide adds:</b> siltide is read-only by design and covers fifteen vendors rather than one, with an API, metrics and an agent interface on the same data.</p>
         <p style="margin-top:.6rem;color:var(--dim)">If you want to act on processes from the monitor, nvitop does that and siltide deliberately does not.</p>

@@ -6,8 +6,17 @@
   var screen = document.getElementById("demo-screen");
   var toggle = document.getElementById("demo-toggle");
   if (!screen || !toggle) { return; }
-  var rows = [], frames = [], at = 0, timer = null, running = false;
+  var rows = [], frames = [], at = 0, timer = null, running = false, wanted = false;
+  var cache = {}, onScreen = true;
 
+  // One recording per colour mode. The dark page plays the capture made with
+  // the default theme and the light page the one made with paper, because a
+  // terminal captured for a dark background is genuinely hard to read on a
+  // white page -- the frame keeps its own two colours either way.
+  function reelURL() {
+    return document.documentElement.getAttribute("data-mode") === "light"
+      ? "assets/demo-light.json" : "assets/demo.json";
+  }
   function label() {
     var zh = (document.documentElement.lang || "").indexOf("zh") === 0;
     toggle.textContent = toggle.getAttribute(zh ? "data-zh" : "data-en");
@@ -22,40 +31,70 @@
     at = (at + 1) % frames.length;
     timer = setTimeout(step, hold * 100);
   }
-  function play() {
-    if (running) { return; }
-    running = true;
-    toggle.setAttribute("data-en", "pause");
-    toggle.setAttribute("data-zh", "暂停");
-    label();
-    step();
+  // wanted is what the reader asked for; running is what is actually going on.
+  // They come apart when the frame scrolls out of view, which is the whole
+  // point: redrawing forty rows of markup ten times a second while nobody is
+  // looking at them is what made scrolling feel heavy.
+  function sync() {
+    var should = wanted && onScreen && frames.length > 0;
+    if (should === running) { return; }
+    running = should;
+    if (should) { step(); } else { clearTimeout(timer); }
   }
-  function pause() {
-    running = false;
-    clearTimeout(timer);
-    toggle.setAttribute("data-en", "play");
-    toggle.setAttribute("data-zh", "播放");
+  function play() { wanted = true; mark(); sync(); }
+  function pause() { wanted = false; mark(); sync(); }
+  function mark() {
+    toggle.setAttribute("data-en", wanted ? "pause" : "play");
+    toggle.setAttribute("data-zh", wanted ? "\u6682\u505c" : "\u64ad\u653e");
     label();
   }
-  toggle.addEventListener("click", function(){ if (running) { pause(); } else { play(); } });
+  toggle.addEventListener("click", function(){ if (wanted) { pause(); } else { play(); } });
 
-  fetch("assets/demo.json").then(function(r){ return r.json(); }).then(function(reel){
+  function apply(reel) {
+    clearTimeout(timer);
+    running = false;
+    screen.textContent = "";
+    rows = [];
     for (var i = 0; i < reel.rows; i++) {
       rows.push(screen.appendChild(document.createElement("div")));
     }
     frames = reel.frames;
+    at = 0;
+    var frame = screen.closest ? screen.closest(".term") : null;
+    if (frame && reel.bg) { frame.style.background = reel.bg; }
+    if (reel.fg) { screen.style.color = reel.fg; }
     draw(0);
-    var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (still) { pause(); } else { play(); }
-  }).catch(function(){
-    // No animation without the recording: the picture of it still works.
+    at = 1 % frames.length;
+    sync();
+  }
+  function load() {
+    var url = reelURL();
+    if (cache[url]) { apply(cache[url]); return; }
+    fetch(url).then(function(r){ return r.json(); }).then(function(reel){
+      cache[url] = reel;
+      if (reelURL() === url) { apply(reel); }
+    }).catch(fallback);
+  }
+  function fallback() {
+    // No recording: the picture of it still works.
     var img = document.createElement("img");
     img.src = "assets/demo.gif";
     img.alt = "siltide moving through its tabs on a simulated fleet";
     img.style.width = "100%";
-    screen.parentNode.replaceChild(img, screen);
+    if (screen.parentNode) { screen.parentNode.replaceChild(img, screen); }
     toggle.remove();
-  });
+  }
+
+  document.addEventListener("siltide:mode", load);
+  if (window.IntersectionObserver) {
+    new IntersectionObserver(function(entries){
+      onScreen = entries[0].isIntersecting;
+      sync();
+    }, { rootMargin: "200px" }).observe(screen);
+  }
+  wanted = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  mark();
+  load();
 })();
 
 document.querySelectorAll(".install .tabbtn").forEach(function(b){
@@ -115,6 +154,7 @@ function accelApplyMode(mode){
   var btn = document.getElementById("mode-toggle");
   if (btn) btn.textContent = mode === "light" ? "dark" : "light";
   try { localStorage.setItem(SILTIDE_MODE_KEY, mode); } catch (e) {}
+  document.dispatchEvent(new CustomEvent("siltide:mode"));
 }
 (function(){
   var start = "";
