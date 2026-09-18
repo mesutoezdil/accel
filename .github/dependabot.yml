@@ -1,0 +1,24 @@
+version: 2
+
+# The workflows pin every action to a commit SHA, which is what stops a moved
+# tag from changing what CI runs. A pin only stays safe while something moves
+# it forward, so this does: one grouped pull request a week rather than one
+# per action, which is how a bot stays read rather than ignored.
+#
+# Go modules are left out on purpose. They arrive through go.sum, the test
+# suite runs against them on every change, and the dependency list is five
+# direct entries: a pull request each would bury the action updates that
+# actually need looking at.
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+    labels: [enhancement]
+    groups:
+      actions:
+        patterns: ["*"]

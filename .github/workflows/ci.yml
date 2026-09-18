@@ -14,8 +14,8 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
           go-version-file: go.mod
       - run: test -z "$(gofmt -l .)"
@@ -24,7 +24,7 @@ jobs:
       - run: go test -race ./...
       - run: go test -run TestFakeNVML -v ./internal/provider/nvidia/
         if: runner.os == 'Linux'
-      - uses: golangci/golangci-lint-action@v8
+      - uses: golangci/golangci-lint-action@4afd733a84b1f43292c63897423277bb7f4313a9 # v8
         with:
           version: latest
       - run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build .
@@ -33,3 +33,37 @@ jobs:
       - run: go run . --demo --once
       - run: go test -run xxx -bench . -benchtime 200ms ./internal/collect/ ./internal/tui/
         if: runner.os == 'Linux'
+      # What is reachable from our code, not what merely appears in the module
+      # graph, which is the difference between a list worth reading and noise.
+      - name: govulncheck
+        if: runner.os == 'Linux'
+        run: |
+          go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
+  # The packaging only runs on a tag, so without this a bad nfpm entry or a
+  # completion that stopped generating is found during a release.
+  packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0 # goreleaser reads the tags to name a snapshot
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version-file: go.mod
+      - uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6
+        with:
+          version: latest
+          args: check
+      - name: Build the packages without publishing them
+        uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6
+        with:
+          version: latest
+          args: release --snapshot --clean --skip=docker,publish
+      - name: Every package we promise is in dist
+        run: |
+          set -eu
+          for ext in deb rpm apk pkg.tar.zst; do
+            ls dist/*."$ext" >/dev/null
+          done
+          ls dist/checksums.txt >/dev/null
