@@ -193,9 +193,9 @@
       <button class="tabbtn" data-p="docker" data-en="Container" data-zh="容器">Container</button>
     </div>
     <div class="install-panel active" id="p-bin">
-<pre><button class="copy">copy</button><code>tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
-curl -fsSL -o siltide "https://github.com/mesutoezdil/siltide/releases/download/$tag/siltide-linux-amd64"
-chmod +x siltide && sudo mv siltide /usr/local/bin/</code></pre>
+<pre><button class="copy">copy</button><code>( f="$(mktemp)" &amp;&amp; trap 'rm -f "$f"' EXIT &amp;&amp;
+  curl -fsSL https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh -o "$f" &amp;&amp;
+  sh "$f" )</code></pre>
     </div>
     <div class="install-panel" id="p-brew">
 <pre><button class="copy">copy</button><code>brew install mesutoezdil/tap/siltide</code></pre>
