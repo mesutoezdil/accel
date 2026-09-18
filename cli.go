@@ -13,6 +13,7 @@ import (
 	"github.com/mesutoezdil/siltide/internal/collect"
 	"github.com/mesutoezdil/siltide/internal/config"
 	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/kube"
 	"github.com/mesutoezdil/siltide/internal/provider"
 	"github.com/mesutoezdil/siltide/internal/tui"
 )
@@ -258,6 +259,22 @@ func diagnose(cfg config.Config, cfgPath string, provs []provider.Provider, dete
 	row("nodes", "%d", len(cfg.Nodes))
 	row("theme", "%s", cfg.Theme)
 
+	b.WriteString("kubernetes\n")
+	pods := kube.New(kube.Options{Kubeconfig: cfg.Kubernetes.Kubeconfig, Context: cfg.Kubernetes.Context})
+	if pods.Enabled() {
+		row("source", "%s", pods.Source())
+	}
+	for _, a := range pods.Attempts() {
+		state := "ok"
+		if a.Err != "" {
+			state = a.Err
+		}
+		fmt.Fprintf(&b, "  %-10s %-44s %s\n", "", cut(a.What+" "+a.Where, 44), state)
+	}
+	if len(pods.Attempts()) == 0 {
+		row("looked", "nowhere: no pod source is configured")
+	}
+
 	b.WriteString("providers\n")
 	if !detect {
 		row("detection", "skipped (--diagnose-offline)")
@@ -282,6 +299,14 @@ func diagnose(cfg config.Config, cfgPath string, provs []provider.Provider, dete
 	}
 	row("detection", "%d probed, %d available, %s total", len(provs), active, ms(total))
 	return b.String()
+}
+
+// cut shortens s to w characters, ending in an ellipsis when it had to.
+func cut(s string, w int) string {
+	if len(s) <= w {
+		return s
+	}
+	return s[:w-1] + "…"
 }
 
 // ms renders a detection time the way a person reads it.

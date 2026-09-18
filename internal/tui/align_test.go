@@ -12,6 +12,7 @@ import (
 
 	"github.com/mesutoezdil/siltide/internal/collect"
 	"github.com/mesutoezdil/siltide/internal/device"
+	"github.com/mesutoezdil/siltide/internal/kube"
 )
 
 // inColor makes the styles emit escapes the way a real terminal sees them.
@@ -254,5 +255,25 @@ func TestSelectionReadsAsOneBar(t *testing.T) {
 		if p["selection_bg"] == "" {
 			t.Errorf("theme %s sets no selection_bg, so its selected row inverts", name)
 		}
+	}
+}
+
+// TestKubeEmptyStateNamesWhatWasTried covers the tab someone opens on a
+// machine with no cluster: it should say where siltide looked, not only that
+// it found nothing.
+func TestKubeEmptyStateNamesWhatWasTried(t *testing.T) {
+	m := Model{th: NewTheme("mono", nil), width: 120}
+	out := m.unreachable("Kubernetes was not detected.", []kube.Attempt{
+		{What: "pod log directory", Where: "/var/log/pods", Err: "stat /var/log/pods: no such file or directory"},
+		{What: "in-cluster service account", Where: "/var/run/secrets/kubernetes.io/serviceaccount", Err: "KUBERNETES_SERVICE_HOST is not set: not running in a pod"},
+		{What: "kubeconfig", Where: "/home/me/.kube/config", Err: ""},
+	})
+	for _, want := range []string{"Kubernetes was not detected.", "what was tried", "pod log directory", "/var/log/pods", "no such file", "service account", "not running in a pod", "kubeconfig", "ok"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("the empty state does not mention %q:\n%s", want, out)
+		}
+	}
+	if m.unreachable("nothing here.", nil) == "" {
+		t.Error("an empty attempt list should still carry the headline")
 	}
 }

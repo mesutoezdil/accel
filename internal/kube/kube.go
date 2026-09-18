@@ -51,17 +51,38 @@ type Pod struct {
 
 // Resolver caches pod lookups.
 type Resolver struct {
-	mu      sync.Mutex
-	logDir  string
-	pods    map[string]Pod // by UID
-	at      time.Time
-	ttl     time.Duration
-	client  *http.Client
-	apiURL  string
-	token   string
-	node    string
-	enabled bool
-	source  string // "log-dir", "in-cluster", "kubeconfig"
+	mu       sync.Mutex
+	logDir   string
+	pods     map[string]Pod // by UID
+	at       time.Time
+	ttl      time.Duration
+	client   *http.Client
+	apiURL   string
+	token    string
+	node     string
+	enabled  bool
+	source   string // "log-dir", "in-cluster", "kubeconfig"
+	attempts []Attempt
+}
+
+// Attempt is one place siltide looked for Kubernetes and what came of it.
+// A machine with no cluster on it is the normal case, so the list is how
+// someone who expected one finds out which assumption was wrong.
+type Attempt struct {
+	What  string // "pod log directory", "in-cluster service account", "kubeconfig"
+	Where string // the path or address that was tried
+	Err   string // why it did not work; empty when it did
+}
+
+// Attempts lists the sources that were tried, in the order they were tried.
+func (r *Resolver) Attempts() []Attempt { return append([]Attempt(nil), r.attempts...) }
+
+func (r *Resolver) tried(what, where string, err error) {
+	a := Attempt{What: what, Where: where}
+	if err != nil {
+		a.Err = err.Error()
+	}
+	r.attempts = append(r.attempts, a)
 }
 
 // Options select how the API is reached.
@@ -72,8 +93,14 @@ type Options struct {
 
 // New returns a resolver. It is inert on machines without Kubernetes.
 func New(o Options) *Resolver {
-	r := &Resolver{logDir: "/var/log/pods", pods: map[string]Pod{}, ttl: 30 * time.Second}
-	if _, err := os.Stat(r.logDir); err == nil {
+	logDir := "/var/log/pods"
+	if d := os.Getenv("SILTIDE_POD_LOG_DIR"); d != "" {
+		logDir = d // for a runtime that keeps pod logs somewhere else
+	}
+	r := &Resolver{logDir: logDir, pods: map[string]Pod{}, ttl: 30 * time.Second}
+	_, err := os.Stat(r.logDir)
+	r.tried("pod log directory", r.logDir, err)
+	if err == nil {
 		r.enabled, r.source = true, "log-dir"
 	}
 	r.node = os.Getenv("NODE_NAME")
@@ -89,7 +116,7 @@ func New(o Options) *Resolver {
 			home, _ := os.UserHomeDir()
 			path = filepath.Join(home, ".kube", "config")
 		}
-		_ = r.fromKubeconfig(path, o.Context)
+		r.tried("kubeconfig", path, r.fromKubeconfig(path, o.Context))
 	}
 	return r
 }
@@ -104,9 +131,15 @@ func (r *Resolver) inCluster() bool {
 	host, port := os.Getenv("KUBERNETES_SERVICE_HOST"), os.Getenv("KUBERNETES_SERVICE_PORT")
 	const sa = "/var/run/secrets/kubernetes.io/serviceaccount"
 	tok, err := os.ReadFile(sa + "/token")
-	if host == "" || err != nil {
+	switch {
+	case host == "":
+		r.tried("in-cluster service account", sa, errors.New("KUBERNETES_SERVICE_HOST is not set: not running in a pod"))
+		return false
+	case err != nil:
+		r.tried("in-cluster service account", sa+"/token", err)
 		return false
 	}
+	r.tried("in-cluster service account", "https://"+host+":"+port, nil)
 	pool := x509.NewCertPool()
 	if ca, err := os.ReadFile(sa + "/ca.crt"); err == nil {
 		pool.AppendCertsFromPEM(ca)
