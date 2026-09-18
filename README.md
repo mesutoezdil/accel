@@ -77,6 +77,7 @@ docker run --rm -p 9800:9800 --gpus all --pid=host \
 ```
 
 A [systemd unit](deploy/systemd/siltide.service) and a [Kubernetes DaemonSet](deploy/kubernetes/daemonset.yaml) are in `deploy/`.
+What siltide costs to run, and the scripts that measure it, are in [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 
 ## Quick start
 
