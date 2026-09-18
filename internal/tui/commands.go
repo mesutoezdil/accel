@@ -21,6 +21,7 @@ var commands = []commandDef{
 	{"describe", "[pod]", "Kubernetes: describe the selected pod"},
 	{"filter", "<query>", "set the filter, as / does"},
 	{"live", "", "leave the time machine and follow now"},
+	{"log", "", "siltide's own log, the one --debug writes"},
 	{"logs", "[pod]", "Kubernetes: container logs for the selected pod"},
 	{"metric", "<name>", "which metric the history charts draw"},
 	{"node", "[name]", "limit every tab to one node"},

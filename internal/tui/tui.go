@@ -4,6 +4,7 @@ package tui
 import (
 	"context"
 	"fmt"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -47,6 +48,7 @@ const (
 	overlayDescribe
 	overlayLogs
 	overlayCompare
+	overlaySelfLog
 )
 
 type refreshed struct{}
@@ -58,6 +60,9 @@ type Options struct {
 	TempWarn float64 // for the thermals view; 0 means 85
 	Mouse    bool
 	Currency string
+	// LogFile is siltide's own log, shown by `:log`. Empty means logging is
+	// off, which the view says rather than showing nothing.
+	LogFile string
 	// Reload re-reads the config file and returns the options it now asks
 	// for, after applying it to the engine. nil disables `:reload`.
 	Reload func() (Options, error)
@@ -73,6 +78,7 @@ type Model struct {
 	currency string
 	reload   func() (Options, error)
 	marks    []Bookmark
+	logFile  string
 	tab      int
 	prev     int // tab to return to from help
 	sel      int // selected row on the current tab
@@ -148,6 +154,7 @@ func New(eng *collect.Engine, o Options) Model {
 // leaves empty. It runs at startup and again on every `:reload`.
 func (m *Model) apply(o Options) {
 	m.th, m.keys, m.tempWarn, m.currency, m.reload = o.Theme, o.Keys, o.TempWarn, o.Currency, o.Reload
+	m.logFile = o.LogFile
 	if m.keys == nil {
 		m.keys = NewKeymap(nil)
 	}
@@ -521,6 +528,8 @@ func (m Model) overlayKey(k string) Model {
 			m.logs()
 		case overlayDescribe:
 			m.describe()
+		case overlaySelfLog:
+			m.selfLog()
 		}
 	}
 	return m
@@ -630,6 +639,8 @@ func (m *Model) command(line string) {
 		m.startCompare(f[1:])
 	case "reload":
 		m.reloadConfig()
+	case "log":
+		m.selfLog()
 	case "bookmark", "bm":
 		m.bookmark(arg)
 	case "pause":
@@ -670,6 +681,34 @@ func (m *Model) reloadConfig() {
 	}
 	m.apply(o)
 	m.say("config reloaded")
+}
+
+// selfLogLines is how much of siltide's own log the view holds. Long enough
+// to cover a start and the failures after it, short enough to open at once.
+const selfLogLines = 2000
+
+// selfLog shows the tail of siltide's own log, which otherwise only exists
+// as a file someone has to quit the interface to read.
+func (m *Model) selfLog() {
+	if m.logFile == "" {
+		m.say("logging is off: start with --debug, or set log: in the config")
+		return
+	}
+	b, err := os.ReadFile(m.logFile)
+	if err != nil {
+		m.say("log: " + err.Error())
+		return
+	}
+	lines := strings.Split(strings.TrimRight(string(b), "\n"), "\n")
+	if len(lines) > selfLogLines {
+		lines = lines[len(lines)-selfLogLines:]
+	}
+	text := strings.Join(lines, "\n")
+	if strings.TrimSpace(text) == "" {
+		text = "the log file is empty"
+	}
+	m.text, m.textTitle, m.overlay = text, "log "+m.logFile, overlaySelfLog
+	m.scroll = max(len(lines)-(m.height-5), 0) // the newest lines first
 }
 
 // jumpPod selects a pod by name on the Kubernetes tab.
@@ -997,6 +1036,8 @@ func (m Model) hintKeys() []string {
 		return []string{"esc", "d", "c", "w", "r"}
 	case m.overlay == overlayDescribe:
 		return []string{"esc", "l", "r"}
+	case m.overlay == overlaySelfLog:
+		return []string{"esc", "r", "w"}
 	case m.overlay != overlayNone:
 		return []string{"esc"}
 	case m.tab == tabHistory, m.tab == tabDashboard:
