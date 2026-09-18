@@ -28,6 +28,10 @@ type Tracker struct {
 // New returns a tracker.
 func New(t Thresholds) *Tracker { return &Tracker{t: t, idleSince: map[string]time.Time{}} }
 
+// SetThresholds applies reloaded thresholds, keeping how long each device
+// has been idle. Callers hold their own lock.
+func (tr *Tracker) SetThresholds(t Thresholds) { tr.t = t }
+
 // Apply fills State, Outlier, and IdleAlloc on every device.
 func (tr *Tracker) Apply(now time.Time, devs []device.Device) {
 	for i := range devs {

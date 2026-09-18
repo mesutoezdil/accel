@@ -5,3 +5,6 @@
 *.test
 *.out
 .DS_Store
+
+# local agent config
+.claude/

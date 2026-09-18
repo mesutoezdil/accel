@@ -47,6 +47,20 @@ func New(o Options) *Notifier {
 	return &Notifier{o: o, client: &http.Client{Timeout: 5 * time.Second}, sent: map[string]time.Time{}}
 }
 
+// SetOptions applies reloaded delivery settings, keeping what was already
+// sent so a reload does not repeat every active alert.
+func (n *Notifier) SetOptions(o Options) {
+	if n == nil {
+		return
+	}
+	if o.Resend <= 0 {
+		o.Resend = time.Hour
+	}
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	n.o = o
+}
+
 var rank = map[events.Severity]int{events.Info: 0, events.Warning: 1, events.Critical: 2}
 
 // Push sends every alert that is new or due for a resend and forgets alerts
