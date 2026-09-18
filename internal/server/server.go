@@ -275,10 +275,10 @@ func Prometheus(s collect.Snapshot) string {
 	}
 	if h := s.Host2; h != nil {
 		if !h.CPU.Percent.Unknown() {
-			fmt.Fprintf(&b, "# HELP siltide_host_cpu_percent Host CPU busy share.\n# TYPE siltide_host_cpu_percent gauge\naccel_host_cpu_percent %g\n", float64(h.CPU.Percent))
+			fmt.Fprintf(&b, "# HELP siltide_host_cpu_percent Host CPU busy share.\n# TYPE siltide_host_cpu_percent gauge\nsiltide_host_cpu_percent %g\n", float64(h.CPU.Percent))
 		}
 		if !h.Mem.Used.Unknown() {
-			fmt.Fprintf(&b, "# HELP siltide_host_memory_used_bytes Host memory in use.\n# TYPE siltide_host_memory_used_bytes gauge\naccel_host_memory_used_bytes %g\n", float64(h.Mem.Used))
+			fmt.Fprintf(&b, "# HELP siltide_host_memory_used_bytes Host memory in use.\n# TYPE siltide_host_memory_used_bytes gauge\nsiltide_host_memory_used_bytes %g\n", float64(h.Mem.Used))
 		}
 		if len(h.Nets) > 0 {
 			b.WriteString("# HELP siltide_host_net_rx_bytes_per_second Interface receive rate.\n# TYPE siltide_host_net_rx_bytes_per_second gauge\n")
@@ -287,7 +287,7 @@ func Prometheus(s collect.Snapshot) string {
 			}
 		}
 	}
-	fmt.Fprintf(&b, "# HELP siltide_snapshot_age_seconds Seconds since the last collection.\n# TYPE siltide_snapshot_age_seconds gauge\naccel_snapshot_age_seconds %g\n", time.Since(s.Time).Seconds())
+	fmt.Fprintf(&b, "# HELP siltide_snapshot_age_seconds Seconds since the last collection.\n# TYPE siltide_snapshot_age_seconds gauge\nsiltide_snapshot_age_seconds %g\n", time.Since(s.Time).Seconds())
 	return b.String()
 }
 

@@ -55,3 +55,37 @@ func TestServer(t *testing.T) {
 		t.Fatalf("snapshot %d", code)
 	}
 }
+
+// TestMetricsNamesAreDeclared checks every sample against the HELP and TYPE
+// lines around it. A renamed metric that only half landed shows up here as a
+// sample Prometheus would read as an untyped metric of its own.
+func TestMetricsNamesAreDeclared(t *testing.T) {
+	e := collect.New([]provider.Provider{sim.Provider(2)}, config.Default(), nil, true)
+	e.Detect()
+	snap := e.Collect(context.Background())
+	if snap.Host2 == nil {
+		t.Skip("no host counters on this machine")
+	}
+
+	declared, samples := map[string]bool{}, 0
+	for _, line := range strings.Split(Prometheus(snap), "\n") {
+		switch {
+		case line == "":
+		case strings.HasPrefix(line, "# HELP "), strings.HasPrefix(line, "# TYPE "):
+			declared[strings.Fields(line)[2]] = true
+		default:
+			name, _, _ := strings.Cut(line, " ")
+			name, _, _ = strings.Cut(name, "{")
+			samples++
+			if !declared[name] {
+				t.Errorf("sample %q has no HELP or TYPE above it", name)
+			}
+			if !strings.HasPrefix(name, "siltide_") {
+				t.Errorf("metric %q is not in the siltide namespace", name)
+			}
+		}
+	}
+	if samples == 0 {
+		t.Fatal("no samples in the metrics output")
+	}
+}
