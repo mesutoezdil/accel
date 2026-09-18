@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+# siltide headless collector for Alpine and any other OpenRC system.
+# systemd hosts use deploy/systemd/siltide.service instead.
+
+name="siltide"
+description="siltide accelerator monitor (headless collector with API and /metrics)"
+
+command="/usr/local/bin/siltide"
+command_args="--service --listen ${SILTIDE_LISTEN:-127.0.0.1:9800}"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/${RC_SVCNAME}.log"
+error_log="/var/log/${RC_SVCNAME}.log"
+
+export SILTIDE_STATE_DIR="${SILTIDE_STATE_DIR:-/var/lib/siltide}"
+export SILTIDE_CONFIG="${SILTIDE_CONFIG:-/etc/siltide/config.yaml}"
+
+depend() {
+	need net
+	after firewall
+}
+
+start_pre() {
+	checkpath --directory --mode 0755 "${SILTIDE_STATE_DIR}"
+}
