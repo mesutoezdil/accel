@@ -55,6 +55,12 @@ chmod +x siltide && sudo mv siltide /usr/local/bin/
 # deb or rpm, with completions and the man page
 sudo dpkg -i siltide_*_amd64.deb   # or: sudo rpm -i siltide-*.x86_64.rpm
 
+# One line: picks the build for this machine, checks it against the published
+# checksums, and installs into /usr/local/bin (or ~/.local/bin)
+( f="$(mktemp)" && trap 'rm -f "$f"' EXIT &&
+  curl -fsSL https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh -o "$f" &&
+  sh "$f" )
+
 # Homebrew (macOS and Linux)
 brew install mesutoezdil/tap/siltide
 

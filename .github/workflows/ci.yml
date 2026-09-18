@@ -31,6 +31,9 @@ jobs:
       - run: GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build .
       - run: GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build .
       - run: go run . --demo --once
+      - name: The install script, against a fake release
+        if: runner.os == 'Linux'
+        run: sh packaging/install/test.sh
       - run: go test -run xxx -bench . -benchtime 200ms ./internal/collect/ ./internal/tui/
         if: runner.os == 'Linux'
       # What is reachable from our code, not what merely appears in the module
