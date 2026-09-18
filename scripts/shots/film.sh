@@ -17,7 +17,7 @@ cols="${COLS:-150}"
 rows="${ROWS:-40}"
 scale="${SCALE:-1.5}"
 
-go run ./scripts/shots -film "$dir" -width "$cols" -height "$rows"
+go run ./scripts/shots -film "$dir" -player "${PLAYER:-assets/demo.json}" -width "$cols" -height "$rows"
 
 rm -f "$dir"/frame-*.png
 first=$(ls "$dir"/frame-*.svg | head -1)

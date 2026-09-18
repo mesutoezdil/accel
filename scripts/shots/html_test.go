@@ -1,0 +1,87 @@
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+)
+
+func TestHTMLLines(t *testing.T) {
+	for _, c := range []struct{ in, want string }{
+		{"plain", "plain"},
+		{"a < b & c > d", "a &lt; b &amp; c &gt; d"},
+		{"\x1b[31mred\x1b[0m", `<span style="color:#ff7b72">red</span>`},
+		{"\x1b[1mbold\x1b[0m", `<span style="font-weight:700">bold</span>`},
+		{"\x1b[38;2;18;52;86mtrue\x1b[0m", `<span style="color:#123456">true</span>`},
+		{"\x1b[2mfaint\x1b[0m", `<span style="opacity:.6">faint</span>`},
+		{"", ""},
+		{"\x1b[0m", ""},
+		{"\x1b[7mrev\x1b[0m", `<span style="color:#0d1117;background:#c9d1d9">rev</span>`},
+	} {
+		got := htmlLines(c.in)
+		if len(got) != 1 || got[0] != c.want {
+			t.Errorf("htmlLines(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+
+	// one line per line of the view, blank ones included
+	if got := htmlLines("a\n\nb\n"); len(got) != 3 || got[1] != "" {
+		t.Errorf("htmlLines over three lines gave %q", got)
+	}
+}
+
+func TestWritePlayer(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "demo.json")
+	views := []string{
+		"one\ntwo\nthree",
+		"one\ntwo\nthree", // nothing moved
+		"one\nTWO\nthree", // one line changed
+	}
+	if err := writePlayer(path, views, 40, 3); err != nil {
+		t.Fatal(err)
+	}
+	b, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var r reel
+	if err := json.Unmarshal(b, &r); err != nil {
+		t.Fatal(err)
+	}
+
+	if r.Cols != 40 || r.Rows != 3 {
+		t.Errorf("reel is %dx%d, want 40x3", r.Cols, r.Rows)
+	}
+	if len(r.Frames) != 2 {
+		t.Fatalf("wrote %d frames for three views with one repeat, want 2", len(r.Frames))
+	}
+	if len(r.Frames[0].Lines) != 3 {
+		t.Errorf("the first frame carries %d lines, want all 3 so a loop needs no clearing", len(r.Frames[0].Lines))
+	}
+	if r.Frames[0].Hold != 1 {
+		t.Errorf("the repeated view should hold: hold %d, want 1", r.Frames[0].Hold)
+	}
+	if len(r.Frames[1].Lines) != 1 || r.Frames[1].Lines["1"] != "TWO" {
+		t.Errorf("the second frame should carry only the line that changed: %v", r.Frames[1].Lines)
+	}
+}
+
+func TestWritePlayerPadsShortViews(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "demo.json")
+	if err := writePlayer(path, []string{"just one line"}, 20, 5); err != nil {
+		t.Fatal(err)
+	}
+	b, _ := os.ReadFile(path)
+	var r reel
+	if err := json.Unmarshal(b, &r); err != nil {
+		t.Fatal(err)
+	}
+	if len(r.Frames[0].Lines) != 5 {
+		t.Fatalf("a short view should still fill the %d rows: %v", r.Rows, r.Frames[0].Lines)
+	}
+	if strings.Contains(string(b), "\x1b") {
+		t.Error("an escape sequence reached the page")
+	}
+}

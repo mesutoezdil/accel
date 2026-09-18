@@ -25,7 +25,7 @@ jobs:
       - run: |
           mkdir -p _site/assets
           cp site/index.html _site/index.html
-          cp assets/logo.svg assets/demo.gif _site/assets/
+          cp assets/logo.svg assets/demo.gif assets/demo.json _site/assets/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
