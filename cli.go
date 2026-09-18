@@ -22,6 +22,7 @@ import (
 var flagNames = []string{
 	"config", "interval", "demo", "demo-devices", "once", "json", "vendors", "listen", "service", "remote", "token",
 	"gen-token", "no-history", "retention", "theme", "list-themes", "print-config", "diagnose", "diagnose-offline",
+	"tab", "filter", "node", "namespace", "bookmark",
 	"debug", "log-file", "version", "record", "replay", "status", "export", "completion", "man",
 }
 

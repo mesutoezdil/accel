@@ -63,6 +63,12 @@ type Options struct {
 	// LogFile is siltide's own log, shown by `:log`. Empty means logging is
 	// off, which the view says rather than showing nothing.
 	LogFile string
+	// Open is the view the command line asked for. When it asks for nothing
+	// the interface returns to where it was last closed.
+	Open openView
+	// NoSession leaves the last view unread and unwritten, for a run that
+	// should not disturb it: --replay, --demo, a recording.
+	NoSession bool
 	// Reload re-reads the config file and returns the options it now asks
 	// for, after applying it to the engine. nil disables `:reload`.
 	Reload func() (Options, error)
@@ -79,6 +85,7 @@ type Model struct {
 	reload   func() (Options, error)
 	marks    []Bookmark
 	logFile  string
+	session  bool // remember the view for the next run
 	tab      int
 	prev     int // tab to return to from help
 	sel      int // selected row on the current tab
@@ -137,7 +144,13 @@ func Run(ctx context.Context, eng *collect.Engine, o Options) error {
 	if o.Mouse {
 		opts = append(opts, tea.WithMouseCellMotion())
 	}
-	_, err := tea.NewProgram(m, opts...).Run()
+	final, err := tea.NewProgram(m, opts...).Run()
+	// Where the interface was when it closed, for the next run to open on.
+	// A failure to write it is not worth reporting over whatever ended the
+	// program.
+	if last, ok := final.(Model); ok && last.session {
+		_ = last.saveSession()
+	}
 	return err
 }
 
@@ -147,6 +160,15 @@ func New(eng *collect.Engine, o Options) Model {
 		sortDesc: true, window: 30 * time.Minute, pick: -1}
 	m.apply(o)
 	m.marks = loadBookmarks()
+	m.session = !o.NoSession
+	switch {
+	case !o.Open.Empty():
+		m.openFromFlags(o.Open)
+	case m.session:
+		if s, ok := loadSession(); ok {
+			m.restore(s)
+		}
+	}
 	return m
 }
 
