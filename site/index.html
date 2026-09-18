@@ -158,6 +158,7 @@ footer a:hover{color:var(--text)}
       <a class="link" href="#views" data-en="Views" data-zh="功能">Views</a>
       <a class="link" href="#keys" data-en="Keys" data-zh="快捷键">Keys</a>
       <a class="link" href="#vendors" data-en="Vendors" data-zh="厂商">Vendors</a>
+      <a class="link" href="#numbers" data-en="Numbers" data-zh="数据">Numbers</a>
       <a class="link" href="#name" data-en="Name" data-zh="名字">Name</a>
       <a class="link" href="#install" data-en="Install" data-zh="安装">Install</a>
     </div>
@@ -270,6 +271,32 @@ footer a:hover{color:var(--text)}
       <tr><td>VastAI</td><td>PCI sysfs</td></tr>
     </table>
     </div>
+  </div>
+</section>
+
+<section id="numbers">
+  <div class="wrap">
+    <h2 data-en="What it costs" data-zh="它的开销">What it costs</h2>
+    <p class="lede" data-en="Every figure below was measured on one machine, named under the table, and each says how to measure it again. Nothing here is compared against another tool." data-zh="下面每一个数字都在同一台机器上实测得出，机器配置列在表格下方，每一行也写明了复现的方法。这里没有和任何其他工具做比较。">Every figure below was measured on one machine, named under the table, and each says how to measure it again. Nothing here is compared against another tool.</p>
+    <div class="tablewrap">
+    <table>
+      <tr>
+        <th data-en="Measurement" data-zh="测量项">Measurement</th>
+        <th data-en="Result" data-zh="结果">Result</th>
+        <th data-en="How" data-zh="方法">How</th>
+      </tr>
+      <tr><td data-en="First rendered snapshot, simulated fleet" data-zh="模拟集群，渲染出第一屏">First rendered snapshot, simulated fleet</td><td class="mono">0.03 s</td><td class="mono" data-en="time siltide --demo --once, 20 runs, median" data-zh="time siltide --demo --once，20 次运行取中位数">time siltide --demo --once, 20 runs, median</td></tr>
+      <tr><td data-en="First rendered snapshot, the machine below" data-zh="下述这台机器上，渲染出第一屏">First rendered snapshot, the machine below</td><td class="mono">0.52 s</td><td class="mono" data-en="time siltide --once, 20 runs, median; 0.43 s of it is probing 15 vendors" data-zh="time siltide --once，20 次运行取中位数；其中 0.43 秒用于探测 15 家厂商">time siltide --once, 20 runs, median; 0.43 s of it is probing 15 vendors</td></tr>
+      <tr><td data-en="Memory at rest, the interface" data-zh="界面常驻内存">Memory at rest, the interface</td><td class="mono">19 MB</td><td class="mono" data-en="resident size sampled every 2 s for 24 s, median, 17 devices in view" data-zh="每 2 秒采样一次常驻内存，持续 24 秒取中位数，视图内 17 块设备">resident size sampled every 2 s for 24 s, median, 17 devices in view</td></tr>
+      <tr><td data-en="Memory at rest, the headless collector" data-zh="无界面采集器常驻内存">Memory at rest, the headless collector</td><td class="mono">25 MB</td><td class="mono" data-en="same sampling over 30 s, serving the API and /metrics" data-zh="同样的采样方式持续 30 秒，同时提供 API 和 /metrics">same sampling over 30 s, serving the API and /metrics</td></tr>
+      <tr><td data-en="One keystroke in the filter" data-zh="筛选栏里敲一个键">One keystroke in the filter</td><td class="mono">11 µs</td><td class="mono" data-en="go test -bench Filter -count=5, mean; parses the query and matches every device and process in view" data-zh="go test -bench Filter -count=5 取均值；解析查询并匹配视图内每块设备和每个进程">go test -bench Filter -count=5, mean; parses the query and matches every device and process in view</td></tr>
+      <tr><td data-en="Redrawing the Overview" data-zh="重绘 Overview 标签页">Redrawing the Overview</td><td class="mono">0.38 ms</td><td class="mono" data-en="go test -bench Render -count=5, mean, 200 by 60 cells" data-zh="go test -bench Render -count=5 取均值，200x60 字符">go test -bench Render -count=5, mean, 200 by 60 cells</td></tr>
+      <tr><td data-en="Redrawing the Dashboard" data-zh="重绘 Dashboard 标签页">Redrawing the Dashboard</td><td class="mono">0.51 ms</td><td class="mono" data-en="go test -bench RenderDashboard -count=5, mean" data-zh="go test -bench RenderDashboard -count=5 取均值">go test -bench RenderDashboard -count=5, mean</td></tr>
+      <tr><td data-en="One collection pass, 64 devices" data-zh="一次采集，64 块设备">One collection pass, 64 devices</td><td class="mono">0.60 ms</td><td class="mono" data-en="go test -bench Collect/64 -count=5, mean, excluding what the vendor tool costs" data-zh="go test -bench Collect/64 -count=5 取均值，不含厂商工具本身的开销">go test -bench Collect/64 -count=5, mean, excluding what the vendor tool costs</td></tr>
+      <tr><td data-en="Writing one history point" data-zh="写入一个历史数据点">Writing one history point</td><td class="mono">7.5 µs</td><td class="mono" data-en="go test -bench Record -count=5, mean" data-zh="go test -bench Record -count=5 取均值">go test -bench Record -count=5, mean</td></tr>
+    </table>
+    </div>
+    <p data-en="Measured on an Apple M5 with 10 cores and 24 GB, macOS 26.6.2, Go 1.26.5, siltide v0.0.37-main.1-4-g16fd798. The interface figures use the simulated fleet of 17 devices; the hardware figure is this machine and its single Apple GPU, where one vendor probe takes most of the startup. A Linux host with eight NVIDIA cards will not reproduce these numbers, and the startup figure in particular moves with how many vendors are present. Run make bench for the last four rows." data-zh="测量环境：Apple M5，10 核，24 GB 内存，macOS 26.6.2，Go 1.26.5，siltide v0.0.37-main.1-4-g16fd798。界面相关数字使用 17 块设备的模拟集群；硬件相关数字来自这台机器上唯一的一块 Apple GPU，启动耗时的大部分花在一次厂商探测上。装有 8 块 NVIDIA 显卡的 Linux 主机不会复现这些数字，启动耗时尤其会随在场厂商的数量变化。表格最后四行可用 make bench 复现。" style="color:var(--dim);font-size:.88rem;margin-top:1.2rem">Measured on an Apple M5 with 10 cores and 24 GB, macOS 26.6.2, Go 1.26.5, siltide v0.0.37-main.1-4-g16fd798. The interface figures use the simulated fleet of 17 devices; the hardware figure is this machine and its single Apple GPU, where one vendor probe takes most of the startup. A Linux host with eight NVIDIA cards will not reproduce these numbers, and the startup figure in particular moves with how many vendors are present. Run make bench for the last four rows.</p>
   </div>
 </section>
 
