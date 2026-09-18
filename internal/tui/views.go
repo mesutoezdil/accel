@@ -899,7 +899,7 @@ func (m *Model) viewEvents() string {
 		b.WriteString(trunc(m.eventLine(a, true), m.width) + "\n")
 	}
 	evs := m.eventRows()
-	b.WriteString("\n" + th.bold.Render("Events") + th.dim.Render(fmt.Sprintf(" %d, newest first · filter with sev:critical kind:xid dev:3", len(evs))) + "\n")
+	b.WriteString("\n" + th.bold.Render("Events") + th.dim.Render(fmt.Sprintf(" %d, newest first · filter with sev:critical kind:xid dev:3 !sev:info", len(evs))) + "\n")
 	var rows [][]string
 	for _, e := range evs {
 		sev := string(e.Severity)
@@ -928,7 +928,7 @@ func (m Model) viewHelp() string {
 		{ActUp, "select previous row"}, {ActDown, "select next row"}, {ActPageUp, "up 10 rows"}, {ActPageDown, "down 10 rows"},
 		{ActEnter, "open the selected row (device detail, pod describe)"}, {ActBack, "clear filters, then back to the overview"},
 		{ActNextTab, "next tab"}, {ActPrevTab, "previous tab"}, {ActPause, "pause updates"}, {ActRefresh, "collect now"},
-		{ActSearch, "filter: words, dev:3 user:alice ns:ml sev:critical kind:xid"}, {ActCommand, "command bar (Tab completes)"},
+		{ActSearch, "filter: words, dev:3 user:alice ns:ml, util>80 temp>=70, ! negates"}, {ActCommand, "command bar (Tab completes)"},
 		{ActSortNext, "sort by the next column"}, {ActSortRev, "reverse the sort"},
 		{ActHistBack, "history: one step back"}, {ActHistFwd, "history: one step forward"}, {ActHistJump, "history: 30 steps"},
 		{ActHistLive, "history: back to now"}, {ActMetric, "history: next metric"}, {ActZoomIn, "history: narrower window"}, {ActZoomOut, "history: wider window"},
