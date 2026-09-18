@@ -223,3 +223,36 @@ func TestSelectedRowKeepsItsHighlight(t *testing.T) {
 		t.Errorf("the highlight should run to the end of the row: %q", plain(line))
 	}
 }
+
+// TestTruncClosesWhatItCuts covers a styled string cut short. The closing
+// escape sits at the end, so cutting from the end removes it and the colour
+// runs on into the next thing drawn.
+func TestTruncClosesWhatItCuts(t *testing.T) {
+	inColor(t)
+	th := NewTheme("default", nil)
+	styled := th.ok.Render("a long green string that will not fit")
+	for _, w := range []int{4, 10, 20} {
+		got := trunc(styled, w)
+		if !strings.HasSuffix(got, reset) {
+			t.Errorf("trunc(styled, %d) leaves the colour open: %q", w, got)
+		}
+		if n := width(got); n > w {
+			t.Errorf("trunc(styled, %d) is %d wide", w, n)
+		}
+	}
+	if got := trunc("plain text here", 6); strings.Contains(got, "\x1b") {
+		t.Errorf("an unstyled string should stay unstyled: %q", got)
+	}
+}
+
+// TestSelectionReadsAsOneBar keeps every theme on a selection colour of its
+// own: without one the row is drawn in reverse video, which turns the bars
+// on it into blocks of solid colour instead of a highlight.
+func TestSelectionReadsAsOneBar(t *testing.T) {
+	for _, name := range ThemeNames() {
+		p := palettes[name]
+		if p["selection_bg"] == "" {
+			t.Errorf("theme %s sets no selection_bg, so its selected row inverts", name)
+		}
+	}
+}
