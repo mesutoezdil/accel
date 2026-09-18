@@ -1,31 +1,39 @@
 /* siltide.  One stylesheet for every page on the site.
 
-   The look comes from the thing it documents: a warm dark terminal, one hot
-   accent and one cold one, because the two numbers this tool draws most are
-   load and temperature. Headings and data stay monospaced, which is the
-   product's own voice; running prose does not, because paragraphs set in a
-   terminal face are slower to read than they are handsome. */
+   The colours are the interface's own. Dark mode is the default theme's
+   background and its blue; light mode is the paper theme, down to the hex.
+   The page and the terminal in it are then the same surface, and a change to
+   one has an obvious answer in the other.
+
+   Headings, tables and code are monospaced. Running prose is not: paragraphs
+   set in a terminal face are slower to read. */
 :root{
-  --bg:#0b0a09; --bg2:#131010; --panel:#161310; --panel2:#1d1915; --border:#332c24;
-  --text:#ece6db; --dim:#9c9186; --dimmer:#5c5349;
-  --accent:#ff8a3d; --accent2:#ffb35c; --cool:#5ad1e6; --nav-bg:rgba(11,10,9,.72);
-  --grid-line:rgba(236,230,219,.05); --frame-shadow:0 40px 90px -40px rgba(0,0,0,.85);
-  --divider:rgba(236,230,219,.1);
-  --card:linear-gradient(160deg, rgba(236,230,219,.045), rgba(236,230,219,.012));
-  --card-hover:linear-gradient(160deg, rgba(255,138,61,.1), rgba(236,230,219,.02));
-  --glow:radial-gradient(60% 60% at 50% 0%, rgba(255,138,61,.16), transparent 70%);
+  --bg:#0d1117; --bg2:#12171f; --panel:#161b22; --panel2:#1b212a; --border:#2a313b;
+  --text:#e6edf3; --dim:#8b949e; --dimmer:#586069;
+  --accent:#58a6ff; --accent2:#79c0ff; --cool:#3fb950; --on-accent:#08131f;
+  --accent-soft:rgba(88,166,255,.1); --accent-line:rgba(88,166,255,.32);
+  --accent-wash:rgba(88,166,255,.05); --cool-line:rgba(63,185,80,.45);
+  --nav-bg:rgba(13,17,23,.72);
+  --grid-line:rgba(230,237,243,.045); --frame-shadow:0 40px 90px -40px rgba(0,0,0,.85);
+  --divider:rgba(230,237,243,.1);
+  --card:linear-gradient(160deg, rgba(230,237,243,.045), rgba(230,237,243,.012));
+  --card-hover:linear-gradient(160deg, rgba(88,166,255,.09), rgba(230,237,243,.02));
+  --glow:radial-gradient(60% 60% at 50% 0%, rgba(88,166,255,.14), transparent 70%);
   --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 html[data-mode="light"]{
-  --bg:#f7f4ef; --bg2:#efe9e0; --panel:#ffffff; --panel2:#efe9df; --border:#ddd3c4;
-  --text:#241f19; --dim:#6b6156; --dimmer:#a89c8c;
-  --accent2:#d9650f; --cool:#0d7f93; --nav-bg:rgba(247,244,239,.78);
-  --grid-line:rgba(36,31,25,.06); --frame-shadow:0 26px 60px -30px rgba(36,31,25,.28);
-  --divider:rgba(36,31,25,.12);
-  --card:linear-gradient(160deg, rgba(36,31,25,.04), rgba(36,31,25,.01));
-  --card-hover:linear-gradient(160deg, rgba(217,101,15,.09), rgba(36,31,25,.02));
-  --glow:radial-gradient(60% 60% at 50% 0%, rgba(217,101,15,.1), transparent 70%);
+  --bg:#f7f5ef; --bg2:#edeae0; --panel:#ffffff; --panel2:#e9e5db; --border:#c9c6bc;
+  --text:#2b2b2b; --dim:#6b6b62; --dimmer:#9a978c;
+  --accent:#0b5cad; --accent2:#0b5cad; --cool:#2a7d2a; --on-accent:#ffffff;
+  --accent-soft:rgba(11,92,173,.08); --accent-line:rgba(11,92,173,.3);
+  --accent-wash:rgba(11,92,173,.045); --cool-line:rgba(42,125,42,.45);
+  --nav-bg:rgba(247,245,239,.8);
+  --grid-line:rgba(43,43,43,.06); --frame-shadow:0 26px 60px -30px rgba(43,43,43,.28);
+  --divider:rgba(43,43,43,.12);
+  --card:linear-gradient(160deg, rgba(43,43,43,.04), rgba(43,43,43,.01));
+  --card-hover:linear-gradient(160deg, rgba(11,92,173,.07), rgba(43,43,43,.02));
+  --glow:radial-gradient(60% 60% at 50% 0%, rgba(11,92,173,.09), transparent 70%);
 }
 *{box-sizing:border-box}
 html{background:var(--bg);scroll-behavior:smooth}
@@ -64,6 +72,7 @@ h2{font-size:clamp(1.5rem,4vw,2.9rem);margin:0 0 .35em}
 h3{font-size:1.06rem;letter-spacing:-.01em}
 p{margin:0 0 1rem}
 .lede{color:var(--dim);margin:0 0 1.7rem;font-size:1.06rem;max-width:64ch}
+h1+.lede,h2+.lede{margin-top:.75rem}
 .note{color:var(--dim);font-size:.9rem;max-width:74ch}
 
 /* An eyebrow numbers the sections, which gives a long page a spine to
@@ -82,7 +91,7 @@ section+section:not(.band){border-top:1px solid var(--divider)}
 .band+section{border-top:none}
 
 .skip-link{position:absolute;left:8px;top:calc(-48px - env(safe-area-inset-top,0px));z-index:100;
-  background:var(--accent);color:#1c0d02;font-family:var(--mono);font-weight:700;font-size:.85rem;
+  background:var(--accent);color:var(--on-accent);font-family:var(--mono);font-weight:700;font-size:.85rem;
   text-decoration:none;padding:8px 14px;border-radius:6px;transition:top .15s ease}
 .skip-link:focus{top:calc(8px + env(safe-area-inset-top,0px))}
 
@@ -115,7 +124,7 @@ nav a.link:hover{color:var(--text)}
 .hero .cores i{flex:1;min-width:2px;height:100%;border-radius:0 0 3px 3px;font-style:normal;
   background:linear-gradient(to bottom, var(--accent), transparent 82%);
   transform-origin:top;animation:gpuPulse 4s ease-in-out infinite}
-.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#8a3d0f,transparent 82%)}
+.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#1f6feb,transparent 82%)}
 .hero .cores i:nth-child(5n){background:linear-gradient(to bottom,var(--accent2),transparent 82%)}
 .hero .cores i:nth-child(8n){background:linear-gradient(to bottom,var(--cool),transparent 82%)}
 .hero .cores i:nth-child(2n){animation-duration:5.5s;animation-delay:-1.3s}
@@ -125,21 +134,21 @@ nav a.link:hover{color:var(--text)}
 .hero .cores i:nth-child(11n){animation-duration:7.1s;animation-delay:-4.8s}
 @keyframes gpuPulse{0%,100%{transform:scaleY(.1)}50%{transform:scaleY(1)}}
 .hero h1{margin:0 0 .35em;max-width:17ch}
-.hero h1 .accent{background:linear-gradient(100deg,var(--accent) 10%,var(--accent2) 55%,var(--cool) 130%);
+.hero h1 .accent{background:linear-gradient(100deg,var(--accent) 5%,var(--accent2) 60%,var(--cool) 135%);
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .hero .lede{font-size:clamp(1rem,1.6vw,1.16rem);max-width:60ch;margin-bottom:1.8rem}
 .tagline{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.78rem;
   letter-spacing:.06em;color:var(--dim);border:1px solid var(--border);background:var(--panel);
   border-radius:999px;padding:5px 14px;margin:0 0 22px}
-.tagline .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none;
-  box-shadow:0 0 0 0 rgba(255,138,61,.6);animation:ping 2.6s ease-out infinite}
-@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,138,61,.55)}70%,100%{box-shadow:0 0 0 9px rgba(255,138,61,0)}}
+.tagline .dot{width:7px;height:7px;border-radius:50%;background:var(--cool);flex:none;
+  box-shadow:0 0 0 0 var(--cool-line);animation:ping 2.6s ease-out infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 var(--cool-line)}70%,100%{box-shadow:0 0 0 9px transparent}}
 .cta{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 20px}
 .btn{font-family:var(--mono);font-size:.92rem;padding:11px 20px;border-radius:9px;text-decoration:none;
   border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px;
   transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
 .btn:hover{transform:translateY(-2px)}
-.btn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#1c0d02;
+.btn.primary{background:var(--accent);color:var(--on-accent);
   border-color:transparent;font-weight:700;box-shadow:0 10px 30px -14px var(--accent)}
 .btn.primary:hover{box-shadow:0 16px 34px -14px var(--accent)}
 .btn.ghost{color:var(--text);background:var(--panel)}
@@ -195,8 +204,8 @@ nav a.link:hover{color:var(--text)}
 .card .q{font-family:var(--mono);color:var(--text);font-weight:700;margin:0 0 10px;font-size:1rem;
   letter-spacing:-.015em;line-height:1.35}
 .card .tab{display:inline-block;align-self:flex-start;font-family:var(--mono);font-size:.72rem;
-  letter-spacing:.06em;color:var(--accent);background:rgba(255,138,61,.1);
-  border:1px solid rgba(255,138,61,.3);border-radius:999px;padding:3px 10px;margin-bottom:12px}
+  letter-spacing:.06em;color:var(--accent);background:var(--accent-soft);
+  border:1px solid var(--accent-line);border-radius:999px;padding:3px 10px;margin-bottom:12px}
 .card p{margin:0;color:var(--dim);font-size:.93rem}
 
 /* A dense wall of short labels: the tab list and anything else that is a set
@@ -217,7 +226,7 @@ nav a.link:hover{color:var(--text)}
 .chip{font-family:var(--mono);font-size:.86rem;white-space:nowrap;color:var(--text);
   background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:7px 16px}
 .chip em{font-style:normal;color:var(--dim)}
-.chip.real{border-color:rgba(90,209,230,.45);color:var(--text)}
+.chip.real{border-color:var(--cool-line);color:var(--text)}
 .chip.real::before{content:"●";color:var(--cool);margin-right:7px;font-size:.7em;vertical-align:middle}
 
 /* The measured numbers, as a wall rather than a table. */
@@ -247,7 +256,7 @@ th,td{text-align:left;padding:10px;border-bottom:1px solid var(--border)}
 th:first-child,td:first-child{padding-left:0}
 th:last-child,td:last-child{padding-right:0}
 th{color:var(--dim);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em}
-tbody tr:hover td,table tr:hover td{background:rgba(255,138,61,.04)}
+tbody tr:hover td,table tr:hover td{background:var(--accent-wash)}
 .tablewrap{overflow-x:auto}
 
 /* Install */
@@ -257,7 +266,7 @@ tbody tr:hover td,table tr:hover td{background:rgba(255,138,61,.04)}
 .install .tabbtn{font-family:var(--mono);font-size:.82rem;background:var(--panel);border:1px solid var(--border);
   color:var(--dim);border-radius:8px;padding:7px 14px;cursor:pointer;transition:color .15s ease,border-color .15s ease}
 .install .tabbtn:hover{color:var(--text)}
-.install .tabbtn.active{color:var(--text);border-color:var(--accent);background:rgba(255,138,61,.08)}
+.install .tabbtn.active{color:var(--text);border-color:var(--accent);background:var(--accent-soft)}
 .copy{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:.75rem;background:var(--panel);
   border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 9px;cursor:pointer}
 .copy:hover{color:var(--text);border-color:var(--dimmer)}

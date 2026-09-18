@@ -17,7 +17,7 @@ func TestHTMLLines(t *testing.T) {
 		{"\x1b[31mred\x1b[0m", `<span style="color:#ff7b72">red</span>`},
 		{"\x1b[1mbold\x1b[0m", `<span style="font-weight:700">bold</span>`},
 		{"\x1b[38;2;18;52;86mtrue\x1b[0m", `<span style="color:#123456">true</span>`},
-		{"\x1b[2mfaint\x1b[0m", `<span style="opacity:.6">faint</span>`},
+		{"\x1b[2mfaint\x1b[0m", `<span style="opacity:.7">faint</span>`},
 		{"", ""},
 		{"\x1b[0m", ""},
 		{"\x1b[7mrev\x1b[0m", `<span style="color:#0d1117;background:#c9d1d9">rev</span>`},
@@ -98,5 +98,34 @@ func TestHTMLLinesReverseTakesTheTerminalsOwnBackground(t *testing.T) {
 	}
 	if strings.Contains(got[0], defaultBG) {
 		t.Fatalf("reversed cell fell back to the dark page background: %q", got[0])
+	}
+}
+
+// Faint has to mean something different on paper: there the dim colour is
+// already close to the background, and a dark terminal's fade leaves the text
+// under three to one against the page.
+func TestFaintFadesLessOnALightTerminal(t *testing.T) {
+	dark := htmlLines("\x1b[2mdim\x1b[0m", defaultFg, defaultBG)
+	light := htmlLines("\x1b[2mdim\x1b[0m", "#2b2b2b", "#f7f5ef")
+	if !strings.Contains(dark[0], "opacity:.7") {
+		t.Fatalf("dark: %q", dark[0])
+	}
+	if !strings.Contains(light[0], "opacity:.86") {
+		t.Fatalf("light: %q", light[0])
+	}
+}
+
+// A cell with no colour of its own takes the terminal's, whatever that is.
+// The renderer used to answer #c9d1d9 for every such cell, which is the dark
+// theme's grey: on a paper capture it put the ordinary text of the interface
+// in near-white on cream, and the page carrying it was unreadable.
+func TestPlainTextTakesTheTerminalsForeground(t *testing.T) {
+	const paperBG, paperFG = "#f7f5ef", "#2b2b2b"
+	got := htmlLines("\x1b[38;2;11;92;173msiltide\x1b[0m  h100-node-07", paperFG, paperBG)
+	if strings.Contains(got[0], defaultFg) {
+		t.Fatalf("a dark grey reached a paper capture: %q", got[0])
+	}
+	if strings.Contains(got[0], "<span") && strings.Count(got[0], "<span") != 1 {
+		t.Fatalf("plain text should carry no colour of its own: %q", got[0])
 	}
 }

@@ -10,9 +10,8 @@ Every release and every push to `main` (pre-release `vX.Y.Z-main.N`) publishes b
 curl -fsSLO https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh
 sh install.sh
 
-# By hand, if you would rather see every step. The first two lines work out
-# the build for THIS machine: siltide-linux-amd64 on an Apple laptop gives
-# "exec format error", which is the machine telling you it is not its binary.
+# By hand, every step. The first two lines work out the build for this
+# machine: siltide-linux-amd64 on an Apple laptop gives "exec format error".
 os=$(uname -s | tr '[:upper:]' '[:lower:]')                 # linux or darwin
 arch=$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')  # amd64 or arm64
 tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
@@ -54,9 +53,8 @@ What siltide costs to run, and the scripts that measure it, are in [docs/PERFORM
 Every release publishes `checksums.txt` beside the binaries, and the install
 script checks the download against it before writing anything.
 
-By hand, whole, into an empty directory. Each block here stands on its own:
-one that reads a file an earlier block downloaded is a block that fails for
-whoever copies only that one.
+To do it by hand, paste the whole block into an empty directory. Each block
+on this page is self-contained, so copying only one of them still works.
 
 ```sh
 os=$(uname -s | tr '[:upper:]' '[:lower:]')

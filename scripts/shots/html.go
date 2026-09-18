@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+	"strconv"
 	"strings"
 )
 
@@ -55,6 +57,9 @@ func (s style) css(defFg, defBg string) string {
 	fg, bg := s.fg, s.bg
 	if s.reverse {
 		fg, bg = defBg, s.fg
+		if bg == "" {
+			bg = defFg // a cell with no colour of its own reverses to the terminal's
+		}
 		if s.bg != "" {
 			fg = s.bg
 		}
@@ -70,7 +75,7 @@ func (s style) css(defFg, defBg string) string {
 		a = append(a, "font-weight:700")
 	}
 	if s.faint {
-		a = append(a, "opacity:.6")
+		a = append(a, "opacity:"+faintOn(defBg))
 	}
 	if s.italic {
 		a = append(a, "font-style:italic")
@@ -79,6 +84,39 @@ func (s style) css(defFg, defBg string) string {
 		a = append(a, "text-decoration:underline")
 	}
 	return strings.Join(a, ";")
+}
+
+// faintOn is how far a faint cell fades, which cannot be one number. On a
+// dark terminal the dim colour is far from the background and .6 still reads;
+// on paper it is already close to it, and the same fade puts the text under
+// three to one against the page. Light backgrounds fade less.
+func faintOn(bg string) string {
+	if luminance(bg) > 0.5 {
+		return ".86"
+	}
+	return ".7"
+}
+
+// luminance is the relative luminance of #rrggbb, 0 for black and 1 for white.
+func luminance(hex string) float64 {
+	if len(hex) != 7 || hex[0] != '#' {
+		return 0
+	}
+	var l float64
+	for i, w := range [3]float64{0.2126, 0.7152, 0.0722} {
+		n, err := strconv.ParseUint(hex[1+i*2:3+i*2], 16, 8)
+		if err != nil {
+			return 0
+		}
+		c := float64(n) / 255
+		if c <= 0.04045 {
+			c /= 12.92
+		} else {
+			c = math.Pow((c+0.055)/1.055, 2.4)
+		}
+		l += w * c
+	}
+	return l
 }
 
 var htmlEscapes = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")

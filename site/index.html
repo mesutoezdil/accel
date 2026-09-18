@@ -7,7 +7,7 @@
 <meta name="description" content="siltide finds every accelerator in the machine: fifteen vendors, one terminal, and a rewindable history of what each device was doing.">
 <link rel="canonical" href="https://mesutoezdil.github.io/siltide/">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="theme-color" content="#0b0a09">
+<meta name="theme-color" content="#0d1117">
 <meta name="color-scheme" content="dark light">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="siltide">
@@ -72,7 +72,7 @@
   <div class="wrap">
     <p class="tagline"><span class="dot"></span><span data-en="Open source · Apache-2.0 · one static binary" data-zh="开源 · Apache-2.0 · 单个静态二进制文件">Open source · Apache-2.0 · one static binary</span></p>
     <h1><span class="accent">siltide</span> <span data-en="finds every accelerator in the machine." data-zh="能找到机器里的每一块加速卡。">finds every accelerator in the machine.</span></h1>
-    <p class="lede" data-en="Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago." data-zh="目前支持十五家厂商：GPU、NPU、苹果自研芯片，以及机架里能叫得上名字的其他加速器。它会显示谁在用每一块设备、温度多高，还有十分钟前发生了什么。">Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago.</p>
+    <p class="lede" data-en="Fifteen vendors: NVIDIA, AMD, Intel, Apple silicon, Huawei Ascend, AWS Neuron and nine more. It shows which process holds each device, how hot it runs, and what it was doing ten minutes ago." data-zh="支持十五家厂商：NVIDIA、AMD、Intel、苹果自研芯片、华为昇腾、AWS Neuron，以及另外九家。它会显示每块设备被哪个进程占用、温度多高，以及十分钟前在做什么。">Fifteen vendors: NVIDIA, AMD, Intel, Apple silicon, Huawei Ascend, AWS Neuron and nine more. It shows which process holds each device, how hot it runs, and what it was doing ten minutes ago.</p>
     <div class="cta">
       <a class="btn primary" href="#install" data-en="Install →" data-zh="安装 →">Install →</a>
       <a class="btn ghost" href="https://github.com/mesutoezdil/siltide" data-en="View source ↗" data-zh="查看源码 ↗">View source ↗</a>
@@ -98,7 +98,7 @@
   <div class="wrap">
     <p class="eyebrow"><b>01</b> <span data-en="Why" data-zh="为什么">Why</span></p>
     <h2 data-en="Why siltide" data-zh="为什么选择 siltide">Why siltide</h2>
-    <p class="lede" data-en="These are the questions that come up when a job is slow, a device sits idle, or a bill looks wrong. Each one points at a tab." data-zh="这些是任务变慢、设备闲置或账单不对劲时会问的问题，每一个都对应一个标签页。">These are the questions that come up when a job is slow, a device sits idle, or a bill looks wrong. Each one points at a tab.</p>
+    <p class="lede" data-en="Six questions that come up when a job is slow or a device sits idle. Each one names the tab that answers it." data-zh="任务变慢或设备闲置时会问到的六个问题。每一个都标出了回答它的标签页。">Six questions that come up when a job is slow or a device sits idle. Each one names the tab that answers it.</p>
     <div class="bento">
       <div class="card"><span class="tab">Overview</span><p class="q" data-en="Which device is idle while a pod still holds it?" data-zh="哪块设备处于闲置状态，却仍被某个 Pod 占用？">Which device is idle while a pod still holds it?</p><p data-en="Fleet totals and per-device state land on one screen. Idle-allocated devices get flagged there too." data-zh="集群汇总和每块设备的状态都在同一屏幕上，闲置却仍被占用的设备也会在这里标出来。">Fleet totals and per-device state land on one screen. Idle-allocated devices get flagged there too.</p></div>
       <div class="card"><span class="tab">Workloads</span><p class="q" data-en="Which workload is wasting spend?" data-zh="哪个工作负载在浪费开销？">Which workload is wasting spend?</p><p data-en="Set your own price per hour, and siltide turns held devices into a spend and waste figure per workload." data-zh="设置好每小时的价格，siltide 就能把占用的设备换算成每个工作负载的花费和浪费金额。">Set your own price per hour, and siltide turns held devices into a spend and waste figure per workload.</p></div>
@@ -114,7 +114,7 @@
   <div class="wrap">
     <p class="eyebrow"><b>02</b> <span data-en="The interface" data-zh="界面">The interface</span></p>
     <h2 data-en="16 tabs" data-zh="16 个标签页">16 tabs</h2>
-    <p class="lede" data-en="A tab hides itself when it has nothing to show: Links without link data, Kubernetes without a pod source." data-zh="标签页没有内容可显示时会自动隐藏：比如没有链路数据就不显示 Links，没有 Pod 来源就不显示 Kubernetes。">A tab hides itself when it has nothing to show: Links without link data, Kubernetes without a pod source.</p>
+    <p class="lede" data-en="Tabs with no data are hidden. Links needs link data, Kubernetes needs a pod source." data-zh="没有数据的标签页会隐藏。Links 需要链路数据，Kubernetes 需要 Pod 来源。">Tabs with no data are hidden. Links needs link data, Kubernetes needs a pod source.</p>
     <div class="tabgrid">
       <div class="tabcell"><b>Overview</b><span data-en="Fleet summary, top processes, alerts" data-zh="集群概览、占用最高的进程、告警">Fleet summary, top processes, alerts</span></div>
       <div class="tabcell"><b>Devices</b><span data-en="Table plus a full detail pane" data-zh="设备表格加完整详情面板">Table plus a full detail pane</span></div>
@@ -197,7 +197,7 @@
   <div class="wrap">
     <p class="eyebrow"><b>05</b> <span data-en="Measured" data-zh="实测">Measured</span></p>
     <h2 data-en="What it costs" data-zh="它的开销">What it costs</h2>
-    <p class="lede" data-en="Every figure below was measured on one machine, named under the table, and each says how to measure it again. Nothing here is compared against another tool." data-zh="下面每一个数字都在同一台机器上实测得出，机器配置列在表格下方，每一行也写明了复现的方法。这里没有和任何其他工具做比较。">Every figure below was measured on one machine, named under the table, and each says how to measure it again. Nothing here is compared against another tool.</p>
+    <p class="lede" data-en="Measured on one machine, named below the table. Each row says how to repeat it. No comparison against other tools." data-zh="在同一台机器上实测，机器配置列在表格下方。每一行都写明了复现方法。没有和其他工具做比较。">Measured on one machine, named below the table. Each row says how to repeat it. No comparison against other tools.</p>
     <div class="statwall">
       <div class="stat"><span class="v">0.03<small>s</small></span><span class="k" data-en="to the first rendered snapshot" data-zh="渲染出第一屏所需时间">to the first rendered snapshot</span></div>
       <div class="stat"><span class="v">19<small>MB</small></span><span class="k" data-en="resident, with 17 devices in view" data-zh="视图内 17 块设备时的常驻内存">resident, with 17 devices in view</span></div>
@@ -233,7 +233,7 @@
   <div class="wrap">
     <p class="eyebrow"><b>06</b> <span data-en="The name" data-zh="名字">The name</span></p>
     <h2 data-en="The name" data-zh="名字的由来">The name</h2>
-    <p class="lede" data-en="The name is silicon and tide: the rise and fall of load across a room full of silicon, which is what the interface spends its time drawing. The name says nothing about a vendor on purpose. No GPU, no CUDA, no NPU: 15 accelerator families are read the same way here, and a tool that reads all of them should not sound like it belongs to one." data-zh="这个名字由 silicon（硅）和 tide（潮汐）组成：一屋子芯片上负载的涨落，也正是这个界面大部分时间在画的东西。这个名字刻意不带任何厂商色彩——没有 GPU，没有 CUDA，也没有 NPU。这里用同一套方式读取 15 种加速器，能读遍它们的工具不该听起来只属于其中一家。">The name is silicon and tide: the rise and fall of load across a room full of silicon, which is what the interface spends its time drawing. The name says nothing about a vendor on purpose. No GPU, no CUDA, no NPU: 15 accelerator families are read the same way here, and a tool that reads all of them should not sound like it belongs to one.</p>
+    <p class="lede" data-en="Silicon and tide: the rise and fall of load across a room full of silicon. There is no vendor in the name on purpose. No GPU, no CUDA, no NPU. Fifteen accelerator families are read the same way here, and the name should not pick one of them." data-zh="silicon（硅）加 tide（潮汐）：一屋子芯片上负载的涨落。名字里刻意不带厂商：没有 GPU，没有 CUDA，也没有 NPU。这里用同一套方式读取十五种加速器，名字不该偏向其中任何一家。">Silicon and tide: the rise and fall of load across a room full of silicon. There is no vendor in the name on purpose. No GPU, no CUDA, no NPU. Fifteen accelerator families are read the same way here, and the name should not pick one of them.</p>
   </div>
 </section>
 
@@ -274,8 +274,8 @@ sh install.sh</code></pre>
 
 <section class="cta-section">
   <div class="wrap" style="text-align:center">
-    <h2 data-en="Open, and still moving" data-zh="开源，还在持续推进">Open, and still moving</h2>
-    <p class="lede" style="margin-inline:auto" data-en="Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it." data-zh="这里的每一处改动都从一个 issue 开始，以一个可读的 pull request 结束。少了哪个厂商、哪个数字不对、哪里用起来别扭，都值得报告，哪怕你不是来修它的人。">Every change here starts as an issue and ends as a pull request someone can read. A missing vendor, a wrong number, or a rough edge is worth reporting even when you are not the one fixing it.</p>
+    <h2 data-en="Contributing" data-zh="参与贡献">Contributing</h2>
+    <p class="lede" style="margin-inline:auto" data-en="Issues and pull requests are welcome. A missing vendor, a wrong number or a rough edge is worth reporting, whether or not you fix it yourself." data-zh="欢迎提 issue 和 pull request。少了哪个厂商、哪个数字不对、哪里用起来别扭，都值得报告，不管你是不是自己动手修。">Issues and pull requests are welcome. A missing vendor, a wrong number or a rough edge is worth reporting, whether or not you fix it yourself.</p>
     <a class="btn primary" href="https://github.com/mesutoezdil/siltide" data-en="Star on GitHub →" data-zh="去 GitHub 点个 Star →">Star on GitHub →</a>
   </div>
 </section>
