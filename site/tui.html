@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>siltide in the terminal</title>
+<meta name="description" content="One static binary, no daemon and no agent: siltide runs in the terminal, over SSH, on the machine the accelerators are actually in.">
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="gpu-bg"><div class="grid-lines"></div></div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html#top"><img src="assets/logo.svg" alt=""> siltide</a>
+    <div class="nav-sections">
+      <a class="link" href="tui.html" data-en="Terminal" data-zh="终端">Terminal</a>
+      <a class="link" href="index.html#why" data-en="Why" data-zh="为什么">Why</a>
+      <a class="link" href="index.html#views" data-en="Views" data-zh="功能">Views</a>
+      <a class="link" href="index.html#keys" data-en="Keys" data-zh="快捷键">Keys</a>
+      <a class="link" href="index.html#vendors" data-en="Vendors" data-zh="厂商">Vendors</a>
+      <a class="link" href="index.html#numbers" data-en="Numbers" data-zh="数据">Numbers</a>
+      <a class="link" href="index.html#name" data-en="Name" data-zh="名字">Name</a>
+      <a class="link" href="index.html#install" data-en="Install" data-zh="安装">Install</a>
+    </div>
+    <div class="nav-right">
+      <a class="link" href="https://github.com/mesutoezdil/siltide">GitHub ↗</a>
+      <button class="lang-btn" id="lang-toggle" title="切换语言 / switch language" type="button">中文</button>
+      <button class="mode-btn" id="mode-toggle" title="switch color mode" type="button">light</button>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+<section class="hero">
+  <div class="wrap">
+    <h1><span data-en="One binary." data-zh="一个二进制文件。">One binary.</span> <span class="accent" data-en="No daemon." data-zh="没有守护进程。">No daemon.</span></h1>
+    <p class="lede" data-en="siltide is a terminal program. It reads the devices in the machine it runs on, draws them, and exits when you press q. There is nothing to install beside it, nothing listening unless you ask for it, and nothing to clean up afterwards." data-zh="siltide 是一个终端程序。它读取所在机器上的设备，把它们画出来，按 q 就退出。旁边不需要再装别的东西，除非你要求，否则不会有任何监听端口，用完也没有什么需要清理。">siltide is a terminal program. It reads the devices in the machine it runs on, draws them, and exits when you press q. There is nothing to install beside it, nothing listening unless you ask for it, and nothing to clean up afterwards.</p>
+    <div class="cta">
+      <a class="btn primary" href="index.html#install" data-en="Install →" data-zh="安装 →">Install →</a>
+      <a class="btn ghost" href="https://github.com/mesutoezdil/siltide" data-en="View source ↗" data-zh="查看源码 ↗">View source ↗</a>
+    </div>
+    <div class="frame term" id="demo">
+      <div class="termbar"><i></i><i></i><i></i>
+        <span class="mono">siltide</span>
+        <button type="button" id="demo-toggle" class="termbtn" data-en="pause" data-zh="暂停">pause</button>
+      </div>
+      <div class="termbody"><pre id="demo-screen" class="mono" aria-label="a recorded siltide session, replayed as text"></pre></div>
+      <noscript><img src="assets/demo.gif" alt="siltide moving through its tabs on a simulated fleet"></noscript>
+    </div>
+  </div>
+</section>
+
+<section id="ssh">
+  <div class="wrap">
+    <h2 data-en="Where the devices are" data-zh="设备在哪里，它就在哪里">Where the devices are</h2>
+    <p class="lede" data-en="Accelerators live in machines you reach over SSH, and a browser is rarely one of the things you have there. siltide is one file: copy it to the host, run it, delete it when you are done." data-zh="加速卡装在你通过 SSH 登录的机器里，而那种机器上通常没有浏览器可用。siltide 只是一个文件：拷到主机上，运行它，用完删掉就行。">Accelerators live in machines you reach over SSH, and a browser is rarely one of the things you have there. siltide is one file: copy it to the host, run it, delete it when you are done.</p>
+    <div class="grid">
+      <div class="card"><span class="tab">no daemon</span><p class="q" data-en="Nothing runs when you are not looking." data-zh="你不看的时候，它什么都不跑。">Nothing runs when you are not looking.</p><p data-en="There is no agent, no service to enable and no database. The interface is the process; when it exits, nothing of it is left running." data-zh="没有 agent，没有需要启用的服务，也没有数据库。界面就是那个进程；进程退出后，不会有任何残留在跑。">There is no agent, no service to enable and no database. The interface is the process; when it exits, nothing of it is left running.</p></div>
+      <div class="card"><span class="tab">no root</span><p class="q" data-en="It asks for what it needs and no more." data-zh="它只要它需要的权限，不多要。">It asks for what it needs and no more.</p><p data-en="NVIDIA, Apple and the sysfs vendors are read without privileges. Where a vendor tool insists on root, siltide says so instead of failing quietly." data-zh="NVIDIA、Apple 以及通过 sysfs 读取的厂商都不需要特权。如果某个厂商的工具非要 root，siltide 会直接说出来，而不是悄悄失败。">NVIDIA, Apple and the sysfs vendors are read without privileges. Where a vendor tool insists on root, siltide says so instead of failing quietly.</p></div>
+      <div class="card"><span class="tab">no port</span><p class="q" data-en="Nothing is exposed unless you ask." data-zh="除非你要求，否则什么都不会暴露。">Nothing is exposed unless you ask.</p><p data-en="The API and the Prometheus endpoint exist behind --listen. Without it siltide opens no socket at all, which is the state a shared host should be in." data-zh="API 和 Prometheus 端点都在 --listen 后面。不加这个参数，siltide 根本不会打开任何 socket，共享主机上本来就该是这个状态。">The API and the Prometheus endpoint exist behind --listen. Without it siltide opens no socket at all, which is the state a shared host should be in.</p></div>
+      <div class="card"><span class="tab">one file</span><p class="q" data-en="scp it and it works." data-zh="scp 过去就能用。">scp it and it works.</p><p data-en="Static, no cgo, no runtime to match. The same binary runs on a jump host, in a container, and on the laptop you are reading this on." data-zh="静态编译，不用 cgo，也不需要匹配任何运行时。同一个二进制文件能在跳板机、容器，以及你正在看这页的笔记本上运行。">Static, no cgo, no runtime to match. The same binary runs on a jump host, in a container, and on the laptop you are reading this on.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="hands">
+  <div class="wrap">
+    <h2 data-en="Everything under the fingers" data-zh="一切都在手指下">Everything under the fingers</h2>
+    <p class="lede" data-en="Sixteen tabs on the number and letter keys, a filter that takes comparisons, a command bar that tells you what it accepts, and a history you can scrub back through without leaving the view." data-zh="十六个标签页分布在数字键和字母键上，筛选支持比较运算，命令栏会告诉你它接受什么，历史记录可以直接往回拖，不用离开当前视图。">Sixteen tabs on the number and letter keys, a filter that takes comparisons, a command bar that tells you what it accepts, and a history you can scrub back through without leaving the view.</p>
+    <div class="tabgrid">
+      <div class="tabcell"><b>/ util&gt;80 !ns:ml</b><span data-en="filter by number and by negation, not only by word" data-zh="按数值和取反筛选，不只是按关键词">filter by number and by negation, not only by word</span></div>
+      <div class="tabcell"><b>: bookmark save incident</b><span data-en="name a tab, filter and node, and come back to it" data-zh="给标签页、筛选和节点起个名字，随时回到这个视图">name a tab, filter and node, and come back to it</span></div>
+      <div class="tabcell"><b>, . n</b><span data-en="scrub history back, forward, and return to now" data-zh="在历史里往回拖、往前拖，再回到当前">scrub history back, forward, and return to now</span></div>
+      <div class="tabcell"><b>siltide --tab processes --filter "util&gt;80"</b><span data-en="open a view straight from a runbook" data-zh="直接从操作手册里打开某个视图">open a view straight from a runbook</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="headless">
+  <div class="wrap">
+    <h2 data-en="The same collector, without the interface" data-zh="同一个采集器，不带界面">The same collector, without the interface</h2>
+    <p class="lede" data-en="The terminal is one way to read what siltide collects. --once prints a snapshot, --json streams them, --status writes a line for a prompt or a status bar, and --service runs headless with the API and Prometheus metrics. It is the same code path either way: what the interface shows is what the API serves." data-zh="终端只是读取 siltide 采集结果的一种方式。--once 打印一次快照，--json 持续输出，--status 输出适合放在提示符或状态栏里的一行，--service 则无界面运行并提供 API 和 Prometheus 指标。两边走的是同一条代码路径：界面上看到的，就是 API 提供的。">The terminal is one way to read what siltide collects. --once prints a snapshot, --json streams them, --status writes a line for a prompt or a status bar, and --service runs headless with the API and Prometheus metrics. It is the same code path either way: what the interface shows is what the API serves.</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th data-en="Command" data-zh="命令">Command</th><th data-en="What it is for" data-zh="用途">What it is for</th></tr>
+      <tr><td class="mono">siltide</td><td data-en="the interface, on the machine in front of you" data-zh="在你面前这台机器上打开界面">the interface, on the machine in front of you</td></tr>
+      <tr><td class="mono">siltide --once</td><td data-en="one snapshot on stdout, for a script or a ticket" data-zh="向 stdout 打印一次快照，方便脚本或工单使用">one snapshot on stdout, for a script or a ticket</td></tr>
+      <tr><td class="mono">siltide --status</td><td data-en="one line for tmux, i3bar or a shell prompt" data-zh="一行输出，适合 tmux、i3bar 或 shell 提示符">one line for tmux, i3bar or a shell prompt</td></tr>
+      <tr><td class="mono">siltide --service --listen :9800</td><td data-en="headless, with the API and /metrics" data-zh="无界面运行，同时提供 API 和 /metrics">headless, with the API and /metrics</td></tr>
+      <tr><td class="mono">siltide --remote https://node:9800</td><td data-en="the interface, attached to another machine's collector" data-zh="界面连到另一台机器的采集器">the interface, attached to another machine's collector</td></tr>
+    </table>
+    </div>
+    <p style="color:var(--dim);font-size:.88rem;margin-top:1.2rem" data-en="On the machine these numbers were taken from, the interface starts in 0.03 s on the simulated fleet and sits at 19 MB. The measurements and how to repeat them are on the front page." data-zh="在测得这些数字的机器上，界面在模拟集群下 0.03 秒启动，常驻内存 19 MB。测量方法和复现步骤在首页。">On the machine these numbers were taken from, the interface starts in 0.03 s on the simulated fleet and sits at 19 MB. The measurements and how to repeat them are on the front page.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span data-en="Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies." data-zh="Apache-2.0 协议。siltide 是一个独立项目，上面提到的厂商名称都属于各自公司。">Apache-2.0. siltide is an independent project. The vendor names above belong to their own companies.</span>
+      <span>
+        <a href="https://github.com/mesutoezdil/siltide">GitHub</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/issues" data-en="Issues" data-zh="问题反馈">Issues</a> ·
+        <a href="https://github.com/mesutoezdil/siltide/blob/main/CONTRIBUTING.md" data-en="Contributing" data-zh="参与贡献">Contributing</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+/* siltide.  One stylesheet for every page on the site. */
+:root{
+  --bg:#0b0a09; --panel:#161310; --panel2:#1d1915; --border:#332c24;
+  --text:#ece6db; --dim:#9c9186; --dimmer:#5c5349;
+  --accent:#ff8a3d; --accent2:#ffb35c; --nav-bg:rgba(11,10,9,.86);
+  --grid-line:rgba(236,230,219,.05); --frame-shadow:0 30px 60px -30px rgba(0,0,0,.7);
+  --divider:rgba(236,230,219,.16);
+  --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+}
+html[data-mode="light"]{
+  --bg:#f7f4ef; --panel:#ffffff; --panel2:#efe9df; --border:#ddd3c4;
+  --text:#241f19; --dim:#6b6156; --dimmer:#a89c8c;
+  --accent2:#d9650f; --nav-bg:rgba(247,244,239,.86);
+  --grid-line:rgba(36,31,25,.06); --frame-shadow:0 20px 40px -24px rgba(36,31,25,.18);
+  --divider:rgba(36,31,25,.16);
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--text);font-family:var(--mono);line-height:1.6;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+/* A fixed backdrop: a faint chip-like grid and a row of cores pulsing like
+   a live utilization wall, standing in for the terminal siltide draws once
+   it is running. Static and low-contrast enough to read text over. */
+.gpu-bg{position:fixed;inset:0;z-index:-1;background:var(--bg);overflow:hidden}
+.gpu-bg .grid-lines{position:absolute;inset:-1px;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:44px 44px;
+}
+@media (prefers-reduced-motion: reduce){.cores i{animation:none!important;transform:scaleY(.32)!important}}
+img{max-width:100%;display:block}
+a{color:var(--accent2)}
+[hidden]{display:none!important}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:20px}
+code,.mono{font-family:var(--mono)}
+h1,h2,h3{font-family:var(--mono);font-weight:600;letter-spacing:-.01em}
+h2{font-size:1.5rem;margin:0 0 .3em}
+.lede{color:var(--dim);margin:0 0 2rem}
+section{padding:64px 0}
+section:last-of-type{padding-bottom:24px}
+section+section{border-top:1px solid var(--divider)}
+
+.skip-link{position:absolute;left:8px;top:calc(-48px - env(safe-area-inset-top,0px));z-index:100;
+  background:var(--accent);color:#1c0d02;font-family:var(--mono);font-weight:700;font-size:.85rem;
+  text-decoration:none;padding:8px 14px;border-radius:6px;transition:top .15s ease}
+.skip-link:focus{top:calc(8px + env(safe-area-inset-top,0px))}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--nav-bg);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+nav .wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;height:56px;max-width:1040px}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap;justify-self:start;grid-column:1}
+.brand img{width:22px;height:22px}
+nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem;white-space:nowrap}
+nav a.link:hover{color:var(--text)}
+.nav-sections{display:flex;gap:20px;justify-self:center;grid-column:2}
+.nav-right{display:flex;align-items:center;gap:16px;min-width:0;justify-self:end;grid-column:3}
+.lang-btn,.mode-btn{font-family:var(--mono);font-size:.8rem;background:none;border:1px solid var(--border);
+  color:var(--dim);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap;flex:none}
+.lang-btn:hover,.mode-btn:hover{color:var(--text);border-color:var(--dimmer)}
+@media (max-width:640px){
+  .nav-sections{display:none}
+}
+
+.hero{padding:72px 0 48px;position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:1}
+.hero .cores{position:absolute;left:0;right:0;top:0;height:150px;display:flex;
+  align-items:flex-start;gap:clamp(2px,.6vw,9px);padding-inline:4vw;opacity:.4;z-index:0}
+.hero .cores i{flex:1;min-width:2px;height:100%;border-radius:0 0 2px 2px;font-style:normal;
+  background:linear-gradient(to bottom, var(--accent), transparent 85%);
+  transform-origin:top;animation:gpuPulse 4s ease-in-out infinite}
+.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#8a3d0f,transparent 85%)}
+.hero .cores i:nth-child(5n){background:linear-gradient(to bottom,var(--accent2),transparent 85%)}
+.hero .cores i:nth-child(2n){animation-duration:5.5s;animation-delay:-1.3s}
+.hero .cores i:nth-child(3n+1){animation-duration:3.2s;animation-delay:-2.1s}
+.hero .cores i:nth-child(4n+2){animation-duration:6.4s;animation-delay:-.6s}
+.hero .cores i:nth-child(7n){animation-duration:2.6s;animation-delay:-3.4s}
+.hero .cores i:nth-child(11n){animation-duration:7.1s;animation-delay:-4.8s}
+@keyframes gpuPulse{0%,100%{transform:scaleY(.12)}50%{transform:scaleY(1)}}
+.hero h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 .4em;color:var(--text)}
+.hero h1 .accent{color:var(--accent)}
+.hero .lede{font-size:1.05rem}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 40px}
+.btn{font-family:var(--mono);font-size:.92rem;padding:10px 18px;border-radius:8px;text-decoration:none;
+  border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px}
+.btn.primary{background:var(--accent);color:#1c0d02;border-color:var(--accent);font-weight:700}
+.btn.ghost{color:var(--text)}
+.btn.ghost:hover{border-color:var(--dimmer)}
+
+.frame{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--frame-shadow)}
+.frame img{width:100%}
+.term{background:#0d1117}
+.termbar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#161b22;border-bottom:1px solid var(--border)}
+.termbar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}
+.termbar i:nth-child(2){background:#febc2e}
+.termbar i:nth-child(3){background:#28c840}
+.termbar span{flex:1;text-align:center;font-size:.78rem;color:#8b949e}
+.termbtn{font-family:var(--mono);font-size:.72rem;background:none;border:1px solid #30363d;color:#8b949e;
+  border-radius:6px;padding:3px 9px;cursor:pointer}
+.termbtn:hover{color:#c9d1d9;border-color:#8b949e}
+.termbody{overflow-x:auto;padding:14px 16px}
+/* 150 columns of a monospace face are 90em wide, so this is the size that fits the capture in the frame, with a floor for narrow screens where the body scrolls sideways instead. */
+.termbody pre{margin:0;color:#c9d1d9;line-height:1.32;white-space:pre;font-size:max(7.5px,calc((min(100vw,1040px) - 72px) / 90))}
+.termbody pre div{min-height:1.32em}
+
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;
+  display:flex;flex-direction:column}
+.card .q{font-family:var(--mono);color:var(--text);font-weight:600;margin:0 0 8px;min-height:3.2em}
+.card .tab{display:inline-block;font-family:var(--mono);font-size:.75rem;color:var(--accent);
+  background:rgba(255,138,61,.12);border:1px solid rgba(255,138,61,.35);border-radius:999px;padding:2px 9px;margin-bottom:8px}
+.card p{margin:0;color:var(--dim);font-size:.92rem}
+
+.tabgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.tabcell{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.tabcell b{font-family:var(--mono);display:block;font-size:.9rem;color:var(--text)}
+.tabcell span{font-size:.82rem;color:var(--dim)}
+
+kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;
+  border-radius:5px;padding:2px 7px;font-size:.82rem;color:var(--text)}
+
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
+th:first-child,td:first-child{padding-left:0}
+th:last-child,td:last-child{padding-right:0}
+th{color:var(--dim);font-weight:600;font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.tablewrap{overflow-x:auto}
+
+.install pre{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;
+  overflow-x:auto;position:relative;font-size:.86rem}
+.install .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.install .tabbtn{font-family:var(--mono);font-size:.82rem;background:none;border:1px solid var(--border);
+  color:var(--dim);border-radius:7px;padding:6px 12px;cursor:pointer}
+.install .tabbtn.active{color:var(--text);border-color:var(--accent)}
+.copy{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:.75rem;background:var(--panel);
+  border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 9px;cursor:pointer}
+.copy:hover{color:var(--text)}
+.install-panel{display:none}
+.install-panel.active{display:block}
+
+.cta-section h2{margin-bottom:.3em}
+.cta-section .btn{margin-top:8px}
+footer{padding:24px 0 40px;color:var(--dim);font-size:.85rem;border-top:1px solid var(--divider)}
+footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
+footer a{color:var(--dim)}
+footer a:hover{color:var(--text)}
