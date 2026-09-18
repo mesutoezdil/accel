@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X main.version=$(VERSION)
 
-.PHONY: build test race lint check cross bench demo film test-nvidia test-fake-nvml completions clean
+.PHONY: build test race lint check cross bench demo film schema test-nvidia test-fake-nvml completions clean
 
 build:
 	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/siltide .
@@ -54,6 +54,10 @@ completions: build
 shots:
 	go run ./scripts/shots -out assets
 	scripts/shots/png.sh
+
+# The JSON schema for config.yaml, generated from the struct that reads it.
+schema:
+	go run ./scripts/schema > schemas/config.schema.json
 
 # The animated demo README.md and the site hero embed: a scripted run over
 # the simulated fleet, rasterized frame by frame and assembled into a GIF.
