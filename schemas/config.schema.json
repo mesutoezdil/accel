@@ -1,0 +1,232 @@
+{
+  "$id": "https://raw.githubusercontent.com/mesutoezdil/siltide/main/schemas/config.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Every key of ~/.config/siltide/config.yaml. Unknown keys are rejected by siltide itself, so this schema is closed too.",
+  "properties": {
+    "alerts": {
+      "additionalProperties": false,
+      "properties": {
+        "alertmanager": {
+          "type": "string"
+        },
+        "min_severity": {
+          "type": "string"
+        },
+        "resend": {
+          "description": "a duration such as 2s, 500ms or 24h",
+          "pattern": "^\\d+(\\.\\d+)?(ns|us|µs|ms|s|m|h)([\\d.]+(ns|us|µs|ms|s|m|h))*$",
+          "type": "string"
+        },
+        "rules": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "for": {
+                "description": "a duration such as 2s, 500ms or 24h",
+                "pattern": "^\\d+(\\.\\d+)?(ns|us|µs|ms|s|m|h)([\\d.]+(ns|us|µs|ms|s|m|h))*$",
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "on": {
+                "type": "string"
+              },
+              "severity": {
+                "type": "string"
+              },
+              "when": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "slack": {
+          "type": "string"
+        },
+        "webhook": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "carbon": {
+      "additionalProperties": false,
+      "properties": {
+        "g_per_kwh": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "colors": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "cost": {
+      "additionalProperties": false,
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "per_hour": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "history": {
+      "additionalProperties": false,
+      "properties": {
+        "dir": {
+          "type": "string"
+        },
+        "keep": {
+          "description": "a duration such as 2s, 500ms or 24h",
+          "pattern": "^\\d+(\\.\\d+)?(ns|us|µs|ms|s|m|h)([\\d.]+(ns|us|µs|ms|s|m|h))*$",
+          "type": "string"
+        },
+        "max_disk_mb": {
+          "type": "integer"
+        },
+        "persist": {
+          "type": "boolean"
+        },
+        "resolution": {
+          "description": "a duration such as 2s, 500ms or 24h",
+          "pattern": "^\\d+(\\.\\d+)?(ns|us|µs|ms|s|m|h)([\\d.]+(ns|us|µs|ms|s|m|h))*$",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "insecure": {
+      "type": "boolean"
+    },
+    "keys": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "kubernetes": {
+      "additionalProperties": false,
+      "properties": {
+        "context": {
+          "type": "string"
+        },
+        "kubeconfig": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "listen": {
+      "type": "string"
+    },
+    "log": {
+      "type": "string"
+    },
+    "mouse": {
+      "type": "boolean"
+    },
+    "nodes": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "ca": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "ssh": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "token_file": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "refresh": {
+      "description": "a duration such as 2s, 500ms or 24h",
+      "pattern": "^\\d+(\\.\\d+)?(ns|us|µs|ms|s|m|h)([\\d.]+(ns|us|µs|ms|s|m|h))*$",
+      "type": "string"
+    },
+    "theme": {
+      "type": "string"
+    },
+    "thresholds": {
+      "additionalProperties": false,
+      "properties": {
+        "busy_util": {
+          "type": "number"
+        },
+        "idle_after": {
+          "description": "a duration such as 2s, 500ms or 24h",
+          "pattern": "^\\d+(\\.\\d+)?(ns|us|µs|ms|s|m|h)([\\d.]+(ns|us|µs|ms|s|m|h))*$",
+          "type": "string"
+        },
+        "idle_util": {
+          "type": "number"
+        },
+        "outlier_delta": {
+          "type": "number"
+        },
+        "temp_warn": {
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "tls": {
+      "additionalProperties": false,
+      "properties": {
+        "cert": {
+          "type": "string"
+        },
+        "client_ca": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "token": {
+      "type": "string"
+    },
+    "transparent": {
+      "type": "boolean"
+    },
+    "vendors": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "title": "siltide configuration",
+  "type": "object"
+}
