@@ -1,16 +1,15 @@
 #!/bin/sh
 # Install siltide on Linux or macOS.
 #
-#   ( f="$(mktemp)" && trap 'rm -f "$f"' EXIT &&
-#     curl -fsSL https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh -o "$f" &&
-#     sh "$f" )
+#   curl -fsSLO https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh
+#   sh install.sh
 #
 # Download the script and then run it, rather than piping it into sh. A
 # pipeline reports the status of its LAST command, so a download that 404s
 # hands sh an empty script: nothing runs, the line exits 0, and the machine
-# has installed nothing while appearing to have succeeded. mktemp rather
-# than a fixed name, because in a directory someone else can write a fixed
-# name can be pre-created as a symlink for `curl -o` to truncate through.
+# has installed nothing while appearing to have succeeded. Two lines also
+# mean the script can be read before it is run, which is the other half of
+# the reason not to pipe it.
 #
 # Everything is inside main(), called on the last line: a script read from a
 # broken connection is a syntax error that does nothing, rather than half a
@@ -55,12 +54,30 @@ target() {
 	echo "${BIN}-${os}-${arch}"
 }
 
-# latest_version asks the releases API rather than following the /latest
-# redirect, which needs no HTML parsing and skips pre-releases by itself.
+# tag_names prints the tag of every release in a releases API response,
+# newest first, without the leading v.
+tag_names() {
+	tr ',' '\n' |
+		sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"v\{0,1\}\([^"]*\)".*/\1/p'
+}
+
+# latest_version is the newest release worth installing.
+#
+# /releases/latest answers with the newest STABLE release and 404s when there
+# is not one yet, which is every project before its first tag and was this
+# one: the script reported "could not work out the latest version" on a repo
+# publishing a build for every push. So when there is no stable release, take
+# the newest release there is. Somebody running the installer wants siltide,
+# not a lecture about release channels -- but they are told which one it is.
 latest_version() {
-	curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" |
-		sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"v\{0,1\}\([^"]*\)".*/\1/p' |
-		head -1
+	v="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null |
+		tag_names | head -1)"
+	if [ -n "$v" ]; then
+		echo "$v"
+		return
+	fi
+	curl -fsSL "https://api.github.com/repos/${REPO}/releases?per_page=30" 2>/dev/null |
+		tag_names | head -1
 }
 
 # install_dir is where the binary lands, and it must be on PATH or the
@@ -110,8 +127,12 @@ main() {
 	command -v curl >/dev/null 2>&1 || die "curl is needed to download anything"
 	asset="$(target)"
 	[ -n "$version" ] || version="$(latest_version)"
-	[ -n "$version" ] || die "could not work out the latest version; pass --version"
+	[ -n "$version" ] ||
+		die "no release found for ${REPO}; check the releases page, or pass --version"
 	version="${version#v}"
+	case "$version" in
+		*-*) echo "install: no stable release yet; taking the pre-release ${version}" ;;
+	esac
 
 	base="https://github.com/${REPO}/releases/download/v${version}"
 	tmp="$(mktemp -d)"

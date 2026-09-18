@@ -46,6 +46,8 @@ chmod +x "$rel/siltide-linux-amd64"
 sum="$(sha256sum "$rel/siltide-linux-amd64" 2>/dev/null | cut -d' ' -f1 || shasum -a 256 "$rel/siltide-linux-amd64" | cut -d' ' -f1)"
 printf '%s  siltide-linux-amd64\n' "$sum" > "$rel/checksums.txt"
 printf '{"tag_name": "v9.9.9"}\n' > "$rel/latest.json"
+# The releases list, newest first, as the API returns it.
+printf '[{"tag_name": "v9.9.9-main.3", "prerelease": true},{"tag_name": "v9.9.8"}]\n' > "$rel/list.json"
 
 # Fake curl: maps the URLs the script asks for onto that directory.
 bin="$work/bin"
@@ -63,6 +65,7 @@ while [ \$# -gt 0 ]; do
 done
 case "\$url" in
   *releases/latest) src="$rel/latest.json" ;;
+  *releases\?*) src="$rel/list.json" ;;
   *checksums.txt) src="$rel/checksums.txt" ;;
   *siltide-linux-amd64) src="$rel/siltide-linux-amd64" ;;
   *) exit 22 ;;
@@ -96,6 +99,23 @@ bad="$work/bad"
 check "a bad checksum stops the install" "checksum mismatch" 1 sh "$script" --dir "$bad"
 [ -e "$bad/siltide" ] && { echo "FAIL a binary was installed despite the checksum"; fail=$((fail + 1)); }
 printf '%s  siltide-linux-amd64\n' "$sum" > "$rel/checksums.txt"
+
+# Before the first stable tag, /releases/latest is a 404 and the only builds
+# are pre-releases. The installer has to find them: this was the state of this
+# repository, and the script told everyone who ran it to pass --version.
+rm -f "$rel/latest.json"
+check "it falls back to the newest pre-release" "pre-release 9.9.9-main.3" 0 \
+	sh "$script" --dir "$work/pre"
+[ -x "$work/pre/siltide" ] || { echo "FAIL nothing was installed from the pre-release"; fail=$((fail + 1)); }
+printf '{"tag_name": "v9.9.9"}\n' > "$rel/latest.json"
+
+# With no releases at all it should say so, not ask for a version it cannot
+# name.
+mv "$rel/list.json" "$rel/list.json.off"
+rm -f "$rel/latest.json"
+check "no releases at all is reported plainly" "no release found" 1 sh "$script" --dir "$work/none2"
+mv "$rel/list.json.off" "$rel/list.json"
+printf '{"tag_name": "v9.9.9"}\n' > "$rel/latest.json"
 
 # A machine with no build for it should say so rather than install something else.
 cat > "$bin/uname" <<'EOF'
