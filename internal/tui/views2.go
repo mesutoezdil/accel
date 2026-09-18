@@ -98,12 +98,92 @@ func (m *Model) viewNodes() string {
 	var b strings.Builder
 	b.WriteString(th.bold.Render("Nodes") + th.dim.Render("  add remote siltide services or ssh hosts under nodes: in the config") + "\n")
 	b.WriteString(th.table(cols, out, m.sel, min(len(out), max(m.height/3, 3)), m.width, -1, false) + "\n\n")
+	if sched := m.scheduler(); sched != "" {
+		b.WriteString(sched + "\n")
+	}
 	if h := m.snap.Host2; h != nil && (m.sel == 0 || m.sel >= len(rows)) {
 		b.WriteString(m.hostDetail(*h))
 	} else if m.sel < len(rows) {
 		b.WriteString(th.dim.Render("select the local node for host details; remote nodes show their devices above"))
 	}
 	return strings.TrimRight(b.String(), "\n")
+}
+
+// scheduler shows what the cluster believes about each node's accelerators
+// next to what siltide measured on the ones it can see. The two disagreeing
+// is the whole reason to draw it: the scheduler counts devices it handed out,
+// siltide watches what those devices then did.
+func (m Model) scheduler() string {
+	nodes := m.snap.KubeNodes
+	if len(nodes) == 0 {
+		return ""
+	}
+	th := m.th
+	cols := []column{
+		{"NODE", 26, false}, {"RESOURCE", 22, false}, {"CAPACITY", 8, true}, {"ALLOCATABLE", 11, true},
+		{"REQUESTED", 9, true}, {"FREE", 6, true}, {"PODS", 5, true}, {"MEASURED", 34, false},
+	}
+	var rows [][]string
+	for _, n := range nodes {
+		for _, name := range sortedResourceNames(n.Resources) {
+			r := n.Resources[name]
+			node := n.Name
+			if n.Unschedulable {
+				node = th.warn.Render(n.Name + " (cordoned)")
+			}
+			rows = append(rows, []string{
+				node, name, fmt.Sprint(r.Capacity), fmt.Sprint(r.Allocatable),
+				fmt.Sprint(r.Requested), fmt.Sprint(r.Free()), fmt.Sprint(r.Pods),
+				m.measuredAgainst(n.Name, r),
+			})
+		}
+	}
+	if len(rows) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	b.WriteString(th.bold.Render("What the scheduler believes") +
+		th.dim.Render("  capacity and requests from the API server, measured from the devices themselves") + "\n")
+	b.WriteString(th.table(cols, rows, -1, min(len(rows), max(m.height/4, 3)), m.width, -1, false))
+	return b.String()
+}
+
+// measuredAgainst says what siltide sees on a node the scheduler has handed
+// devices out on, when it can see that node at all.
+func (m Model) measuredAgainst(node string, r kube.NodeResource) string {
+	th := m.th
+	var devs []device.Device
+	for _, d := range m.snap.Devices {
+		if d.Node == node || (d.Node == "" && strings.HasPrefix(m.snap.Host, node)) {
+			devs = append(devs, d)
+		}
+	}
+	if len(devs) == 0 {
+		return th.dim.Render("no devices from this node reach siltide")
+	}
+	idle := 0
+	for _, d := range devs {
+		if d.State == device.StateIdle || d.IdleAlloc {
+			idle++
+		}
+	}
+	switch {
+	case r.Requested > 0 && idle > 0:
+		return th.warn.Render(fmt.Sprintf("%d handed out, %d doing nothing", r.Requested, idle))
+	case r.Requested > 0:
+		return th.ok.Render(fmt.Sprintf("%d handed out, all working", r.Requested))
+	}
+	return th.dim.Render(fmt.Sprintf("%d devices here, none requested", len(devs)))
+}
+
+// sortedResourceNames keeps the table in one order between refreshes.
+func sortedResourceNames(m map[string]kube.NodeResource) []string {
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
 }
 
 func (m Model) hostDetail(h host.Stats) string {
