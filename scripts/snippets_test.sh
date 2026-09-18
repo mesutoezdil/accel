@@ -42,6 +42,18 @@ for name, body in blocks:
 print("%d blocks" % n)
 PY
 
+# The blocks ask the releases API without a token, exactly as a reader does,
+# and that allowance is sixty requests an hour per address. Running out is not
+# a broken command, so say so and check only what parses. /rate_limit does not
+# itself count against the limit.
+budget="$(curl -fsSL https://api.github.com/rate_limit 2>/dev/null |
+	tr ',' '\n' | sed -n 's/.*"remaining"[[:space:]]*:[[:space:]]*\([0-9][0-9]*\).*/\1/p' | head -1)"
+network=yes
+if [ "${budget:-1}" -lt 4 ] 2>/dev/null; then
+	network=no
+	echo "snippets: the GitHub API allowance is spent, so only parsing is checked"
+fi
+
 # stops names the commands that end a run: they install things, need a daemon,
 # want a password, or need a signed-in gh. Everything above them is still
 # exercised, which is the downloading and verifying that went wrong.
@@ -68,6 +80,11 @@ for block in "$work"/block-*.sh; do
 	fi
 	if ! grep -qE 'curl|sha256sum|shasum|uname' "$work/run.sh"; then
 		skip=$((skip + 1)) # nothing in it to get wrong
+		continue
+	fi
+
+	if [ "$network" = no ]; then
+		skip=$((skip + 1))
 		continue
 	fi
 
