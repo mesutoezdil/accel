@@ -1,0 +1,83 @@
+name: aur
+
+# Publishes siltide-bin to the AUR. Called by the release workflow once a
+# stable release is public, and runnable by hand for any version already
+# published: a publish that failed should not need another release to retry.
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Version to publish, without the leading v
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish, without the leading v
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# The package is one git branch, so two runs would race on the push.
+concurrency:
+  group: aur-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Take the checksums from the release being published
+        id: sums
+        run: |
+          set -eu
+          v="${{ inputs.version }}"
+          v="${v#v}"   # the release workflow passes the tag, a person passes the number
+          base="https://github.com/mesutoezdil/siltide/releases/download/v$v"
+          curl -fsSL "$base/checksums.txt" -o checksums.txt
+          amd=$(awk '$2 == "siltide-linux-amd64" { print $1 }' checksums.txt)
+          arm=$(awk '$2 == "siltide-linux-arm64" { print $1 }' checksums.txt)
+          [ -n "$amd" ] && [ -n "$arm" ] || { echo "release v$v publishes no linux checksums"; exit 1; }
+          {
+            echo "amd64=$amd"
+            echo "arm64=$arm"
+          } >> "$GITHUB_OUTPUT"
+      - name: Fill in the PKGBUILD
+        run: |
+          set -eu
+          version="${{ inputs.version }}"
+          version="${version#v}"
+          sed -e "s/^pkgver=.*/pkgver=${version}/" \
+              -e "s/^sha256sums_x86_64=.*/sha256sums_x86_64=('${{ steps.sums.outputs.amd64 }}')/" \
+              -e "s/^sha256sums_aarch64=.*/sha256sums_aarch64=('${{ steps.sums.outputs.arm64 }}')/" \
+              packaging/aur/PKGBUILD > PKGBUILD.new
+          mv PKGBUILD.new packaging/aur/PKGBUILD
+          cat packaging/aur/PKGBUILD
+      - name: Push it
+        env:
+          AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
+        run: |
+          set -eu
+          if [ -z "${AUR_SSH_KEY:-}" ]; then
+            echo "AUR_SSH_KEY is not configured; nothing was published." >&2
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          printf '%s\n' "$AUR_SSH_KEY" > ~/.ssh/aur
+          chmod 600 ~/.ssh/aur
+          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts 2>/dev/null
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/aur -o IdentitiesOnly=yes"
+          git clone ssh://aur@aur.archlinux.org/siltide-bin.git aur
+          cp packaging/aur/PKGBUILD aur/PKGBUILD
+          cd aur
+          # .SRCINFO is what the AUR reads; it has to match the PKGBUILD.
+          docker run --rm -v "$PWD:/pkg" -w /pkg archlinux:base-devel \
+            sh -c 'useradd -m build && chown -R build /pkg && su build -c "makepkg --printsrcinfo" ' > .SRCINFO
+          git config user.name "siltide release"
+          git config user.email "releases@siltide.invalid"
+          git add PKGBUILD .SRCINFO
+          git commit -m "siltide ${{ inputs.version }}" || { echo "nothing changed"; exit 0; }
+          git push
