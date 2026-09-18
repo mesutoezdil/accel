@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -154,28 +155,78 @@ func StateDir() string {
 
 // Load reads path over the defaults. A missing default file is fine; a
 // missing explicit file is an error. Unknown keys are rejected with their
-// line number.
+// line number. See Files for the drop-in directory.
 func Load(path string, explicit bool) (Config, error) {
 	c := Default()
-	b, err := os.ReadFile(path)
+	files, err := Files(path, explicit)
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) && !explicit {
-			return c, c.env()
-		}
 		return c, err
 	}
-	dec := yaml.NewDecoder(bytes.NewReader(b))
-	dec.KnownFields(true)
-	if err := dec.Decode(&c); err != nil && !errors.Is(err, os.ErrNotExist) && err.Error() != "EOF" {
-		return c, fmt.Errorf("%s: %w", path, err)
+	for _, f := range files {
+		if err := c.merge(f); err != nil {
+			return c, err
+		}
 	}
 	if err := c.env(); err != nil {
 		return c, err
 	}
+	if len(files) == 0 {
+		return c, nil // nothing on disk: the defaults are already valid
+	}
 	return c, c.Validate()
 }
 
-// env applies `SILTIDE_TOKEN` and `SILTIDE_LISTEN`, useful in containers.
+// Files lists the configuration files that make up one config, in the order
+// they are applied. It is path itself, or every *.yaml in it when path is a
+// directory, followed by every *.yaml in a `config.d` directory beside it.
+// Later files win key by key; a list is replaced by the last file that sets
+// it, so one concern belongs in one file.
+func Files(path string, explicit bool) ([]string, error) {
+	var out []string
+	fi, err := os.Stat(path)
+	switch {
+	case err == nil && fi.IsDir():
+		out = append(out, yamlIn(path)...)
+		if len(out) == 0 && explicit {
+			return nil, fmt.Errorf("%s: no *.yaml files", path)
+		}
+		return out, nil
+	case err == nil:
+		out = append(out, path)
+	case errors.Is(err, os.ErrNotExist) && !explicit:
+		// no main file: drop-ins alone still configure siltide
+	default:
+		return nil, err
+	}
+	out = append(out, yamlIn(filepath.Join(filepath.Dir(path), "config.d"))...)
+	return out, nil
+}
+
+// yamlIn lists the YAML files of a directory in the order they are read.
+func yamlIn(dir string) []string {
+	files, err := filepath.Glob(filepath.Join(dir, "*.yaml"))
+	if err != nil {
+		return nil
+	}
+	sort.Strings(files)
+	return files
+}
+
+// merge decodes one file over what is already loaded.
+func (c *Config) merge(path string) error {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	dec := yaml.NewDecoder(bytes.NewReader(b))
+	dec.KnownFields(true)
+	if err := dec.Decode(c); err != nil && !errors.Is(err, os.ErrNotExist) && err.Error() != "EOF" {
+		return fmt.Errorf("%s: %w", path, err)
+	}
+	return nil
+}
+
+// env applies `ACCEL_TOKEN` and `ACCEL_LISTEN`, useful in containers.
 func (c *Config) env() error {
 	if v := os.Getenv("SILTIDE_TOKEN"); v != "" {
 		c.Token = v

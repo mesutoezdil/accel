@@ -35,13 +35,25 @@ func TestDiagnoseReportsEnvironment(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// a drop-in beside the config file is listed too
+	if err := os.MkdirAll(filepath.Join(dir, "config.d"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	dropIn := filepath.Join(dir, "config.d", "local.yaml")
+	if err := os.WriteFile(dropIn, []byte("theme: gruvbox\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
 	detected := 0
 	out := diagnose(cfg, cfgPath, fakeProviders(&detected), true)
+	if !strings.Contains(out, dropIn) {
+		t.Errorf("diagnose does not list the drop-in file:\n%s", out)
+	}
 	if detected != 2 {
 		t.Fatalf("detect ran %d times, want 2", detected)
 	}
 	for _, want := range []string{
-		"build", "version", "go ", "files", cfgPath, "loaded",
+		"build", "version", "go ", "files", cfgPath,
 		"state", "history", "settings", "theme", "nord",
 		"providers", "here", "ok", "gone", "absent", "no device",
 		"install the gone driver", "2 probed, 1 available",

@@ -46,7 +46,7 @@ const (
 
 func main() {
 	fs := flag.NewFlagSet("siltide", flag.ContinueOnError)
-	cfgPath := fs.String("config", "", "config file (default "+config.Path()+")")
+	cfgPath := fs.String("config", "", "config file or directory of *.yaml files (default "+config.Path()+")")
 	interval := fs.Duration("interval", 0, "refresh interval (overrides refresh in the config)")
 	demo := fs.Bool("demo", false, "show a simulated mixed fleet instead of real hardware")
 	demoN := fs.Int("demo-devices", 8, "NVIDIA-class devices in the simulated fleet")
