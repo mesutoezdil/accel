@@ -295,7 +295,7 @@ func TestEventKindTally(t *testing.T) {
 	if !strings.Contains(got, "3 thermal") || !strings.Contains(got, "2 ecc") || !strings.Contains(got, "1 xid") {
 		t.Fatalf("tally %q", got)
 	}
-	if i, j, k := strings.Index(got, "thermal"), strings.Index(got, "ecc"), strings.Index(got, "xid"); !(i < j && j < k) {
+	if i, j, k := strings.Index(got, "thermal"), strings.Index(got, "ecc"), strings.Index(got, "xid"); i >= j || j >= k {
 		t.Errorf("kinds are not ordered by frequency: %q", got)
 	}
 	if m.kindTally(evs[:1]) != "" {

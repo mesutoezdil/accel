@@ -65,7 +65,7 @@ func schemaFor(t reflect.Type) map[string]any {
 		}
 	}
 	switch t.Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		return schemaFor(t.Elem())
 	case reflect.Bool:
 		return map[string]any{"type": "boolean"}
