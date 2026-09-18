@@ -1,0 +1,9 @@
+# siltide serves /metrics on the interval it collects at, so scraping faster
+# than that only repeats the same sample.
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: siltide
+    static_configs:
+      - targets: ["siltide:9800"]
