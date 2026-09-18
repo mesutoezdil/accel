@@ -186,8 +186,9 @@ Flags:
 	if *service && cfg.Listen == "" {
 		fail(errors.New("--service needs --listen or listen: in the config"))
 	}
+	logPath := ""
 	if *debug || cfg.Log != "" {
-		logPath := cfg.Log
+		logPath = cfg.Log
 		if logPath == "" {
 			logPath = filepath.Join(config.StateDir(), "siltide.log")
 		}
@@ -277,7 +278,7 @@ Flags:
 	uiOptions := func(cfg config.Config) (tui.Options, error) {
 		th, err := tui.LoadTheme(cfg.Theme, filepath.Join(config.ConfigDir(), "themes"), cfg.Colors, cfg.Transparent)
 		mouse := cfg.Mouse == nil || *cfg.Mouse
-		return tui.Options{Theme: th, Keys: tui.NewKeymap(cfg.Keys), TempWarn: cfg.Thresholds.TempWarn, Mouse: mouse, Currency: cfg.Cost.Currency}, err
+		return tui.Options{Theme: th, Keys: tui.NewKeymap(cfg.Keys), TempWarn: cfg.Thresholds.TempWarn, Mouse: mouse, Currency: cfg.Cost.Currency, LogFile: logPath}, err
 	}
 	opts, terr := uiOptions(cfg)
 	th := opts.Theme

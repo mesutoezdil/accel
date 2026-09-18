@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -305,4 +307,55 @@ func procLine(t *testing.T, view string, pid int) string {
 	}
 	t.Fatalf("no row for pid %d in:\n%s", pid, view)
 	return ""
+}
+
+func TestSelfLogView(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "siltide.log")
+	if err := os.WriteFile(path, []byte("2026/09/18 starting\n2026/09/18 nvml: no library\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	e := demoEngine(t)
+
+	// without a log file the command says how to turn one on
+	m := New(e, Options{Theme: NewTheme("mono", nil)})
+	m.command("log")
+	if m.overlay != overlayNone || !strings.Contains(m.notice, "--debug") {
+		t.Fatalf("overlay %d notice %q", m.overlay, m.notice)
+	}
+
+	m = New(e, Options{Theme: NewTheme("mono", nil), LogFile: path})
+	m.width, m.height = 120, 30
+	m.command("log")
+	if m.overlay != overlaySelfLog {
+		t.Fatalf("overlay %d, want the log view", m.overlay)
+	}
+	if !strings.Contains(m.text, "nvml: no library") || !strings.Contains(m.textTitle, path) {
+		t.Fatalf("text %q title %q", m.text, m.textTitle)
+	}
+	if !strings.Contains(m.View(), "nvml: no library") {
+		t.Error("the log is not on screen")
+	}
+
+	// r re-reads, so a failure that happens while the view is open shows up
+	if err := os.WriteFile(path, []byte("2026/09/18 starting\n2026/09/18 nvml: no library\n2026/09/18 amd: sysfs gone\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	m = m.overlayKey("r")
+	if !strings.Contains(m.text, "amd: sysfs gone") {
+		t.Error("r did not re-read the file")
+	}
+	m = m.overlayKey("esc")
+	if m.overlay != overlayNone {
+		t.Errorf("esc left overlay %d", m.overlay)
+	}
+
+	// a file that is there but empty says so rather than showing nothing
+	if err := os.WriteFile(path, nil, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	m.command("log")
+	if !strings.Contains(m.text, "empty") {
+		t.Errorf("text %q", m.text)
+	}
 }
