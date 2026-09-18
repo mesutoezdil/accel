@@ -50,7 +50,10 @@
 <section id="download">
   <div class="wrap">
     <h1 data-en="Download siltide." data-zh="下载 siltide。">Download siltide.</h1>
-    <p class="lede" data-en="One static binary per platform, or a package for the manager you already use. Every release also publishes checksums and a build attestation, and the verify steps are below." data-zh="每个平台一个静态二进制文件，或者用你已有的包管理器安装。每次发布都会附带校验和与构建证明，验证步骤见下方。">One static binary per platform, or a package for the manager you already use. Every release also publishes checksums and a build attestation, and the verify steps are below.</p>
+    <p class="lede" data-en="One static binary per platform, or a package for the manager you already use. The quickest way is the install script: it works out which build this machine needs, checks it against the published checksums, and puts it on your PATH." data-zh="每个平台一个静态二进制文件，或者用你已有的包管理器安装。最快的方式是安装脚本：它会判断这台机器需要哪个构建，用发布的校验和核对，然后把它放到你的 PATH 上。">One static binary per platform, or a package for the manager you already use. The quickest way is the install script: it works out which build this machine needs, checks it against the published checksums, and puts it on your PATH.</p>
+<pre><button class="copy">copy</button><code>curl -fsSLO https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh
+sh install.sh</code></pre>
+    <p class="note" data-en="Everything below is for doing the same thing by hand. You do not need it." data-zh="下面的内容都是手动完成同样的事情，你并不需要它。">Everything below is for doing the same thing by hand. You do not need it.</p>
 
     <div class="tablewrap">
     <table>
@@ -68,15 +71,24 @@
 
     <p style="margin-top:1.4rem"><a class="btn primary" href="https://github.com/mesutoezdil/siltide/releases/latest" data-en="All release assets ↗" data-zh="全部发布文件 ↗">All release assets ↗</a></p>
 
-    <h2 data-en="Checking what you downloaded" data-zh="校验你下载的文件">Checking what you downloaded</h2>
-    <p class="lede" data-en="The install script does this for you before it writes anything. By hand:" data-zh="安装脚本会在写入任何文件之前自动完成这一步。手动的话：">The install script does this for you before it writes anything. By hand:</p>
+    <h2 data-en="By hand, every step" data-zh="手动完成，每一步">By hand, every step</h2>
+    <p class="lede" data-en="The install script does all of this for you. This is the same thing written out: download the build for this machine, check it against the published checksums, check where it was built, and install it. Paste it whole into an empty directory." data-zh="安装脚本已经帮你做完了这些。下面是同样的步骤写开的版本：下载适合这台机器的构建，用发布的校验和核对，确认它是在哪里构建的，然后安装。请在一个空目录里整段粘贴运行。">The install script does all of this for you. This is the same thing written out: download the build for this machine, check it against the published checksums, check where it was built, and install it. Paste it whole into an empty directory.</p>
 <pre><button class="copy">copy</button><code>os=$(uname -s | tr '[:upper:]' '[:lower:]')                 # linux or darwin
 arch=$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')  # amd64 or arm64
+tag=$(curl -fsSL https://api.github.com/repos/mesutoezdil/siltide/releases | grep -m1 '"tag_name"' | cut -d '"' -f4)
+base=https://github.com/mesutoezdil/siltide/releases/download/$tag
 
-sha256sum -c checksums.txt --ignore-missing       # shasum -a 256 -c on macOS
-gh attestation verify "siltide-$os-$arch" --repo mesutoezdil/siltide</code></pre>
-    <p class="note" data-en="checksums.txt has to be downloaded from the same release, next to the binary; both commands read files that are already in the directory you are standing in. Take the build for this machine: siltide-linux-amd64 on an Apple laptop gives &quot;exec format error&quot;." data-zh="checksums.txt 需要从同一个 release 里下载，就放在二进制文件旁边；这两条命令读的都是当前目录下已有的文件。请拿适合这台机器的构建：在苹果笔记本上用 siltide-linux-amd64 会报 &quot;exec format error&quot;。"><code>checksums.txt</code> has to be downloaded from the same release, next to the binary; both commands read files that are already in the directory you are standing in. Take the build for this machine: <code>siltide-linux-amd64</code> on an Apple laptop gives &ldquo;exec format error&rdquo;.</p>
-    <p style="color:var(--dim);font-size:.88rem" data-en="The attestation says which workflow, at which commit, produced that exact file. Each archive also ships an SBOM listing what went into it." data-zh="构建证明会说明是哪个 workflow、在哪个提交上产出了这个文件。每个压缩包还附带一份 SBOM，列出其中包含的内容。">The attestation says which workflow, at which commit, produced that exact file. Each archive also ships an SBOM listing what went into it.</p>
+curl -fsSLO "$base/siltide-$os-$arch"
+curl -fsSLO "$base/checksums.txt"
+
+command -v sha256sum >/dev/null &amp;&amp; sha=sha256sum || sha="shasum -a 256"
+$sha -c checksums.txt --ignore-missing
+gh attestation verify "siltide-$os-$arch" --repo mesutoezdil/siltide
+
+chmod +x "siltide-$os-$arch"
+sudo install "siltide-$os-$arch" /usr/local/bin/siltide</code></pre>
+    <p class="note" data-en="The attestation says which workflow, at which commit, produced that exact file, and gh attestation verify is the command that reads it. A binary downloaded through a browser rather than curl is quarantined by macOS until the builds are signed: xattr -d com.apple.quarantine /usr/local/bin/siltide." data-zh="构建证明会说明是哪个 workflow、在哪个提交上产出了这个文件，gh attestation verify 就是读取它的命令。如果二进制文件是通过浏览器而不是 curl 下载的，在构建签名之前 macOS 会把它隔离：xattr -d com.apple.quarantine /usr/local/bin/siltide。">The attestation says which workflow, at which commit, produced that exact file, and <code>gh attestation verify</code> is the command that reads it. A binary downloaded through a browser rather than <code>curl</code> is quarantined by macOS until the builds are signed: <code>xattr -d com.apple.quarantine /usr/local/bin/siltide</code>.</p>
+    <p class="note" data-en="Each release also ships an SBOM listing what went into every artifact." data-zh="每次发布还会附带一份 SBOM，列出每个产物里包含的内容。">Each release also ships an SBOM listing what went into every artifact.</p>
 
     <h2 data-en="Then" data-zh="然后">Then</h2>
 <pre><button class="copy">copy</button><code>siltide --demo     # explore every view without hardware
