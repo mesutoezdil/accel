@@ -60,7 +60,11 @@ jobs:
       # download page once handed people a block that read a file it never
       # told them to download, and named one platform's binary; both were
       # obvious the moment anybody ran them, and nobody had.
+      # Linux only: these hit the GitHub API unauthenticated, exactly as a
+      # reader would, and the macOS runners share addresses that the API rate
+      # limits to 403 within seconds.
       - name: The commands the site offers to copy
+        if: runner.os == 'Linux'
         run: sh scripts/snippets_test.sh
       - name: The dashboard, against the metrics we export
         if: runner.os == 'Linux'
