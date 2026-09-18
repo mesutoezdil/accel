@@ -56,7 +56,7 @@ func ParseRule(name, when string, hold time.Duration, on, severity string) (Rule
 	default:
 		return Rule{}, fmt.Errorf("rule %q: unknown operator %s", when, f[1])
 	}
-	v, err := parseValue(f[2])
+	v, err := ParseValue(f[2])
 	if err != nil {
 		return Rule{}, fmt.Errorf("rule %q: %w", when, err)
 	}
@@ -70,7 +70,9 @@ func ParseRule(name, when string, hold time.Duration, on, severity string) (Rule
 	return Rule{Name: name, Metric: f[0], Op: f[1], Value: v, For: hold, On: on, Severity: sev}, nil
 }
 
-func parseValue(s string) (float64, error) {
+// ParseValue reads a rule or filter value: a number with an optional
+// size suffix (K, M, G, T, with or without B) or a percent sign.
+func ParseValue(s string) (float64, error) {
 	mult := 1.0
 	s = strings.TrimSuffix(strings.TrimSuffix(s, "B"), "iB")
 	switch {
@@ -109,19 +111,24 @@ func (r Rule) holds(d device.Device) bool {
 			return false
 		}
 	}
-	switch r.Op {
+	return Compare(v, r.Op, r.Value)
+}
+
+// Compare reports whether "v op want" holds. An unknown operator reads as !=.
+func Compare(v float64, op string, want float64) bool {
+	switch op {
 	case "<":
-		return v < r.Value
+		return v < want
 	case "<=":
-		return v <= r.Value
+		return v <= want
 	case ">":
-		return v > r.Value
+		return v > want
 	case ">=":
-		return v >= r.Value
+		return v >= want
 	case "==":
-		return v == r.Value
+		return v == want
 	default:
-		return v != r.Value
+		return v != want
 	}
 }
 
