@@ -335,6 +335,7 @@ footer a:hover{color:var(--text)}
       <button class="tabbtn active" data-p="bin" data-en="Binary" data-zh="二进制">Binary</button>
       <button class="tabbtn" data-p="brew">Homebrew</button>
       <button class="tabbtn" data-p="go">Go</button>
+      <button class="tabbtn" data-p="nix">Nix</button>
       <button class="tabbtn" data-p="docker" data-en="Container" data-zh="容器">Container</button>
     </div>
     <div class="install-panel active" id="p-bin">
@@ -347,6 +348,9 @@ chmod +x siltide && sudo mv siltide /usr/local/bin/</code></pre>
     </div>
     <div class="install-panel" id="p-go">
 <pre><button class="copy">copy</button><code>go install github.com/mesutoezdil/siltide@latest</code></pre>
+    </div>
+    <div class="install-panel" id="p-nix">
+<pre><button class="copy">copy</button><code>nix run github:mesutoezdil/siltide -- --demo</code></pre>
     </div>
     <div class="install-panel" id="p-docker">
 <pre><button class="copy">copy</button><code>docker run --rm -p 9800:9800 --gpus all --pid=host \

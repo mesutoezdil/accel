@@ -61,6 +61,9 @@ brew install mesutoezdil/tap/siltide
 # Go
 go install github.com/mesutoezdil/siltide@latest
 
+# Nix, without installing anything
+nix run github:mesutoezdil/siltide -- --demo
+
 # Container: headless collector with the API and /metrics on port 9800.
 # --pid=host lets it see host processes, not just its own container.
 docker run --rm -p 9800:9800 --gpus all --pid=host \
