@@ -122,6 +122,10 @@ Prometheus metrics.
 .I ~/.config/siltide/config.yaml
 Configuration; see examples/config.yaml. Unknown keys are rejected.
 .TP
+.I ~/.config/siltide/config.d/*.yaml
+Drop-in configuration, read in name order after config.yaml; later files win
+key by key. \\-\\-config may also name a directory of *.yaml files.
+.TP
 .I ~/.config/siltide/themes/*.yaml
 User themes.
 .TP
@@ -205,7 +209,17 @@ func diagnose(cfg config.Config, cfgPath string, provs []provider.Provider, dete
 	row("revision", "%s", revision())
 
 	b.WriteString("files\n")
-	row("config", "%s (%s)", cfgPath, fileState(cfgPath))
+	if files, err := config.Files(cfgPath, false); err != nil || len(files) == 0 {
+		row("config", "%s (%s)", cfgPath, fileState(cfgPath))
+	} else {
+		for i, f := range files {
+			key := "config"
+			if i > 0 {
+				key = "" // a drop-in, applied after the line above it
+			}
+			row(key, "%s", f)
+		}
+	}
 	themes := filepath.Join(config.ConfigDir(), "themes")
 	if files, _ := filepath.Glob(filepath.Join(themes, "*.yaml")); len(files) > 0 {
 		row("themes", "%s (%d user themes)", themes, len(files))
