@@ -1,0 +1,44 @@
+name: cluster
+
+# The Kubernetes half of siltide against a real API server rather than a
+# fixture: pod lookup, container ids, describe and logs. No accelerator is
+# needed for any of it, which is why this can run here at all; what still
+# needs real devices is issue #16.
+on:
+  pull_request:
+    paths:
+      - internal/kube/**
+      - internal/collect/**
+      - .github/workflows/cluster.yml
+  push:
+    branches: [main]
+    paths:
+      - internal/kube/**
+      - .github/workflows/cluster.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version-file: go.mod
+      - uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1
+        with:
+          cluster_name: siltide
+      - name: The cluster is up
+        run: kubectl get nodes -o wide
+      - name: Kubernetes tests against it
+        env:
+          SILTIDE_TEST_CLUSTER: "1"
+        run: go test ./internal/kube/ -run Cluster -v -count=1
+      - name: And the interface starts against it
+        run: |
+          go build -o bin/siltide .
+          ./bin/siltide --once --json | head -c 400
+          ./bin/siltide --diagnose-offline | sed -n '/kubernetes/,/providers/p'
