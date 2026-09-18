@@ -36,11 +36,25 @@ nfpms:
     maintainer: Mesut Oezdil <versusfinem@gmail.com>
     description: Terminal monitor for GPUs, NPUs, and other AI accelerators.
     license: Apache-2.0
-    formats: [deb, rpm]
+    formats: [deb, rpm, apk, archlinux]
     bindir: /usr/local/bin
+    archlinux:
+      pkgbase: siltide
     contents:
       - src: deploy/systemd/siltide.service
         dst: /lib/systemd/system/siltide.service
+        packager: deb
+      - src: deploy/systemd/siltide.service
+        dst: /lib/systemd/system/siltide.service
+        packager: rpm
+      - src: deploy/systemd/siltide.service
+        dst: /usr/lib/systemd/system/siltide.service
+        packager: archlinux
+      - src: deploy/openrc/siltide
+        dst: /etc/init.d/siltide
+        file_info:
+          mode: 0755
+        packager: apk
       - src: examples/config.yaml
         dst: /etc/siltide/config.yaml
         type: config|noreplace
@@ -79,8 +93,8 @@ docker_manifests:
 release:
   prerelease: auto
   header: |
-    Single static binaries for Linux and macOS, deb and rpm packages, a
-    container image, and a Homebrew tap. Install:
+    Single static binaries for Linux and macOS, deb, rpm, apk, and Arch
+    packages, a container image, and a Homebrew tap. Install:
 
         curl -fLo siltide https://github.com/mesutoezdil/siltide/releases/download/{{ .Tag }}/siltide-linux-amd64
         chmod +x siltide && sudo install siltide /usr/local/bin/
