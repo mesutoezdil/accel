@@ -192,6 +192,22 @@ func rpad(s string, w int) string {
 	return s
 }
 
+// reset ends every style lipgloss writes.
+const reset = "\x1b[0m"
+
+// selected marks the row under the cursor. The row carries the escapes of
+// its own cells, and the reset closing the first coloured one would drop the
+// selection's colour for the rest of the line, leaving the highlight cut off
+// partway across, so the opening sequence goes back in after every reset.
+func selected(style lipgloss.Style, line string) string {
+	marked := style.Render("\x00")
+	open, closing, ok := strings.Cut(marked, "\x00")
+	if !ok || open == "" {
+		return line // no colour in this profile: nothing to keep alive
+	}
+	return open + strings.ReplaceAll(line, reset, reset+open) + closing
+}
+
 func trunc(s string, w int) string {
 	if w <= 0 {
 		return ""
@@ -258,7 +274,7 @@ func (t Theme) table(cols []column, rows [][]string, sel, height, width, sortCol
 		}
 		line := strings.Join(cells, " ")
 		if i == sel {
-			line = t.sel.Render(pad(line, max(width, lipgloss.Width(line))))
+			line = selected(t.sel, pad(line, max(width, lipgloss.Width(line))))
 		}
 		b.WriteString(line + "\n")
 	}
