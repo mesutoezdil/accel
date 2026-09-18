@@ -1024,7 +1024,7 @@ func (m Model) viewHelp() string {
 		{ActUp, "select previous row"}, {ActDown, "select next row"}, {ActPageUp, "up 10 rows"}, {ActPageDown, "down 10 rows"},
 		{ActEnter, "open the selected row (device detail, pod describe)"}, {ActBack, "clear filters, then back to the overview"},
 		{ActNextTab, "next tab"}, {ActPrevTab, "previous tab"}, {ActPause, "pause updates"}, {ActRefresh, "collect now"},
-		{ActSearch, "filter: words, dev:3 user:alice ns:ml, util>80 temp>=70, ! negates"}, {ActCommand, "command bar: it lists what it takes, ↑↓ to move, Tab to take one"},
+		{ActSearch, "filter: words, dev:3 user:vllm ns:ml, util>80 temp>=70, ! negates"}, {ActCommand, "command bar: it lists what it takes, ↑↓ to move, Tab to take one"},
 		{ActSortNext, "sort by the next column"}, {ActSortRev, "reverse the sort"},
 		{ActHistBack, "history: one step back"}, {ActHistFwd, "history: one step forward"}, {ActHistJump, "history: 30 steps"},
 		{ActHistLive, "history: back to now"}, {ActMetric, "history: next metric"}, {ActZoomIn, "history: narrower window"}, {ActZoomOut, "history: wider window"},

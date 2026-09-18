@@ -1,46 +1,85 @@
-/* siltide.  One stylesheet for every page on the site. */
+/* siltide.  One stylesheet for every page on the site.
+
+   The look comes from the thing it documents: a warm dark terminal, one hot
+   accent and one cold one, because the two numbers this tool draws most are
+   load and temperature. Headings and data stay monospaced, which is the
+   product's own voice; running prose does not, because paragraphs set in a
+   terminal face are slower to read than they are handsome. */
 :root{
-  --bg:#0b0a09; --panel:#161310; --panel2:#1d1915; --border:#332c24;
+  --bg:#0b0a09; --bg2:#131010; --panel:#161310; --panel2:#1d1915; --border:#332c24;
   --text:#ece6db; --dim:#9c9186; --dimmer:#5c5349;
-  --accent:#ff8a3d; --accent2:#ffb35c; --nav-bg:rgba(11,10,9,.86);
-  --grid-line:rgba(236,230,219,.05); --frame-shadow:0 30px 60px -30px rgba(0,0,0,.7);
-  --divider:rgba(236,230,219,.16);
+  --accent:#ff8a3d; --accent2:#ffb35c; --cool:#5ad1e6; --nav-bg:rgba(11,10,9,.72);
+  --grid-line:rgba(236,230,219,.05); --frame-shadow:0 40px 90px -40px rgba(0,0,0,.85);
+  --divider:rgba(236,230,219,.1);
+  --card:linear-gradient(160deg, rgba(236,230,219,.045), rgba(236,230,219,.012));
+  --card-hover:linear-gradient(160deg, rgba(255,138,61,.1), rgba(236,230,219,.02));
+  --glow:radial-gradient(60% 60% at 50% 0%, rgba(255,138,61,.16), transparent 70%);
   --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 html[data-mode="light"]{
-  --bg:#f7f4ef; --panel:#ffffff; --panel2:#efe9df; --border:#ddd3c4;
+  --bg:#f7f4ef; --bg2:#efe9e0; --panel:#ffffff; --panel2:#efe9df; --border:#ddd3c4;
   --text:#241f19; --dim:#6b6156; --dimmer:#a89c8c;
-  --accent2:#d9650f; --nav-bg:rgba(247,244,239,.86);
-  --grid-line:rgba(36,31,25,.06); --frame-shadow:0 20px 40px -24px rgba(36,31,25,.18);
-  --divider:rgba(36,31,25,.16);
+  --accent2:#d9650f; --cool:#0d7f93; --nav-bg:rgba(247,244,239,.78);
+  --grid-line:rgba(36,31,25,.06); --frame-shadow:0 26px 60px -30px rgba(36,31,25,.28);
+  --divider:rgba(36,31,25,.12);
+  --card:linear-gradient(160deg, rgba(36,31,25,.04), rgba(36,31,25,.01));
+  --card-hover:linear-gradient(160deg, rgba(217,101,15,.09), rgba(36,31,25,.02));
+  --glow:radial-gradient(60% 60% at 50% 0%, rgba(217,101,15,.1), transparent 70%);
 }
 *{box-sizing:border-box}
-html{background:var(--bg)}
-body{margin:0;color:var(--text);font-family:var(--mono);line-height:1.6;
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;color:var(--text);font-family:var(--sans);line-height:1.65;font-size:16px;
+  -webkit-font-smoothing:antialiased;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .cores i{transform:scaleY(.32)!important}
+}
 
-/* A fixed backdrop: a faint chip-like grid and a row of cores pulsing like
-   a live utilization wall, standing in for the terminal siltide draws once
-   it is running. Static and low-contrast enough to read text over. */
+/* A fixed backdrop: a faint chip-like grid under everything, static and
+   low-contrast enough to read text over. */
 .gpu-bg{position:fixed;inset:0;z-index:-1;background:var(--bg);overflow:hidden}
 .gpu-bg .grid-lines{position:absolute;inset:-1px;
   background-image:
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size:44px 44px;
+  mask-image:radial-gradient(120% 90% at 50% 0%, #000 25%, transparent 78%);
 }
-@media (prefers-reduced-motion: reduce){.cores i{animation:none!important;transform:scaleY(.32)!important}}
 img{max-width:100%;display:block}
-a{color:var(--accent2)}
+a{color:var(--accent2);text-underline-offset:3px}
 [hidden]{display:none!important}
-.wrap{max-width:1040px;margin:0 auto;padding-inline:20px}
-code,.mono{font-family:var(--mono)}
-h1,h2,h3{font-family:var(--mono);font-weight:600;letter-spacing:-.01em}
-h2{font-size:1.5rem;margin:0 0 .3em}
-.lede{color:var(--dim);margin:0 0 2rem}
-section{padding:64px 0}
-section:last-of-type{padding-bottom:24px}
-section+section{border-top:1px solid var(--divider)}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:20px}
+@media (max-width:420px){.wrap{padding-inline:16px}}
+.wrap.narrow{max-width:760px}
+code,.mono,kbd,table,.eyebrow{font-family:var(--mono)}
+code{font-size:.92em}
+
+/* Type: headings are monospaced and set tight, prose is not. */
+h1,h2,h3{font-family:var(--mono);font-weight:700;letter-spacing:-.03em;line-height:1.08;margin:0}
+h1{font-size:clamp(1.85rem,6.2vw,4.4rem)}
+h2{font-size:clamp(1.5rem,4vw,2.9rem);margin:0 0 .35em}
+h3{font-size:1.06rem;letter-spacing:-.01em}
+p{margin:0 0 1rem}
+.lede{color:var(--dim);margin:0 0 2.4rem;font-size:1.06rem;max-width:64ch}
+.note{color:var(--dim);font-size:.9rem;max-width:74ch}
+
+/* An eyebrow numbers the sections, which gives a long page a spine to
+   scroll along instead of nine identical headings. */
+.eyebrow{display:flex;align-items:center;gap:10px;font-size:.74rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 14px}
+.eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);flex:none}
+.eyebrow b{color:var(--accent);font-weight:700}
+
+section{padding:clamp(72px,9vw,124px) 0;position:relative}
+section:last-of-type{padding-bottom:clamp(48px,6vw,80px)}
+/* Alternating bands carry the rhythm where a page has them; a page that runs
+   straight through still gets a rule between sections, and never both. */
+.band{background:var(--bg2);border-block:1px solid var(--divider)}
+section+section:not(.band){border-top:1px solid var(--divider)}
+.band+section{border-top:none}
 
 .skip-link{position:absolute;left:8px;top:calc(-48px - env(safe-area-inset-top,0px));z-index:100;
   background:var(--accent);color:#1c0d02;font-family:var(--mono);font-weight:700;font-size:.85rem;
@@ -48,100 +87,194 @@ section+section{border-top:1px solid var(--divider)}
 .skip-link:focus{top:calc(8px + env(safe-area-inset-top,0px))}
 
 nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--nav-bg);
-  backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-nav .wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;height:56px;max-width:1040px}
-.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);text-decoration:none;white-space:nowrap;justify-self:start;grid-column:1}
+  backdrop-filter:saturate(140%) blur(14px);border-bottom:1px solid var(--border)}
+nav .wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;height:58px}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;color:var(--text);
+  text-decoration:none;white-space:nowrap;justify-self:start;grid-column:1;letter-spacing:-.02em}
 .brand img{width:22px;height:22px}
-nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem;white-space:nowrap}
+nav a.link{color:var(--dim);text-decoration:none;font-size:.9rem;white-space:nowrap;
+  font-family:var(--mono);transition:color .15s ease}
 nav a.link:hover{color:var(--text)}
-.nav-sections{display:flex;gap:20px;justify-self:center;grid-column:2}
-.nav-right{display:flex;align-items:center;gap:16px;min-width:0;justify-self:end;grid-column:3}
-.lang-btn,.mode-btn{font-family:var(--mono);font-size:.8rem;background:none;border:1px solid var(--border);
-  color:var(--dim);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap;flex:none}
+.nav-sections{display:flex;gap:22px;justify-self:center;grid-column:2}
+.nav-right{display:flex;align-items:center;gap:14px;min-width:0;justify-self:end;grid-column:3}
+.lang-btn,.mode-btn{font-family:var(--mono);font-size:.78rem;background:none;border:1px solid var(--border);
+  color:var(--dim);border-radius:999px;padding:4px 11px;cursor:pointer;white-space:nowrap;flex:none;
+  transition:color .15s ease,border-color .15s ease}
 .lang-btn:hover,.mode-btn:hover{color:var(--text);border-color:var(--dimmer)}
-@media (max-width:640px){
-  .nav-sections{display:none}
-}
+/* How far down the page you are, drawn on the navigation's own bottom edge. */
+.progress{position:absolute;left:0;bottom:-1px;height:2px;width:0;
+  background:linear-gradient(90deg,var(--cool),var(--accent));transition:width .1s linear}
+@media (max-width:700px){.nav-sections{display:none}}
 
-.hero{padding:72px 0 48px;position:relative;overflow:hidden}
+/* Hero */
+.hero{padding:clamp(56px,8vw,104px) 0 clamp(48px,6vw,72px);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:var(--glow);pointer-events:none}
 .hero .wrap{position:relative;z-index:1}
-.hero .cores{position:absolute;left:0;right:0;top:0;height:150px;display:flex;
-  align-items:flex-start;gap:clamp(2px,.6vw,9px);padding-inline:4vw;opacity:.4;z-index:0}
-.hero .cores i{flex:1;min-width:2px;height:100%;border-radius:0 0 2px 2px;font-style:normal;
-  background:linear-gradient(to bottom, var(--accent), transparent 85%);
+.hero .cores{position:absolute;left:0;right:0;top:0;height:230px;display:flex;
+  align-items:flex-start;gap:clamp(2px,.6vw,9px);padding-inline:3vw;opacity:.34;z-index:0}
+.hero .cores i{flex:1;min-width:2px;height:100%;border-radius:0 0 3px 3px;font-style:normal;
+  background:linear-gradient(to bottom, var(--accent), transparent 82%);
   transform-origin:top;animation:gpuPulse 4s ease-in-out infinite}
-.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#8a3d0f,transparent 85%)}
-.hero .cores i:nth-child(5n){background:linear-gradient(to bottom,var(--accent2),transparent 85%)}
+.hero .cores i:nth-child(3n){background:linear-gradient(to bottom,#8a3d0f,transparent 82%)}
+.hero .cores i:nth-child(5n){background:linear-gradient(to bottom,var(--accent2),transparent 82%)}
+.hero .cores i:nth-child(8n){background:linear-gradient(to bottom,var(--cool),transparent 82%)}
 .hero .cores i:nth-child(2n){animation-duration:5.5s;animation-delay:-1.3s}
 .hero .cores i:nth-child(3n+1){animation-duration:3.2s;animation-delay:-2.1s}
 .hero .cores i:nth-child(4n+2){animation-duration:6.4s;animation-delay:-.6s}
 .hero .cores i:nth-child(7n){animation-duration:2.6s;animation-delay:-3.4s}
 .hero .cores i:nth-child(11n){animation-duration:7.1s;animation-delay:-4.8s}
-@keyframes gpuPulse{0%,100%{transform:scaleY(.12)}50%{transform:scaleY(1)}}
-.hero h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 .4em;color:var(--text)}
-.hero h1 .accent{color:var(--accent)}
-.hero .lede{font-size:1.05rem}
-.cta{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 40px}
-.btn{font-family:var(--mono);font-size:.92rem;padding:10px 18px;border-radius:8px;text-decoration:none;
-  border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px}
-.btn.primary{background:var(--accent);color:#1c0d02;border-color:var(--accent);font-weight:700}
-.btn.ghost{color:var(--text)}
+@keyframes gpuPulse{0%,100%{transform:scaleY(.1)}50%{transform:scaleY(1)}}
+.hero h1{margin:0 0 .35em;max-width:17ch}
+.hero h1 .accent{background:linear-gradient(100deg,var(--accent) 10%,var(--accent2) 55%,var(--cool) 130%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lede{font-size:clamp(1rem,1.6vw,1.16rem);max-width:60ch;margin-bottom:1.8rem}
+.tagline{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.78rem;
+  letter-spacing:.06em;color:var(--dim);border:1px solid var(--border);background:var(--panel);
+  border-radius:999px;padding:5px 14px;margin:0 0 22px}
+.tagline .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none;
+  box-shadow:0 0 0 0 rgba(255,138,61,.6);animation:ping 2.6s ease-out infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,138,61,.55)}70%,100%{box-shadow:0 0 0 9px rgba(255,138,61,0)}}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 20px}
+.btn{font-family:var(--mono);font-size:.92rem;padding:11px 20px;border-radius:9px;text-decoration:none;
+  border:1px solid var(--border);display:inline-flex;align-items:center;gap:8px;
+  transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2));color:#1c0d02;
+  border-color:transparent;font-weight:700;box-shadow:0 10px 30px -14px var(--accent)}
+.btn.primary:hover{box-shadow:0 16px 34px -14px var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
 .btn.ghost:hover{border-color:var(--dimmer)}
+/* The one-line claim strip under the buttons: three facts, no adjectives. */
+.facts{display:flex;flex-wrap:wrap;gap:0 26px;font-family:var(--mono);font-size:.82rem;color:var(--dim);
+  margin:0 0 40px;padding:0;list-style:none}
+.facts li{display:flex;align-items:center;gap:7px}
+.facts b{color:var(--text);font-weight:700}
+.facts li+li::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--dimmer);
+  margin-right:19px;flex:none}
 
-.frame{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--frame-shadow)}
+/* The terminal frame the recording plays in. */
+.frame{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--frame-shadow);
+  position:relative}
+.frame::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
 .frame img{width:100%}
 .term{background:#0d1117}
-.termbar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#161b22;border-bottom:1px solid var(--border)}
+.termbar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#161b22;border-bottom:1px solid #21262d}
 .termbar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}
 .termbar i:nth-child(2){background:#febc2e}
 .termbar i:nth-child(3){background:#28c840}
-.termbar span{flex:1;text-align:center;font-size:.78rem;color:#8b949e}
+.termbar span{flex:1;text-align:center;font-size:.78rem;color:#8b949e;font-family:var(--mono)}
 .termbtn{font-family:var(--mono);font-size:.72rem;background:none;border:1px solid #30363d;color:#8b949e;
   border-radius:6px;padding:3px 9px;cursor:pointer}
 .termbtn:hover{color:#c9d1d9;border-color:#8b949e}
 .termbody{overflow-x:auto;padding:14px 16px}
-/* 150 columns of a monospace face are 90em wide, so this is the size that fits the capture in the frame, with a floor for narrow screens where the body scrolls sideways instead. */
-.termbody pre{margin:0;color:#c9d1d9;line-height:1.32;white-space:pre;font-size:max(7.5px,calc((min(100vw,1040px) - 72px) / 90))}
+/* 150 columns of a monospace face are 90em wide, so this is the size that fits
+   the capture in the frame, with a floor for narrow screens where the body
+   scrolls sideways instead. */
+.termbody pre{margin:0;color:#c9d1d9;line-height:1.32;white-space:pre;
+  font-size:max(7.5px,calc((min(100vw,1100px) - 98px) / 90))}
 .termbody pre div{min-height:1.32em}
 
-.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;
-  display:flex;flex-direction:column}
-.card .q{font-family:var(--mono);color:var(--text);font-weight:600;margin:0 0 8px;min-height:3.2em}
-.card .tab{display:inline-block;font-family:var(--mono);font-size:.75rem;color:var(--accent);
-  background:rgba(255,138,61,.12);border:1px solid rgba(255,138,61,.35);border-radius:999px;padding:2px 9px;margin-bottom:8px}
-.card p{margin:0;color:var(--dim);font-size:.92rem}
+/* Cards */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+/* A bento: the first card takes the width of two, so the eye has somewhere to
+   land before it starts scanning a uniform grid. */
+.bento{display:grid;gap:16px;grid-template-columns:repeat(6,1fr)}
+.bento>*{grid-column:span 2}
+.bento>*:first-child{grid-column:span 3}
+.bento>*:nth-child(2){grid-column:span 3}
+/* Six cards do not divide evenly into rows of three and two, so the last one
+   takes the full width rather than sitting alone in a third of a row. */
+.bento>*:last-child{grid-column:span 6}
+@media (max-width:860px){.bento{grid-template-columns:repeat(2,1fr)}.bento>*,.bento>*:first-child,.bento>*:nth-child(2),.bento>*:last-child{grid-column:span 2}}
+@media (max-width:560px){.bento{grid-template-columns:1fr}.bento>*,.bento>*:first-child,.bento>*:nth-child(2),.bento>*:last-child{grid-column:span 1}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:transform .2s ease,border-color .2s ease,background .2s ease}
+.card:hover{transform:translateY(-3px);border-color:var(--dimmer);background:var(--card-hover)}
+.card .q{font-family:var(--mono);color:var(--text);font-weight:700;margin:0 0 10px;font-size:1rem;
+  letter-spacing:-.015em;line-height:1.35}
+.card .tab{display:inline-block;align-self:flex-start;font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.06em;color:var(--accent);background:rgba(255,138,61,.1);
+  border:1px solid rgba(255,138,61,.3);border-radius:999px;padding:3px 10px;margin-bottom:12px}
+.card p{margin:0;color:var(--dim);font-size:.93rem}
 
-.tabgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
-.tabcell{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
-.tabcell b{font-family:var(--mono);display:block;font-size:.9rem;color:var(--text)}
-.tabcell span{font-size:.82rem;color:var(--dim)}
+/* A dense wall of short labels: the tab list and anything else that is a set
+   of names rather than a set of paragraphs. */
+.tabgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.tabcell{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 15px;
+  transition:border-color .18s ease,transform .18s ease}
+.tabcell:hover{border-color:var(--accent);transform:translateY(-2px)}
+.tabcell b{font-family:var(--mono);display:block;font-size:.9rem;color:var(--text);letter-spacing:-.01em}
+.tabcell span{font-size:.84rem;color:var(--dim)}
+
+/* Vendors, as a marquee: fifteen names read faster moving than stacked. */
+.marquee{--speed:46s;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  margin-bottom:28px;padding:4px 0}
+.marquee-track{display:flex;width:max-content;gap:10px;animation:slide var(--speed) linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.chip{font-family:var(--mono);font-size:.86rem;white-space:nowrap;color:var(--text);
+  background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:7px 16px}
+.chip em{font-style:normal;color:var(--dim)}
+.chip.real{border-color:rgba(90,209,230,.45);color:var(--text)}
+.chip.real::before{content:"●";color:var(--cool);margin-right:7px;font-size:.7em;vertical-align:middle}
+
+/* The measured numbers, as a wall rather than a table. */
+.statwall{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:26px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px}
+.stat .v{font-family:var(--mono);font-size:clamp(1.8rem,3.4vw,2.5rem);font-weight:700;letter-spacing:-.04em;
+  color:var(--text);line-height:1;display:block;margin-bottom:8px}
+.stat .v small{font-size:.44em;color:var(--dim);font-weight:400;letter-spacing:0;margin-left:3px}
+.stat .k{font-size:.86rem;color:var(--dim)}
+/* The figures do not animate on their way in. They are measurements, and a
+   number that counts up is a wrong number for as long as it is counting. */
+details.more{border:1px solid var(--border);border-radius:12px;background:var(--card);padding:0 18px;margin-top:4px}
+details.more summary{cursor:pointer;font-family:var(--mono);font-size:.88rem;color:var(--dim);padding:14px 0;
+  list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:"▸ ";color:var(--accent)}
+details.more[open] summary::before{content:"▾ "}
+details.more[open]{padding-bottom:14px}
+details.more summary:hover{color:var(--text)}
 
 kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--border);border-bottom-width:2px;
-  border-radius:5px;padding:2px 7px;font-size:.82rem;color:var(--text)}
+  border-radius:6px;padding:2px 8px;font-size:.82rem;color:var(--text)}
 
 table{width:100%;border-collapse:collapse;font-size:.88rem}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border)}
+#keys td:first-child,#keys th:first-child{width:clamp(150px,22%,230px)}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--border)}
 th:first-child,td:first-child{padding-left:0}
 th:last-child,td:last-child{padding-right:0}
-th{color:var(--dim);font-weight:600;font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+th{color:var(--dim);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em}
+tbody tr:hover td,table tr:hover td{background:rgba(255,138,61,.04)}
 .tablewrap{overflow-x:auto}
 
-.install pre{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;
-  overflow-x:auto;position:relative;font-size:.86rem}
-.install .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.install .tabbtn{font-family:var(--mono);font-size:.82rem;background:none;border:1px solid var(--border);
-  color:var(--dim);border-radius:7px;padding:6px 12px;cursor:pointer}
-.install .tabbtn.active{color:var(--text);border-color:var(--accent)}
+/* Install */
+.install pre,pre{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;
+  overflow-x:auto;position:relative;font-size:.86rem;font-family:var(--mono);line-height:1.6}
+.install .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.install .tabbtn{font-family:var(--mono);font-size:.82rem;background:var(--panel);border:1px solid var(--border);
+  color:var(--dim);border-radius:8px;padding:7px 14px;cursor:pointer;transition:color .15s ease,border-color .15s ease}
+.install .tabbtn:hover{color:var(--text)}
+.install .tabbtn.active{color:var(--text);border-color:var(--accent);background:rgba(255,138,61,.08)}
 .copy{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:.75rem;background:var(--panel);
   border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 9px;cursor:pointer}
-.copy:hover{color:var(--text)}
+.copy:hover{color:var(--text);border-color:var(--dimmer)}
 .install-panel{display:none}
 .install-panel.active{display:block}
 
-.cta-section h2{margin-bottom:.3em}
+.cta-section{text-align:center}
+.cta-section .lede{margin-inline:auto}
 .cta-section .btn{margin-top:8px}
-footer{padding:24px 0 40px;color:var(--dim);font-size:.85rem;border-top:1px solid var(--divider)}
+
+footer{padding:30px 0 44px;color:var(--dim);font-size:.85rem;border-top:1px solid var(--divider)}
 footer .row{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:center}
 footer a{color:var(--dim)}
 footer a:hover{color:var(--text)}
+
+/* Sections arrive as you reach them. Without JS, or with reduced motion
+   asked for, everything is simply visible. */
+.reveal{opacity:0;transform:translateY(18px)}
+.revealed{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion: reduce){.reveal{opacity:1;transform:none}}

@@ -128,3 +128,54 @@ function accelApplyMode(mode){
     accelApplyMode(document.documentElement.getAttribute("data-mode") === "light" ? "dark" : "light");
   });
 })();
+
+// How far down the page you are, drawn on the navigation's bottom edge. The
+// element is made here rather than repeated in every page's markup, so a new
+// page gets it by including this file and nothing else.
+(function(){
+  var nav = document.querySelector("nav");
+  if (!nav) { return; }
+  var bar = nav.appendChild(document.createElement("div"));
+  bar.className = "progress";
+  var queued = false;
+  function draw(){
+    queued = false;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (h > 0 ? Math.min(1, window.scrollY / h) * 100 : 0) + "%";
+  }
+  addEventListener("scroll", function(){
+    if (!queued) { queued = true; requestAnimationFrame(draw); }
+  }, { passive: true });
+  draw();
+})();
+
+// Sections arrive as they are reached. The starting class is added here and
+// not in the markup, so a reader without JavaScript is never left with a page
+// of invisible text.
+(function(){
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (still || !window.IntersectionObserver) { return; }
+  var parts = document.querySelectorAll(
+    "section:not(.hero) > .wrap > *, .hero .frame, .bento > *, .statwall > *, .tabgrid > *");
+  var seen = new WeakSet();
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) { return; }
+      io.unobserve(e.target);
+      // A short stagger across whatever came into view together, capped so a
+      // long grid never leaves the last cell waiting on the first.
+      var i = e.target.dataset.revealIndex || 0;
+      setTimeout(function(){ e.target.classList.add("revealed"); }, Math.min(i * 45, 260));
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+  parts.forEach(function(el, i){
+    if (seen.has(el)) { return; }
+    seen.add(el);
+    // Whatever is already on screen at load is left alone. Hiding it only to
+    // fade it back in a frame later is a flicker, not an entrance.
+    if (el.getBoundingClientRect().top < window.innerHeight) { return; }
+    el.dataset.revealIndex = i % 8;
+    el.classList.add("reveal");
+    io.observe(el);
+  });
+})();

@@ -21,7 +21,12 @@ More on [the site](https://mesutoezdil.github.io/siltide/): every tab, every key
 
 The vendor list follows the device plugins in [HAMi](https://github.com/Project-HAMi/HAMi/tree/master/pkg/device), plus Apple and Intel. Every vendor is auto-detected. `--vendors nvidia,ascend` limits the probe. NVIDIA (an H100 SXM, driver 570.211.01, every metric checked against `nvidia-smi`) and Apple silicon (an M4 Pro) run on real hardware today. The rest are built against each vendor's documented tool output, with a fixture behind every parser. A hardware report through [an issue](https://github.com/mesutoezdil/siltide/issues/new/choose) is the fastest way to move one from "should work" to confirmed.
 
-| Vendor | Devices | Source | Processes |
+**Per-process** is the column worth reading first: whether the vendor's tool
+names the processes holding a device, not just the device totals. It is what
+turns "this GPU is at 90%" into "this job is holding it". Where it says no,
+the vendor's own tool does not report it, so neither do we.
+
+| Vendor | Devices | Source | Per-process |
 |---|---|---|---|
 | NVIDIA | GPUs, MIG slices | NVML loaded with `dlopen` (no cgo), Xid events, NVLink, ECC, row remap, PCIe AER via sysfs | yes, with `/proc` enrichment |
 | Apple | Apple silicon GPU | `ioreg`, IOReport (power, energy), SMC (temperature), AGX user clients (per-process GPU time) | yes |
@@ -47,11 +52,12 @@ The short version, with every platform and the verification steps in
 [docs/INSTALL.md](docs/INSTALL.md):
 
 ```sh
-# One line: picks the build for this machine, checks it against the published
-# checksums, and installs into /usr/local/bin (or ~/.local/bin)
-( f="$(mktemp)" && trap 'rm -f "$f"' EXIT &&
-  curl -fsSL https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh -o "$f" &&
-  sh "$f" )
+# Download the installer, then run it. Two steps rather than curl | sh, so
+# you can read the script first. It picks the build for this machine, checks
+# it against the published checksums, and installs into /usr/local/bin
+# (or ~/.local/bin if that needs a password).
+curl -fsSLO https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh
+sh install.sh
 
 brew install mesutoezdil/tap/siltide              # macOS and Linux
 go install github.com/mesutoezdil/siltide@latest  # from source

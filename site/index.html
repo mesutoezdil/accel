@@ -70,12 +70,19 @@
 <section class="hero">
   <div class="cores" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="wrap">
+    <p class="tagline"><span class="dot"></span><span data-en="Open source · Apache-2.0 · one static binary" data-zh="开源 · Apache-2.0 · 单个静态二进制文件">Open source · Apache-2.0 · one static binary</span></p>
     <h1><span class="accent">siltide</span> <span data-en="finds every accelerator in the machine." data-zh="能找到机器里的每一块加速卡。">finds every accelerator in the machine.</span></h1>
     <p class="lede" data-en="Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago." data-zh="目前支持十五家厂商：GPU、NPU、苹果自研芯片，以及机架里能叫得上名字的其他加速器。它会显示谁在用每一块设备、温度多高，还有十分钟前发生了什么。">Fifteen vendors so far: GPUs, NPUs, Apple's own silicon, and whatever else a rack calls an accelerator this year. It shows who is using each device, how hot it is running, and what happened to it ten minutes ago.</p>
     <div class="cta">
       <a class="btn primary" href="#install" data-en="Install →" data-zh="安装 →">Install →</a>
       <a class="btn ghost" href="https://github.com/mesutoezdil/siltide" data-en="View source ↗" data-zh="查看源码 ↗">View source ↗</a>
     </div>
+    <ul class="facts">
+      <li><b>15</b> <span data-en="vendors" data-zh="家厂商">vendors</span></li>
+      <li><b>16</b> <span data-en="tabs" data-zh="个标签页">tabs</span></li>
+      <li><b>19 MB</b> <span data-en="at rest" data-zh="常驻内存">at rest</span></li>
+      <li><b data-en="No agent" data-zh="无 agent">No agent</b> <span data-en="no daemon, no cgo" data-zh="无守护进程，无 cgo">no daemon, no cgo</span></li>
+    </ul>
     <div class="frame term" id="demo">
       <div class="termbar"><i></i><i></i><i></i>
         <span class="mono">siltide</span>
@@ -89,9 +96,10 @@
 
 <section id="why">
   <div class="wrap">
+    <p class="eyebrow"><b>01</b> <span data-en="Why" data-zh="为什么">Why</span></p>
     <h2 data-en="Why siltide" data-zh="为什么选择 siltide">Why siltide</h2>
     <p class="lede" data-en="These are the questions that come up when a job is slow, a device sits idle, or a bill looks wrong. Each one points at a tab." data-zh="这些是任务变慢、设备闲置或账单不对劲时会问的问题，每一个都对应一个标签页。">These are the questions that come up when a job is slow, a device sits idle, or a bill looks wrong. Each one points at a tab.</p>
-    <div class="grid">
+    <div class="bento">
       <div class="card"><span class="tab">Overview</span><p class="q" data-en="Which device is idle while a pod still holds it?" data-zh="哪块设备处于闲置状态，却仍被某个 Pod 占用？">Which device is idle while a pod still holds it?</p><p data-en="Fleet totals and per-device state land on one screen. Idle-allocated devices get flagged there too." data-zh="集群汇总和每块设备的状态都在同一屏幕上，闲置却仍被占用的设备也会在这里标出来。">Fleet totals and per-device state land on one screen. Idle-allocated devices get flagged there too.</p></div>
       <div class="card"><span class="tab">Workloads</span><p class="q" data-en="Which workload is wasting spend?" data-zh="哪个工作负载在浪费开销？">Which workload is wasting spend?</p><p data-en="Set your own price per hour, and siltide turns held devices into a spend and waste figure per workload." data-zh="设置好每小时的价格，siltide 就能把占用的设备换算成每个工作负载的花费和浪费金额。">Set your own price per hour, and siltide turns held devices into a spend and waste figure per workload.</p></div>
       <div class="card"><span class="tab">Kubernetes · Nodes</span><p class="q" data-en="Which pod, and which Slurm job, owns this device?" data-zh="这块设备属于哪个 Pod，或者哪个 Slurm 作业？">Which pod, and which Slurm job, owns this device?</p><p data-en="A process traces back through its container to the pod and the workload. Slurm jobs get the same treatment." data-zh="进程会一路追溯到容器、Pod 和工作负载，Slurm 作业也是同样的处理方式。">A process traces back through its container to the pod and the workload. Slurm jobs get the same treatment.</p></div>
@@ -102,8 +110,9 @@
   </div>
 </section>
 
-<section id="views">
+<section id="views" class="band">
   <div class="wrap">
+    <p class="eyebrow"><b>02</b> <span data-en="The interface" data-zh="界面">The interface</span></p>
     <h2 data-en="16 tabs" data-zh="16 个标签页">16 tabs</h2>
     <p class="lede" data-en="A tab hides itself when it has nothing to show: Links without link data, Kubernetes without a pod source." data-zh="标签页没有内容可显示时会自动隐藏：比如没有链路数据就不显示 Links，没有 Pod 来源就不显示 Kubernetes。">A tab hides itself when it has nothing to show: Links without link data, Kubernetes without a pod source.</p>
     <div class="tabgrid">
@@ -129,6 +138,7 @@
 
 <section id="keys">
   <div class="wrap">
+    <p class="eyebrow"><b>03</b> <span data-en="Keys" data-zh="按键">Keys</span></p>
     <h2 data-en="Keyboard first" data-zh="键盘优先">Keyboard first</h2>
     <p class="lede" data-en="Every action is rebindable in the config. The mouse works too: click a tab, a row, or a header." data-zh="每个操作都能在配置文件里重新绑定，鼠标也能用：点击标签页、行或表头即可。">Every action is rebindable in the config. The mouse works too: click a tab, a row, or a header.</p>
     <div class="tablewrap">
@@ -150,10 +160,15 @@
   </div>
 </section>
 
-<section id="vendors">
+<section id="vendors" class="band">
   <div class="wrap">
+    <p class="eyebrow"><b>04</b> <span data-en="Hardware" data-zh="硬件">Hardware</span></p>
     <h2 data-en="15 vendors" data-zh="15 家厂商">15 vendors</h2>
     <p class="lede" data-en-html="NVIDIA and Apple silicon run on real hardware today. The rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href='https://github.com/mesutoezdil/siltide#supported-accelerators'>the README</a>." data-zh-html="NVIDIA 和苹果自研芯片已经在真实硬件上验证过，其余厂商都是照着各自工具的输出实现的，每个解析器都配有一份真实样本。完整表格和来源见<a href='https://github.com/mesutoezdil/siltide#supported-accelerators'>README</a>。">NVIDIA and Apple silicon run on real hardware today. The rest are built against each vendor's own tool output, one fixture per parser. The full table, with sources, is in <a href="https://github.com/mesutoezdil/siltide#supported-accelerators">the README</a>.</p>
+    <div class="marquee" aria-hidden="true"><div class="marquee-track"><span class="chip real">NVIDIA</span><span class="chip real">Apple silicon</span><span class="chip">AMD</span><span class="chip">Intel</span><span class="chip">Huawei Ascend</span><span class="chip">AWS Neuron</span><span class="chip">Cambricon</span><span class="chip">Enflame</span><span class="chip">Hygon</span><span class="chip">Iluvatar CoreX</span><span class="chip">Kunlunxin</span><span class="chip">MetaX</span><span class="chip">Moore Threads</span><span class="chip">Biren</span><span class="chip">VastAI</span><span class="chip real">NVIDIA</span><span class="chip real">Apple silicon</span><span class="chip">AMD</span><span class="chip">Intel</span><span class="chip">Huawei Ascend</span><span class="chip">AWS Neuron</span><span class="chip">Cambricon</span><span class="chip">Enflame</span><span class="chip">Hygon</span><span class="chip">Iluvatar CoreX</span><span class="chip">Kunlunxin</span><span class="chip">MetaX</span><span class="chip">Moore Threads</span><span class="chip">Biren</span><span class="chip">VastAI</span></div></div>
+    <p class="note" data-en="A ● marks a vendor confirmed on real hardware. The rest are built against the vendor's own documented tool output, with a captured fixture behind every parser." data-zh="带 ● 的厂商已在真实硬件上验证过。其余厂商都是照着各自工具的文档化输出实现的，每个解析器背后都有一份采集到的真实样本。">A ● marks a vendor confirmed on real hardware. The rest are built against the vendor’s own documented tool output, with a captured fixture behind every parser.</p>
+    <details class="more">
+      <summary data-en="Every vendor, and what it is read with" data-zh="全部厂商，以及各自的数据来源">Every vendor, and what it is read with</summary>
     <div class="tablewrap">
     <table>
       <tr><th>Vendor</th><th>Source</th></tr>
@@ -174,13 +189,23 @@
       <tr><td>VastAI</td><td>PCI sysfs</td></tr>
     </table>
     </div>
+    </details>
   </div>
 </section>
 
 <section id="numbers">
   <div class="wrap">
+    <p class="eyebrow"><b>05</b> <span data-en="Measured" data-zh="实测">Measured</span></p>
     <h2 data-en="What it costs" data-zh="它的开销">What it costs</h2>
     <p class="lede" data-en="Every figure below was measured on one machine, named under the table, and each says how to measure it again. Nothing here is compared against another tool." data-zh="下面每一个数字都在同一台机器上实测得出，机器配置列在表格下方，每一行也写明了复现的方法。这里没有和任何其他工具做比较。">Every figure below was measured on one machine, named under the table, and each says how to measure it again. Nothing here is compared against another tool.</p>
+    <div class="statwall">
+      <div class="stat"><span class="v">0.03<small>s</small></span><span class="k" data-en="to the first rendered snapshot" data-zh="渲染出第一屏所需时间">to the first rendered snapshot</span></div>
+      <div class="stat"><span class="v">19<small>MB</small></span><span class="k" data-en="resident, with 17 devices in view" data-zh="视图内 17 块设备时的常驻内存">resident, with 17 devices in view</span></div>
+      <div class="stat"><span class="v">0.38<small>ms</small></span><span class="k" data-en="to redraw the Overview, 200 by 60" data-zh="重绘 Overview，200x60 字符">to redraw the Overview, 200 by 60</span></div>
+      <div class="stat"><span class="v">11<small>&micro;s</small></span><span class="k" data-en="per keystroke in the filter bar" data-zh="筛选栏里每敲一个键">per keystroke in the filter bar</span></div>
+    </div>
+    <details class="more">
+      <summary data-en="All nine measurements, and how to repeat each one" data-zh="全部九项测量，以及各自的复现方法">All nine measurements, and how to repeat each one</summary>
     <div class="tablewrap">
     <table>
       <tr>
@@ -200,18 +225,21 @@
     </table>
     </div>
     <p data-en="Measured on an Apple M5 with 10 cores and 24 GB, macOS 26.6.2, Go 1.26.5, siltide v0.0.37-main.1-4-g16fd798. The interface figures use the simulated fleet of 17 devices; the hardware figure is this machine and its single Apple GPU, where one vendor probe takes most of the startup. A Linux host with eight NVIDIA cards will not reproduce these numbers, and the startup figure in particular moves with how many vendors are present. Run make bench for the last four rows; docs/PERFORMANCE.md in the repository carries the scripts behind the rest." data-zh="测量环境：Apple M5，10 核，24 GB 内存，macOS 26.6.2，Go 1.26.5，siltide v0.0.37-main.1-4-g16fd798。界面相关数字使用 17 块设备的模拟集群；硬件相关数字来自这台机器上唯一的一块 Apple GPU，启动耗时的大部分花在一次厂商探测上。装有 8 块 NVIDIA 显卡的 Linux 主机不会复现这些数字，启动耗时尤其会随在场厂商的数量变化。表格最后四行可用 make bench 复现；仓库里的 docs/PERFORMANCE.md 收录了产出其余数字的脚本。" style="color:var(--dim);font-size:.88rem;margin-top:1.2rem">Measured on an Apple M5 with 10 cores and 24 GB, macOS 26.6.2, Go 1.26.5, siltide v0.0.37-main.1-4-g16fd798. The interface figures use the simulated fleet of 17 devices; the hardware figure is this machine and its single Apple GPU, where one vendor probe takes most of the startup. A Linux host with eight NVIDIA cards will not reproduce these numbers, and the startup figure in particular moves with how many vendors are present. Run make bench for the last four rows.</p>
+    </details>
   </div>
 </section>
 
 <section id="name">
   <div class="wrap">
+    <p class="eyebrow"><b>06</b> <span data-en="The name" data-zh="名字">The name</span></p>
     <h2 data-en="The name" data-zh="名字的由来">The name</h2>
     <p class="lede" data-en="siltide is silicon and tide: the rise and fall of load across a room full of silicon, which is what the interface spends its time drawing. The name says nothing about a vendor on purpose. No GPU, no CUDA, no NPU: 15 accelerator families are read the same way here, and a tool that reads all of them should not sound like it belongs to one." data-zh="siltide 由 silicon（硅）和 tide（潮汐）组成：一屋子芯片上负载的涨落，也正是这个界面大部分时间在画的东西。这个名字刻意不带任何厂商色彩——没有 GPU，没有 CUDA，也没有 NPU。这里用同一套方式读取 15 种加速器，能读遍它们的工具不该听起来只属于其中一家。">siltide is silicon and tide: the rise and fall of load across a room full of silicon, which is what the interface spends its time drawing. The name says nothing about a vendor on purpose. No GPU, no CUDA, no NPU: 15 accelerator families are read the same way here, and a tool that reads all of them should not sound like it belongs to one.</p>
   </div>
 </section>
 
-<section id="install" class="install">
+<section id="install" class="install band">
   <div class="wrap">
+    <p class="eyebrow"><b>07</b> <span data-en="Install" data-zh="安装">Install</span></p>
     <h2 data-en="Install" data-zh="安装">Install</h2>
     <p class="lede" data-en="One binary. Nothing to run first, nothing to point it at." data-zh="只有一个二进制文件，不用先启动别的东西，也不用指向任何地址。">One binary. Nothing to run first, nothing to point it at.</p>
     <div class="tabs">
@@ -222,9 +250,9 @@
       <button class="tabbtn" data-p="docker" data-en="Container" data-zh="容器">Container</button>
     </div>
     <div class="install-panel active" id="p-bin">
-<pre><button class="copy">copy</button><code>( f="$(mktemp)" &amp;&amp; trap 'rm -f "$f"' EXIT &amp;&amp;
-  curl -fsSL https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh -o "$f" &amp;&amp;
-  sh "$f" )</code></pre>
+<pre><button class="copy">copy</button><code>curl -fsSLO https://raw.githubusercontent.com/mesutoezdil/siltide/main/packaging/install/install.sh
+sh install.sh</code></pre>
+      <p class="note" data-en="Two steps rather than curl | sh, so you can read the script before you run it. It picks the build for this machine, verifies it against the published checksums, and installs into /usr/local/bin." data-zh="分成两步而不是 curl | sh，这样你可以先读一遍脚本再运行。它会挑选适合这台机器的构建，用发布的校验和核对，然后安装到 /usr/local/bin。">Two steps rather than <code>curl | sh</code>, so you can read the script before you run it. It picks the build for this machine, verifies it against the published checksums, and installs into <code>/usr/local/bin</code>.</p>
     </div>
     <div class="install-panel" id="p-brew">
 <pre><button class="copy">copy</button><code>brew install mesutoezdil/tap/siltide</code></pre>
