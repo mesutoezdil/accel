@@ -40,7 +40,7 @@ func (m *Model) deviceTable(devs []device.Device, height int) string {
 			memText(d.Metrics), th.opt(d.Metrics, device.Temp), th.opt(d.Metrics, device.Power), m.health(d), m.state(d), fmt.Sprint(len(d.Procs))})
 	}
 	m.headSpans = headerSpans(cols)
-	return th.table(cols, rows, m.sel, height, m.width, m.sortCol, m.sortDesc)
+	return th.tableMarks(cols, rows, m.sel, height, m.width, m.sortCol, m.sortDesc, m.markedRows())
 }
 
 // headerSpans maps column x ranges for header clicks.
@@ -603,8 +603,9 @@ func (m *Model) viewProcesses() string {
 	if !m.sortDesc {
 		dir = "asc"
 	}
-	return th.dim.Render(fmt.Sprintf("%d processes · sorted by %s %s · s next column, S reverse, click a header", len(rows), strings.ToLower(cols[min(m.sortCol, len(cols)-1)].name), dir)) + "\n" +
-		th.table(cols, out, m.sel, m.height-6, m.width, m.sortCol, m.sortDesc)
+	return th.dim.Render(fmt.Sprintf("%d processes · sorted by %s %s · %ss next column, S reverse, x marks a row",
+		len(rows), strings.ToLower(cols[min(m.sortCol, len(cols)-1)].name), dir, m.markNote())) + "\n" +
+		th.tableMarks(cols, out, m.sel, m.height-6, m.width, m.sortCol, m.sortDesc, m.markedRows())
 }
 
 // metricTab renders a bar per device for one metric family.
@@ -1030,6 +1031,8 @@ func (m Model) viewHelp() string {
 		{ActHistLive, "history: back to now"}, {ActMetric, "history: next metric"}, {ActZoomIn, "history: narrower window"}, {ActZoomOut, "history: wider window"},
 		{ActPrevDev, "history: previous device"}, {ActNextDev, "history: next device"},
 		{ActDescribe, "Kubernetes: describe pod"}, {ActLogs, "Kubernetes: container logs"}, {ActNextCont, "logs: next container"}, {ActWrap, "logs: wrap lines"},
+		{ActMark, "mark the row, or unmark it (devices, processes, pods)"}, {ActMarkAll, "mark every row in view, or clear them all"},
+		{ActYank, "copy the marked ids: pids, pod names, device ids"}, {ActYankCmd, "copy the command for them: kill, kubectl delete pod. siltide does not run it"},
 		{ActDash, "dashboard"}, {ActNextNode, "next node (filters every tab)"}, {ActPrevNode, "previous node"}, {ActExport, "export history of the devices in view to CSV"},
 		{ActHelp, "this screen"}, {ActQuit, "quit"},
 	} {

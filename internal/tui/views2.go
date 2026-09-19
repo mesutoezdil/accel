@@ -451,8 +451,8 @@ func (m *Model) viewKube() string {
 	if src == "" {
 		src = "processes"
 	}
-	return th.bold.Render("Pods on accelerators") + th.dim.Render("  source: "+src+"  ·  held = allocated through the kubelet with no process yet  ·  ⏎ describe, l logs, :ns NAME") + "\n" +
-		th.table(cols, out, m.sel, m.height-6, m.width, -1, false)
+	return th.bold.Render("Pods on accelerators") + th.dim.Render("  source: "+src+"  ·  held = allocated through the kubelet with no process yet  ·  "+m.markNote()+"⏎ describe, l logs, x marks a row") + "\n" +
+		th.tableMarks(cols, out, m.sel, m.height-6, m.width, -1, false, m.markedRows())
 }
 
 func (m *Model) describe() {

@@ -42,6 +42,10 @@ const (
 	ActNextNode Action = "next_node"
 	ActPrevNode Action = "prev_node"
 	ActExport   Action = "export"
+	ActMark     Action = "mark"
+	ActMarkAll  Action = "mark_all"
+	ActYank     Action = "yank"
+	ActYankCmd  Action = "yank_command"
 )
 
 // defaultKeys maps actions to keys; several keys per action are allowed.
@@ -57,20 +61,39 @@ var defaultKeys = map[Action][]string{
 	ActPrevDev: {"{"}, ActNextDev: {"}"},
 	ActDescribe: {"d"}, ActLogs: {"l"}, ActNextCont: {"c"}, ActWrap: {"w"}, ActDash: {"D"},
 	ActNextNode: {"ctrl+n"}, ActPrevNode: {"ctrl+p"}, ActExport: {"ctrl+e"},
+	ActMark: {"x"}, ActMarkAll: {"X"}, ActYank: {"y"}, ActYankCmd: {"Y"},
 }
 
 // Keymap resolves keys to actions.
 type Keymap map[string]Action
 
 // NewKeymap applies config overrides (action: "key" or "key1,key2").
+//
+// The defaults go down first and the config on top, in two passes rather than
+// one. A key the config asks for is taken off whatever holds it by default:
+// binding quit to x when x already marks a row used to be decided by map
+// order, which is to say by a coin toss on every start.
 func NewKeymap(overrides map[string]string) Keymap {
 	km := Keymap{}
 	for act, keys := range defaultKeys {
-		if o, ok := overrides[string(act)]; ok {
-			keys = strings.Split(o, ",")
-		}
 		for _, k := range keys {
 			km[strings.TrimSpace(k)] = act
+		}
+	}
+	for name, spec := range overrides {
+		act := Action(name)
+		if _, known := defaultKeys[act]; !known {
+			continue
+		}
+		for k, held := range km {
+			if held == act {
+				delete(km, k) // this action's own defaults give way to the config
+			}
+		}
+		for _, k := range strings.Split(spec, ",") {
+			if k = strings.TrimSpace(k); k != "" {
+				km[k] = act // and the key gives way to this action
+			}
 		}
 	}
 	return km
