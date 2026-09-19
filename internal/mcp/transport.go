@@ -19,10 +19,16 @@ import (
 // until r ends or ctx does. Nothing else may be written to w: a stray line on
 // stdout is a protocol error to the client on the other end, which is why
 // siltide sends its log elsewhere while this runs.
-func (s *Server) ServeStdio(ctx context.Context, r io.Reader, w io.Writer) error {
+//
+// hint, when it is not nil, receives one line of plain English the first time
+// something that is not JSON arrives. Somebody typing at this by hand gets
+// "parse error" for every line otherwise, which says what happened but not
+// what to do. A real client never triggers it, and it never touches w.
+func (s *Server) ServeStdio(ctx context.Context, r io.Reader, w io.Writer, hint io.Writer) error {
 	in := bufio.NewScanner(r)
 	in.Buffer(make([]byte, 0, 64<<10), maxMessage)
 	out := json.NewEncoder(w)
+	hinted := false
 
 	for in.Scan() {
 		if ctx.Err() != nil {
@@ -38,6 +44,12 @@ func (s *Server) ServeStdio(ctx context.Context, r io.Reader, w io.Writer) error
 			// error object rather than a reply to something.
 			if err := out.Encode(Response{JSONRPC: "2.0", Error: &RPCError{Code: -32700, Message: "parse error"}}); err != nil {
 				return err
+			}
+			if hint != nil && !hinted {
+				hinted = true
+				_, _ = io.WriteString(hint, "siltide: that was not JSON, so there is nothing to answer. "+
+					"This speaks JSON-RPC, not English.\n"+
+					"Try: echo '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}' | siltide --mcp-stdio\n")
 			}
 			continue
 		}

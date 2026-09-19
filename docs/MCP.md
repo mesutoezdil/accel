@@ -29,7 +29,8 @@ privileges it started siltide with.
 Run by hand, `--mcp-stdio` looks like a program that did not start. It is a
 server: it reads a request on stdin and answers on stdout, and says nothing
 until something asks it a question. It prints a line to stderr saying so,
-because stderr is not the protocol stream. To see it answer, hand it one:
+because stderr is not the protocol stream, and if you type something at it
+that is not JSON it says that too, once. To see it answer, hand it a request:
 
 ```sh
 echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | siltide --mcp-stdio
