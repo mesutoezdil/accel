@@ -9,6 +9,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -367,7 +368,13 @@ Flags:
 				"Waiting for a client. This is meant to be spawned by an agent, not run by hand;\n"+
 				"try --mcp-http 127.0.0.1:8765 to poke at it, or ctrl-c to stop.\n",
 			version, len(mcp.Tools()))
-		if err := mcp.New(eng, version).ServeStdio(ctx, os.Stdin, os.Stdout); err != nil && ctx.Err() == nil {
+		// The hint is for a person at a keyboard, so it is offered only when
+		// stdin is one. An agent's pipe gets the protocol and nothing else.
+		var hint io.Writer
+		if fi, err := os.Stdin.Stat(); err == nil && fi.Mode()&os.ModeCharDevice != 0 {
+			hint = os.Stderr
+		}
+		if err := mcp.New(eng, version).ServeStdio(ctx, os.Stdin, os.Stdout, hint); err != nil && ctx.Err() == nil {
 			fail(err)
 		}
 	case *mcpHTTP != "":

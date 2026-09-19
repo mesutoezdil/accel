@@ -180,7 +180,7 @@ func TestServeStdio(t *testing.T) {
 	}, "\n"))
 
 	var out bytes.Buffer
-	if err := s.ServeStdio(context.Background(), in, &out); err != nil {
+	if err := s.ServeStdio(context.Background(), in, &out, nil); err != nil {
 		t.Fatal(err)
 	}
 	lines := strings.Split(strings.TrimSpace(out.String()), "\n")
@@ -271,5 +271,42 @@ func TestServeRefusesANonLoopbackAddress(t *testing.T) {
 		if loopbackAddr(addr) {
 			t.Errorf("%s should not count as loopback", addr)
 		}
+	}
+}
+
+// Typing at the stdio server gets "parse error" for every line, which says
+// what happened and not what to do. One line of English goes to the hint
+// writer, once, and never to the protocol stream.
+func TestServeStdioHintsOnceWhenTheInputIsNotJSON(t *testing.T) {
+	s := demoServer(t)
+	in := strings.NewReader("masada miyiz\nneden\n{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}\n")
+	var out, hint bytes.Buffer
+	if err := s.ServeStdio(context.Background(), in, &out, &hint); err != nil {
+		t.Fatal(err)
+	}
+	if n := strings.Count(hint.String(), "not JSON"); n != 1 {
+		t.Fatalf("hinted %d times, want once:\n%s", n, hint.String())
+	}
+	if strings.Contains(out.String(), "not JSON") {
+		t.Fatal("the hint reached the protocol stream")
+	}
+	if n := strings.Count(out.String(), "parse error"); n != 2 {
+		t.Fatalf("want a parse error for each of the two bad lines, got %d", n)
+	}
+	if !strings.Contains(out.String(), "fleet_summary") {
+		t.Fatal("the request after the bad lines went unanswered")
+	}
+}
+
+// A pipe from an agent passes no hint writer, and then nothing but protocol
+// is produced no matter what arrives.
+func TestServeStdioStaysSilentWithoutAHintWriter(t *testing.T) {
+	s := demoServer(t)
+	var out bytes.Buffer
+	if err := s.ServeStdio(context.Background(), strings.NewReader("hello\n"), &out, nil); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out.String(), "parse error") || strings.Contains(out.String(), "not JSON") {
+		t.Fatalf("out is %q", out.String())
 	}
 }
