@@ -34,6 +34,12 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The tag that started this run, and not whatever git describe
+          # prefers. Every push to main is tagged as a pre-release, so the
+          # commit a real release is tagged at already carries a second tag,
+          # and v0.1.2-main.1 sorts above v0.1.1: releasing v0.1.1 uploaded
+          # its assets onto the pre-release and then failed on the duplicates.
+          GORELEASER_CURRENT_TAG: ${{ github.ref_name }}
       # dist/siltide-* matched nothing: goreleaser keeps each build at
       # dist/siltide_<os>_<arch>/siltide and gives it the published name only
       # on upload. The attest step took the packages, found no binaries, and
