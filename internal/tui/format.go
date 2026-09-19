@@ -241,6 +241,13 @@ type column struct {
 // Rows scroll so the selection stays within height lines. sortCol marks
 // the sorted column in the header (-1 for none).
 func (t Theme) table(cols []column, rows [][]string, sel, height, width, sortCol int, desc bool) string {
+	return t.tableMarks(cols, rows, sel, height, width, sortCol, desc, nil)
+}
+
+// tableMarks is table, with a set of row indices drawn as marked. A marked row
+// takes the accent across its whole line, which reads next to the cursor row
+// rather than fighting it: a row can be both, and then it is both.
+func (t Theme) tableMarks(cols []column, rows [][]string, sel, height, width, sortCol int, desc bool, marked map[int]bool) string {
 	var b strings.Builder
 	cell := func(c column, s string) string {
 		if c.right {
@@ -279,6 +286,9 @@ func (t Theme) table(cols []column, rows [][]string, sel, height, width, sortCol
 			cells = append(cells, cell(c, v))
 		}
 		line := strings.Join(cells, " ")
+		if marked[i] {
+			line = selected(t.accent, line)
+		}
 		if i == sel {
 			line = selected(t.sel, pad(line, max(width, lipgloss.Width(line))))
 		}

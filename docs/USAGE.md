@@ -32,6 +32,17 @@ before that:
   the next run by itself.
 - **History**: `,` and `.` scrub back and forward, `n` returns to now, `m`
   changes the metric, `+` and `-` the window.
+- **Marking**: `x` marks the row under the cursor, `X` marks everything the
+  filter shows, and pressing `X` again clears. `y` copies the ids of the
+  marked rows, `Y` copies the command for them: `kill 4000 4001`, or
+  `kubectl delete pod a b -n ml`, one command per namespace. With nothing
+  marked both act on the row under the cursor.
+
+  siltide does not run the command. It is read only by design, and it stays
+  that way on a shared node; what it saves you is retyping what you already
+  pointed at. The clipboard is written with OSC 52, which travels over SSH,
+  and the command is repeated in the notice line because OSC 52 is off by
+  default in tmux and in some terminals.
 - **`:reload`** re-reads the config file without restarting, and **`:log`**
   shows siltide's own log when `--debug` is on.
 

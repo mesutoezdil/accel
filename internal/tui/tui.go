@@ -90,6 +90,7 @@ type Model struct {
 	prev     int // tab to return to from help
 	sel      int // selected row on the current tab
 	sels     map[int]int
+	marked   map[string]bool // rows marked with x, by identity rather than position
 	paused   bool
 	width    int
 	height   int
@@ -448,6 +449,14 @@ func (m Model) key(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.cycleNode(-1)
 	case ActExport:
 		m.exportCSV()
+	case ActMark:
+		m.toggleMark()
+	case ActMarkAll:
+		m.markAll()
+	case ActYank:
+		return m, m.yankIDs()
+	case ActYankCmd:
+		return m, m.yankCommand()
 	}
 	return m, nil
 }
@@ -495,7 +504,7 @@ func (m *Model) exportCSV() {
 		return
 	}
 	defer func() { _ = f.Close() }()
-	n, err := ExportCSV(f, h, m.devices())
+	n, err := ExportCSV(f, h, m.markedDevices(m.devices()))
 	if err != nil {
 		m.say(err.Error())
 		return
