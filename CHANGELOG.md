@@ -4,13 +4,28 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ## Unreleased
 
+## 0.1.0 - 2026-09-19
+
+First tagged release. Every push to `main` had been publishing a pre-release; this is the version the install script, `siltide --update` and Homebrew resolve to by default.
+
 ### Added
-- 15 accelerator vendors: NVIDIA (NVML, no cgo), Apple silicon (ioreg, IOReport, SMC), AMD and Intel (sysfs, DRM fdinfo), and Huawei Ascend, AWS Neuron, Biren, Cambricon, Enflame, Hygon, Iluvatar, Kunlunxin, MetaX, Moore Threads, and VastAI through their CLI tools.
-- Interactive terminal UI: 16 tabs, mouse support, a command bar with completion, a filter language, and 6 themes plus user-defined ones.
-- History: a time machine on disk with scrubbing, zoom, and per-metric provenance.
-- Kubernetes and Slurm process correlation, including the kubelet pod-resources API.
-- An SSH provider that runs vendor CLIs on remote hosts without installing siltide there.
-- Fleet mode: `--listen` serves `/api/snapshot`, `/api/summary`, `/api/events`, `/api/history`, and Prometheus `/metrics`; `--remote` attaches a TUI to another siltide.
-- Cost and waste per workload, energy and carbon tracking, alert outputs (webhook, Slack, Alertmanager), anomaly detection, and topology-aware placement hints.
-- `--record` and `--replay`, `--status`, `--export`, shell completions, and a man page.
-- Packages: Linux and macOS binaries, deb and rpm, a container image, and a Homebrew tap.
+
+**Hardware.** 15 accelerator vendors: NVIDIA through NVML loaded with `dlopen` and no cgo, with Xid events, NVLink, ECC, row remaps and PCIe AER; Apple silicon through ioreg, IOReport and SMC, including per-process GPU time; AMD and Intel through sysfs and DRM `fdinfo`; and Huawei Ascend, AWS Neuron, Biren, Cambricon, Enflame, Hygon, Iluvatar CoreX, Kunlunxin, MetaX, Moore Threads and VastAI through their own tools, one captured fixture behind every parser. NVIDIA DCGM profiling metrics when `dcgmi` is present.
+
+**The terminal.** 16 tabs on the number and letter keys, each hiding itself when it has nothing to show. A filter language with free words, `key:value` pairs, comparisons and negation. A command bar that lists what it accepts as you type. Marking with `x` and `X`, and `y` and `Y` to copy the identifiers or the command for the marked rows, which siltide never runs itself. 16 themes including `paper` for a light terminal, plus user-defined ones. Mouse support, rebindable keys, bookmarks, and a view that reopens where you left it.
+
+**History.** An on-disk time machine with scrubbing, zoom, per-metric provenance and per-process trends. `--record` and `--replay` hand an incident to someone else.
+
+**Kubernetes and Slurm.** Processes trace back through their container to the pod and the workload, from `/var/log/pods`, the kubelet pod-resources socket or `scontrol`. Node capacity, allocatable and requested accelerator resources, MIG names included. `describe` and container logs from inside the interface.
+
+**Fleets and integration.** `--listen` serves `/api/snapshot`, `/api/summary`, `/api/events`, `/api/history` and Prometheus `/metrics`; `--remote` attaches a terminal to another siltide; an SSH provider runs vendor tools on hosts without installing siltide there. `--mcp-stdio` and `--mcp-http` answer an agent over the Model Context Protocol with seven read-only tools. A plugin is a signed JSON manifest that adds a view and runs no code.
+
+**Operations.** Cost and waste per workload, energy and carbon tracking, alert outputs to a webhook, Slack or Alertmanager, anomaly detection, topology-aware placement hints, and `--diagnose` for what siltide saw and did not.
+
+**Getting it and keeping it.** An install script that verifies the download against the published checksums, `siltide --update` that does the same and replaces the binary with a rename, Linux and macOS binaries, deb, rpm, apk and Arch packages, a container image, a Nix flake, a Homebrew tap and an AUR package. Every artifact carries an SBOM and a build-provenance attestation.
+
+### Security
+
+- `--listen` refuses a non-loopback address without TLS and a token.
+- The Model Context Protocol endpoint is loopback only, and checks the `Host` header so a page in a browser cannot be pointed at it.
+- Nothing leaves the machine that was not configured to leave it.
