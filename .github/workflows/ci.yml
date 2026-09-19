@@ -107,3 +107,8 @@ jobs:
             ls dist/*."$ext" >/dev/null
           done
           ls dist/checksums.txt >/dev/null
+          # And the binaries are where the release workflow attests them. They
+          # were not, once, and four unattested binaries shipped while the
+          # download page told people to verify them.
+          n=$(ls -1 dist/*/siltide 2>/dev/null | wc -l | tr -d ' ')
+          [ "$n" = 4 ] || { echo "found $n binaries in dist, expected 4"; ls -R dist | head -40; exit 1; }
