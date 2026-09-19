@@ -4,6 +4,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Version
 
 ## Unreleased
 
+## 0.1.1 - 2026-09-19
+
+### Fixed
+- The published binaries carry a build-provenance attestation. In 0.1.0 they did not: the release workflow looked for them at `dist/siltide-*`, and goreleaser keeps each build at `dist/siltide_<os>_<arch>/siltide` and gives it the published name on upload, so the glob matched nothing and the step attested the packages alone without saying it had skipped anything. `gh attestation verify` on a 0.1.0 binary answers 404; on 0.1.1 it answers. A count before the attestation, in the release workflow and on every pull request, stops an empty glob passing quietly again.
+- A missing `AUR_SSH_KEY` is a warning rather than a failed release.
+
 ## 0.1.0 - 2026-09-19
 
 First tagged release. Every push to `main` had been publishing a pre-release; this is the version the install script, `siltide --update` and Homebrew resolve to by default.
