@@ -49,10 +49,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GORELEASER_CURRENT_TAG: ${{ steps.tag.outputs.tag }}
+      # dist/siltide-* matched nothing: goreleaser keeps each build at
+      # dist/siltide_<os>_<arch>/siltide and gives it the published name only
+      # on upload. The attest step took the packages, found no binaries, and
+      # succeeded, so every binary in v0.1.0 went out unattested while the
+      # download page told people to verify it. An empty glob cannot pass
+      # quietly again.
+      - name: The files to attest are the files that were built
+        run: |
+          set -eu
+          n=$(ls -1 dist/*/siltide 2>/dev/null | wc -l | tr -d ' ')
+          [ "$n" = 4 ] || { echo "found $n binaries in dist, expected 4"; ls -R dist | head -40; exit 1; }
+          for ext in deb rpm apk pkg.tar.zst; do
+            ls dist/*."$ext" >/dev/null
+          done
+      # Everything published, not only the binaries: a package or an SBOM that
+      # cannot be traced back to a run is the gap someone would use.
       - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
         with:
           subject-path: |
-            dist/siltide-*
+            dist/*/siltide
             dist/*.deb
             dist/*.rpm
             dist/*.apk

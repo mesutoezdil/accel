@@ -62,8 +62,12 @@ jobs:
         run: |
           set -eu
           if [ -z "${AUR_SSH_KEY:-}" ]; then
-            echo "AUR_SSH_KEY is not configured; nothing was published." >&2
-            exit 1
+            # Not a failure: the key is the owner's to add, and a release
+            # whose every other artifact published is not a red run. It is
+            # loud, so nobody discovers this from a stale AUR page.
+            echo "::warning title=AUR not published::AUR_SSH_KEY is not set, so siltide-bin was not updated on the AUR."
+            echo "AUR_SSH_KEY is not set, so the AUR package was not updated." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
           fi
           mkdir -p ~/.ssh
           printf '%s\n' "$AUR_SSH_KEY" > ~/.ssh/aur
